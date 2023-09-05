@@ -22,7 +22,7 @@ public class LandSquare : MonoBehaviour
     public int y;
 
     public string factionOwner;
-    public string type;//forest, grass_fields, wheat_fields, 
+    public string type;//forest, grass_fields, wheat_fields, ocean, forest, lake
 
     //1 = max 
     public float ironAvalibility;
