@@ -39,10 +39,28 @@ public class Map : MonoBehaviour
         MakeNation1();
         StartCoroutine(PassTime());
 
+        UpdateBorders();
         //DrawMap();
 
 
-        //UpdateNationResources();
+
+        //UpdateNation();
+
+        AddNewSquareTst();
+    }
+
+    public void AddNewSquareTst() 
+    {
+        (players[0].GetComponent(typeof(Nation)) as Nation).ownedLandSquares.Add(worldLandSquares[1, 2]);
+        (players[0].GetComponent(typeof(Nation)) as Nation).ownedLandSquares[4].GetComponent<LandSquare>().factionOwner = "Nation1";
+
+        (players[0].GetComponent(typeof(Nation)) as Nation).ownedLandSquares.Add(worldLandSquares[2, 3]);
+        (players[0].GetComponent(typeof(Nation)) as Nation).ownedLandSquares[5].GetComponent<LandSquare>().factionOwner = "Nation1";
+        (players[0].GetComponent(typeof(Nation)) as Nation).ownedLandSquares.Add(worldLandSquares[0, 3]);
+        (players[0].GetComponent(typeof(Nation)) as Nation).ownedLandSquares[6].GetComponent<LandSquare>().factionOwner = "Nation1";
+        (players[0].GetComponent(typeof(Nation)) as Nation).ownedLandSquares.Add(worldLandSquares[2, 2]);
+        (players[0].GetComponent(typeof(Nation)) as Nation).ownedLandSquares[7].GetComponent<LandSquare>().factionOwner = "Nation1";
+        UpdateBorders();
     }
 
     //
@@ -79,7 +97,7 @@ public class Map : MonoBehaviour
 
             yield return new WaitForSeconds(hourPerTick);
             UpdateTiles();
-            UpdateNationResources();
+            UpdateNation();
 
             for (int i = 0; i < nations.Count; i++) 
             {
@@ -88,6 +106,8 @@ public class Map : MonoBehaviour
             //(players[0].GetComponent(typeof(Nation)) as Nation).population += 55;
         }
     }
+
+
 
 
     public void UpdateTiles() 
@@ -109,7 +129,107 @@ public class Map : MonoBehaviour
         }
     }
 
-    public void UpdateNationResources() 
+
+
+    public void UpdateBorders() 
+    {
+
+        for (int i = 0; i < nations.Count; i++)
+        {
+
+
+            for (int k = 0; k < (nations[i].GetComponent(typeof(Nation)) as Nation).ownedLandSquares.Count; k++)
+            {
+                Debug.Log("landsquare: " + k);
+                //(nations[i].GetComponent(typeof(Nation)) as Nation).ownedLandSquares[k].gameObject.GetComponent<LandSquare>().
+                int landSquareX = (nations[i].GetComponent(typeof(Nation)) as Nation).ownedLandSquares[k].GetComponent<LandSquare>().x;
+                int landSquareY = (nations[i].GetComponent(typeof(Nation)) as Nation).ownedLandSquares[k].GetComponent<LandSquare>().y;
+                string landSquareFaction = (nations[i].GetComponent(typeof(Nation)) as Nation).ownedLandSquares[k].GetComponent<LandSquare>().factionOwner;
+
+
+                //clear current borders
+                foreach (Transform child in (nations[i].GetComponent(typeof(Nation)) as Nation).ownedLandSquares[k].GetComponent<LandSquare>().transform)
+                {
+                    if (child.name.Contains("TileBorder"))
+                    {
+                        Destroy(child.gameObject);
+                    }
+
+                }
+
+                //if border, then add border, else removes border drawing
+                Debug.Log("+x: " + ((landSquareX + 1 > worldLandSquares.GetLength(0))) + ((this.worldLandSquares[landSquareX + 1, landSquareY] == null)) + (this.worldLandSquares[landSquareX + 1, landSquareY].GetComponent<LandSquare>().factionOwner != landSquareFaction));
+                //+x
+                if ((landSquareX + 1 > worldLandSquares.GetLength(0)) || (this.worldLandSquares[landSquareX + 1, landSquareY] == null) || this.worldLandSquares[landSquareX + 1, landSquareY].GetComponent<LandSquare>().factionOwner != landSquareFaction)
+                {
+                    if ((nations[i].GetComponent(typeof(Nation)) as Nation).ownedLandSquares[k].GetComponent<LandSquare>())
+                    {
+                        GameObject newLandSquareBorderR = (GameObject)Instantiate(Resources.Load("Prefabs/Borders/TileBorderBlack_Right_50x50"));
+                        newLandSquareBorderR.transform.position = new Vector3(landSquareX * squareLength, landSquareY * squareLength, 0);
+                        newLandSquareBorderR.transform.SetParent((nations[i].GetComponent(typeof(Nation)) as Nation).ownedLandSquares[k].GetComponent<LandSquare>().transform);
+
+
+                    }
+
+                }
+                //Debug.Log("landSquareX: " + landSquareX + " landSquareY: " + landSquareY + " maxX: " + worldLandSquares.GetLength(0) + " maxY: " + worldLandSquares.GetLength(1) + " " + (landSquareX - 1 > worldLandSquares.GetLength(0) || landSquareX - 1 < 0));
+                Debug.Log("-x: " + ((landSquareX - 1 > worldLandSquares.GetLength(0) || landSquareX - 1 < 0) || (this.worldLandSquares[landSquareX - 1, landSquareY] == null) || (this.worldLandSquares[landSquareX - 1, landSquareY].GetComponent<LandSquare>().factionOwner != landSquareFaction)));
+                //-x
+                if ((landSquareX - 1 > worldLandSquares.GetLength(0) || landSquareX - 1 < 0) || (this.worldLandSquares[landSquareX - 1, landSquareY] == null) || (this.worldLandSquares[landSquareX - 1, landSquareY].GetComponent<LandSquare>().factionOwner != landSquareFaction))
+                {
+                    if ((nations[i].GetComponent(typeof(Nation)) as Nation).ownedLandSquares[k].GetComponent<LandSquare>())
+                    {
+                        GameObject newLandSquareBorderR = (GameObject)Instantiate(Resources.Load("Prefabs/Borders/TileBorderBlack_Left_50x50"));
+                        newLandSquareBorderR.transform.position = new Vector3(landSquareX * squareLength, landSquareY * squareLength, 0);
+                        newLandSquareBorderR.transform.SetParent((nations[i].GetComponent(typeof(Nation)) as Nation).ownedLandSquares[k].GetComponent<LandSquare>().transform);
+
+
+                    }
+
+                }
+                Debug.Log("+y: " + (!(landSquareY + 1 < worldLandSquares.GetLength(1)) || !(this.worldLandSquares[landSquareX, landSquareY + 1] != null || this.worldLandSquares[landSquareX, landSquareY + 1].GetComponent<LandSquare>().factionOwner == landSquareFaction)));
+                //+y
+                if ((landSquareY + 1 > worldLandSquares.GetLength(1)) || (this.worldLandSquares[landSquareX, landSquareY + 1] == null) || this.worldLandSquares[landSquareX, landSquareY + 1].GetComponent<LandSquare>().factionOwner != landSquareFaction)
+                {
+                    if ((nations[i].GetComponent(typeof(Nation)) as Nation).ownedLandSquares[k].GetComponent<LandSquare>())
+                    {
+                        GameObject newLandSquareBorderR = (GameObject)Instantiate(Resources.Load("Prefabs/Borders/TileBorderBlack_Top_50x50"));
+                        newLandSquareBorderR.transform.position = new Vector3(landSquareX * squareLength, landSquareY * squareLength, 0);
+                        newLandSquareBorderR.transform.SetParent((nations[i].GetComponent(typeof(Nation)) as Nation).ownedLandSquares[k].GetComponent<LandSquare>().transform);
+
+
+                    }
+
+                }
+                Debug.Log("-y: " + ((landSquareY - 1 > worldLandSquares.GetLength(1) || landSquareY - 1 < 0) || (this.worldLandSquares[landSquareX, landSquareY - 1] == null) || (this.worldLandSquares[landSquareX, landSquareY - 1].GetComponent<LandSquare>().factionOwner != landSquareFaction)));
+                //-y
+                if ((landSquareY - 1 > worldLandSquares.GetLength(1) || landSquareY - 1 < 0) || (this.worldLandSquares[landSquareX, landSquareY - 1] == null) || (this.worldLandSquares[landSquareX, landSquareY - 1].GetComponent<LandSquare>().factionOwner != landSquareFaction))
+                {
+                    if ((nations[i].GetComponent(typeof(Nation)) as Nation).ownedLandSquares[k].GetComponent<LandSquare>())
+                    {
+                        GameObject newLandSquareBorderR = (GameObject)Instantiate(Resources.Load("Prefabs/Borders/TileBorderBlack_Bottom_50x50"));
+                        newLandSquareBorderR.transform.position = new Vector3(landSquareX * squareLength, landSquareY * squareLength, 0);
+                        newLandSquareBorderR.transform.SetParent((nations[i].GetComponent(typeof(Nation)) as Nation).ownedLandSquares[k].GetComponent<LandSquare>().transform);
+
+
+                    }
+
+                }
+
+
+
+
+
+
+                //(nations[i].GetComponent(typeof(Nation)) as Nation).GetAndSetPopulation();
+
+
+
+            }
+        }
+    }
+
+    public void UpdateNation() 
     {
        
 
@@ -129,6 +249,9 @@ public class Map : MonoBehaviour
 
                 //Debug.Log("owns " + k + " land squares" + (nations[i].GetComponent(typeof(Nation)) as Nation).ownedLandSquares[k].name);
                 (nations[i].GetComponent(typeof(Nation)) as Nation).GetAndSetPopulation();
+
+                
+
             }
 
             //(nations[i].GetComponent(typeof(Nation)) as Nation).population += newPop;
@@ -212,8 +335,11 @@ public class Map : MonoBehaviour
         (players[0].GetComponent(typeof(Nation)) as Nation).ownedLandSquares[0].GetComponent<LandSquare>().population += 40000;
         (players[0].GetComponent(typeof(Nation)) as Nation).ownedLandSquares[0].GetComponent<LandSquare>().factionOwner = "Nation1";
         (players[0].GetComponent(typeof(Nation)) as Nation).ownedLandSquares.Add(worldLandSquares[1,0]);
+        (players[0].GetComponent(typeof(Nation)) as Nation).ownedLandSquares[1].GetComponent<LandSquare>().factionOwner = "Nation1";
         (players[0].GetComponent(typeof(Nation)) as Nation).ownedLandSquares.Add(worldLandSquares[0,1]);
+        (players[0].GetComponent(typeof(Nation)) as Nation).ownedLandSquares[2].GetComponent<LandSquare>().factionOwner = "Nation1";
         (players[0].GetComponent(typeof(Nation)) as Nation).ownedLandSquares.Add(worldLandSquares[1,1]);
+        (players[0].GetComponent(typeof(Nation)) as Nation).ownedLandSquares[3].GetComponent<LandSquare>().factionOwner = "Nation1";
 
         nations.Add(players[0]);
     }
