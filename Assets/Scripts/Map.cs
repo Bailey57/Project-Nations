@@ -1,20 +1,51 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
+using static Unity.Burst.Intrinsics.Arm;
 using static UnityEditor.Experimental.GraphView.GraphView;
 
 public class Map : MonoBehaviour
 {
+
+
+
+
+
+
+    private int squareLength = 5;
+    private int hourPerTick = 1;
+
+
+
+    public List<GameObject> players = new List<GameObject>();
+
+    public List<GameObject> nations = new List<GameObject>();
+
+    //public List<GameObject> worldLandSquares = new List<GameObject>();
+
+    //public List<List<GameObject>> worldLandSquares = new List<List<GameObject>>();
+    public static int worldSize = 100;
+    public GameObject[,] worldLandSquares = new GameObject[worldSize, worldSize];
+    public string mapStr = "";
+
+
     // Start is called before the first frame update
     void Start()
     {
         players.Add(GameObject.Find("Player1"));
         MakeMap1();
+        //GetMapStr();
         MakeNation1();
         StartCoroutine(PassTime());
+
         //DrawMap();
-        
+
+
+        //UpdateNationResources();
     }
+
+    //
 
     // Update is called once per frame
     void Update()
@@ -22,35 +53,104 @@ public class Map : MonoBehaviour
         
     }
 
+    public string GetMapStr() 
+    {
+        string output = "";
+        for (int x = 0; x < worldLandSquares.GetLength(0); x++)
+        {
+            for (int y = 0; y < worldLandSquares.GetLength(1); y++)
+            {
+                //Debug.Log("MapStr");
+                output += "y";
+            }
+            output += "x \n";
+        }    
+
+
+        this.mapStr = output;
+        return output;
+    }
 
     public IEnumerator PassTime()
     {
         
         while (true)
         {
-            yield return new WaitForSeconds(1);
 
+            yield return new WaitForSeconds(hourPerTick);
+            UpdateTiles();
+            UpdateNationResources();
 
-            (players[0].GetComponent(typeof(Nation)) as Nation).population += 55;
+            for (int i = 0; i < nations.Count; i++) 
+            {
+            }
+
+            //(players[0].GetComponent(typeof(Nation)) as Nation).population += 55;
         }
+    }
+
+
+    public void UpdateTiles() 
+    {
+        for (int x = 0; x < worldLandSquares.GetLength(0); x++) 
+        {
+            for (int y = 0; y < worldLandSquares.GetLength(1); y++) 
+            {
+                if (worldLandSquares[x, y] != null) 
+                {
+                    (worldLandSquares[x, y].GetComponent(typeof(LandSquare)) as LandSquare).population += (worldLandSquares[x, y].GetComponent(typeof(LandSquare)) as LandSquare).population * hourPerTick * 0.00000134077f;
+
+                }
+                
+            }
+            
+
+
+        }
+    }
+
+    public void UpdateNationResources() 
+    {
+       
+
+        for (int i = 0; i < nations.Count; i++)
+        {
+            //float newPop = 0;
+            //float newIron = 0;
+
+            //float newGold = 0;
+            //float newWood = 0;
+            //float newWater = 0;
+            //float newFuel = 0;
+
+            for (int k = 0; k < (nations[i].GetComponent(typeof(Nation)) as Nation).ownedLandSquares.Count; k++) 
+            {
+                //(nations[i].GetComponent(typeof(Nation)) as Nation).ownedLandSquares[k].gameObject.GetComponent<LandSquare>().population += (nations[i].GetComponent(typeof(Nation)) as Nation).ownedLandSquares[k].gameObject.GetComponent<LandSquare>().population * hourPerTick * 0.00000134077f;
+
+                //Debug.Log("owns " + k + " land squares" + (nations[i].GetComponent(typeof(Nation)) as Nation).ownedLandSquares[k].name);
+                (nations[i].GetComponent(typeof(Nation)) as Nation).GetAndSetPopulation();
+            }
+
+            //(nations[i].GetComponent(typeof(Nation)) as Nation).population += newPop;
+
+
+
+            //(nations[i].GetComponent(typeof(Nation)) as Nation).population +=
+
+
+        }
+
     }
 
 
 
 
-    private int squareLength = 5;
-
-    public List<GameObject> players = new List<GameObject>();
-
-    public List<GameObject> worldLandSquares = new List<GameObject>();
-
-
     public void MakeMap1() 
     {
     
-        for (int x = 0; x < 30; x++) 
+        for (int x = 0; x < worldSize; x++) 
         {
-            for (int y = 0; y < 30; y++) 
+            for (int y = 0; y < worldSize; y++) 
             {
                 //LandSquare newLandSquare = new LandSquare();
   
@@ -69,7 +169,10 @@ public class Map : MonoBehaviour
                 {
                     (newLandSquare.GetComponent(typeof(LandSquare)) as LandSquare).type = "grass_fields";
                 }
-                
+
+                //rand pop count
+                randInt = Random.Range(0, 4000);
+                (newLandSquare.GetComponent(typeof(LandSquare)) as LandSquare).population = randInt;
 
                 // GetSpriteForLand()
                 (newLandSquare.GetComponent(typeof(SpriteRenderer)) as SpriteRenderer).sprite = GetSpriteForLand((newLandSquare.GetComponent(typeof(LandSquare)) as LandSquare).type);
@@ -77,7 +180,19 @@ public class Map : MonoBehaviour
                 //newLandSquare.AddComponent<LandSquare>();
                 (newLandSquare.GetComponent(typeof(LandSquare)) as LandSquare).x = x;
                 (newLandSquare.GetComponent(typeof(LandSquare)) as LandSquare).y = y;
-                worldLandSquares.Add(newLandSquare);
+                /*
+                if (x >= worldLandSquares.Count)
+                {
+                    List<GameObject> newXList = new List<GameObject>();
+                    worldLandSquares.Add(newXList);
+                }
+                */
+                //Debug.Log("Before: " + worldLandSquares[x]);
+                //worldLandSquares[x].Append(newLandSquare);
+                worldLandSquares[x, y] = newLandSquare;
+                //worldLandSquares[x][y] = newLandSquare;
+                //worldLandSquares.Add(newLandSquare);
+                //Debug.Log("X: " + x + " Y: " + y + " Square: " + worldLandSquares[x]);
 
                 int newLandSquarex = (newLandSquare.GetComponent(typeof(LandSquare)) as LandSquare).x;
                 int newLandSquarey = (newLandSquare.GetComponent(typeof(LandSquare)) as LandSquare).y;
@@ -90,11 +205,25 @@ public class Map : MonoBehaviour
     public void MakeNation1() 
     {
 
-        (players[0].GetComponent(typeof(Nation)) as Nation).population = 1000000;
-        (players[0].GetComponent(typeof(Nation)) as Nation).ownedLandSquares.Add(worldLandSquares[0]);
-        (players[0].GetComponent(typeof(Nation)) as Nation).ownedLandSquares.Add(worldLandSquares[1]);
-        (players[0].GetComponent(typeof(Nation)) as Nation).ownedLandSquares.Add(worldLandSquares[30]);
-        (players[0].GetComponent(typeof(Nation)) as Nation).ownedLandSquares.Add(worldLandSquares[31]);
+        //(players[0].GetComponent(typeof(Nation)) as Nation).population = 1000000;
+        (players[0].GetComponent(typeof(Nation)) as Nation).nationName = "Nation1";
+        Debug.Log("X count: " + worldLandSquares.GetLength(0) + "Y count: " + worldLandSquares.GetLength(1) + " ");
+        (players[0].GetComponent(typeof(Nation)) as Nation).ownedLandSquares.Add(worldLandSquares[0,0]);
+        (players[0].GetComponent(typeof(Nation)) as Nation).ownedLandSquares[0].GetComponent<LandSquare>().population += 40000;
+        (players[0].GetComponent(typeof(Nation)) as Nation).ownedLandSquares[0].GetComponent<LandSquare>().factionOwner = "Nation1";
+        (players[0].GetComponent(typeof(Nation)) as Nation).ownedLandSquares.Add(worldLandSquares[1,0]);
+        (players[0].GetComponent(typeof(Nation)) as Nation).ownedLandSquares.Add(worldLandSquares[0,1]);
+        (players[0].GetComponent(typeof(Nation)) as Nation).ownedLandSquares.Add(worldLandSquares[1,1]);
+
+        nations.Add(players[0]);
+    }
+
+
+    public void MakeRandomStartingNation(int ownSquareCount) 
+    {
+
+    
+    
     }
 
 
@@ -123,7 +252,7 @@ public class Map : MonoBehaviour
         {
             sprite = Resources.Load<Sprite>("Sprites/Land/LakeTile_50x50");
         }
-        Debug.Log(sprite);
+        //Debug.Log(sprite);
 
         return sprite;
 
@@ -134,9 +263,13 @@ public class Map : MonoBehaviour
     public void DrawMap()
     {
 
-        for (int i = 0; i < worldLandSquares.Count; i++)
+        for (int x = 0; x < worldLandSquares.GetLength(0); x++)
         {
-            SpawnTile(worldLandSquares[i]);
+            for (int y = 0; y < worldLandSquares.GetLength(1); y++) 
+            {
+                SpawnTile(worldLandSquares[x,y]);
+            }
+            
         }
 
 

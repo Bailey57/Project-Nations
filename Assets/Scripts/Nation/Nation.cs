@@ -33,8 +33,29 @@ public class Nation : MonoBehaviour
 
     public List<GameObject> ownedLandSquares = new List<GameObject>();
 
+    public float GetAndSetPopulation() 
+    {
+        this.population = 0;
+        for (int i = 0; i < ownedLandSquares.Count; i++) 
+        {
+            //Debug.Log("i: " + i + " max: " + ownedLandSquares.Count);
+            this.population += (ownedLandSquares[i].GetComponent(typeof(LandSquare)) as LandSquare).population;
+            
+        }
+        return this.population;
+    }
+
+
+    public string NationToString() 
+    {
+        string output = "";
+        output += "Nation: " + nationName;
+        output += "\nPopulation: " + population;
 
 
 
+        output += "\n";
 
+        return output;
+    }
 }

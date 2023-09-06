@@ -28,5 +28,7 @@ public class LandSquare : MonoBehaviour
     public float ironAvalibility;
     public float fertility;
 
+    public float population;
+
 
 }
