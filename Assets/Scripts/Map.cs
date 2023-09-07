@@ -39,6 +39,11 @@ public class Map : MonoBehaviour
         MakeNation1();
         StartCoroutine(PassTime());
 
+        GenerateRandNation();
+        GenerateRandNation();
+        GenerateRandNation();
+        GenerateRandNation();
+
         UpdateBorders();
         //DrawMap();
 
@@ -48,6 +53,39 @@ public class Map : MonoBehaviour
 
         AddNewSquareTst();
     }
+
+
+
+    public void GenerateRandNation() 
+    {
+        //(players[0].GetComponent(typeof(Nation)) as Nation).population = 1000000;
+        GameObject newNation = new GameObject();
+        newNation.AddComponent<Nation>();
+        (newNation.GetComponent(typeof(Nation)) as Nation).nationName = "NewNation " + this.nations.Count;
+
+        Debug.Log("X count: " + worldLandSquares.GetLength(0) + "Y count: " + worldLandSquares.GetLength(1) + " ");
+
+
+        //(newNation.GetComponent(typeof(Nation)) as Nation).ownedLandSquares.Add(worldLandSquares[0, 0]);
+        int randX = Random.Range(0, 99);
+        int randY = Random.Range(0, 99);
+
+        (newNation.GetComponent(typeof(Nation)) as Nation).ownedLandSquares.Add(worldLandSquares[randX, randY]);
+        (newNation.GetComponent(typeof(Nation)) as Nation).ownedLandSquares[0].GetComponent<LandSquare>().population += 40000;
+
+        (newNation.GetComponent(typeof(Nation)) as Nation).ownedLandSquares[0].GetComponent<LandSquare>().factionOwner = "NewNation " + this.nations.Count;
+        (newNation.GetComponent(typeof(Nation)) as Nation).ownedLandSquares.Add(worldLandSquares[randX + 1, randY]);
+        (newNation.GetComponent(typeof(Nation)) as Nation).ownedLandSquares[1].GetComponent<LandSquare>().factionOwner = "NewNation " + this.nations.Count;
+        (newNation.GetComponent(typeof(Nation)) as Nation).ownedLandSquares.Add(worldLandSquares[randX, randY + 1]);
+        (newNation.GetComponent(typeof(Nation)) as Nation).ownedLandSquares[2].GetComponent<LandSquare>().factionOwner = "NewNation " + this.nations.Count;
+        
+        //(newNation.GetComponent(typeof(Nation)) as Nation).ownedLandSquares[3].GetComponent<LandSquare>().factionOwner = "NewNation " + this.nations.Count;
+
+        nations.Add(newNation);
+
+    }
+
+
 
     public void AddNewSquareTst() 
     {
@@ -63,6 +101,7 @@ public class Map : MonoBehaviour
 
 
         //edge case testing
+        /**
         (players[0].GetComponent(typeof(Nation)) as Nation).ownedLandSquares.Add(worldLandSquares[98, 98]);
         (players[0].GetComponent(typeof(Nation)) as Nation).ownedLandSquares[8].GetComponent<LandSquare>().factionOwner = "Nation1";
         (players[0].GetComponent(typeof(Nation)) as Nation).ownedLandSquares.Add(worldLandSquares[99, 99]);
@@ -71,6 +110,7 @@ public class Map : MonoBehaviour
         (players[0].GetComponent(typeof(Nation)) as Nation).ownedLandSquares[10].GetComponent<LandSquare>().factionOwner = "Nation1";
         (players[0].GetComponent(typeof(Nation)) as Nation).ownedLandSquares.Add(worldLandSquares[99, 0]);
         (players[0].GetComponent(typeof(Nation)) as Nation).ownedLandSquares[11].GetComponent<LandSquare>().factionOwner = "Nation1";
+        **/
         UpdateBorders();
     }
 
@@ -287,21 +327,25 @@ public class Map : MonoBehaviour
             for (int y = 0; y < worldSize; y++) 
             {
                 //LandSquare newLandSquare = new LandSquare();
-  
-                GameObject newLandSquare = (GameObject)Instantiate(Resources.Load("Prefabs/GrassTile_50x50"));
+
+                GameObject newLandSquare;
 
                 int randInt = Random.Range(0, 100);
                 if (randInt <= 1)
                 {
+                    newLandSquare = (GameObject)Instantiate(Resources.Load("Prefabs/LakeTile_50x50"));
                     (newLandSquare.GetComponent(typeof(LandSquare)) as LandSquare).type = "lake";
                 }
                 else if (randInt >= 15 && randInt <= 30)
                 {
+                    newLandSquare = (GameObject)Instantiate(Resources.Load("Prefabs/TreeTile_50x50"));
                     (newLandSquare.GetComponent(typeof(LandSquare)) as LandSquare).type = "forest";
                 }
                 else 
                 {
+                    newLandSquare = (GameObject)Instantiate(Resources.Load("Prefabs/GrassTile_50x50"));
                     (newLandSquare.GetComponent(typeof(LandSquare)) as LandSquare).type = "grass_fields";
+
                 }
 
                 //rand pop count

@@ -31,4 +31,27 @@ public class LandSquare : MonoBehaviour
     public float population;
 
 
+
+
+    public string LandSquareToString() 
+    {
+        string output = "";
+        output += "x: " + x + " y: " + y;
+        if (factionOwner != "")
+        {
+            output += "\nFactionOwner: " + factionOwner;
+        }
+        else 
+        {
+            output += "\nFactionOwner: " + "none";
+        }
+        
+        output += "\nPopulation: " + population;
+
+        output += "\n";
+
+        return output;
+    }
+
+
 }
