@@ -2,8 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using static Unity.Burst.Intrinsics.Arm;
-using static UnityEditor.Experimental.GraphView.GraphView;
+
 
 public class Map : MonoBehaviour
 {
@@ -53,6 +52,10 @@ public class Map : MonoBehaviour
 
         AddNewSquareTst();
     }
+
+
+    
+
 
 
 
