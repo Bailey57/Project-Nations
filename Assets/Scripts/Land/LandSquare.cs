@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -28,9 +29,24 @@ public class LandSquare : MonoBehaviour
     public float ironAvalibility;
     public float fertility;
 
+
+
     public float population;
 
 
+    /**
+     * Based on buildings, population, infastructure ect...
+     */
+    public float CalculateLandValue() 
+    {
+        float value = 5000000;//5mil base value
+
+        //add based on pop
+        value += population * 1000;
+        //add based on buildings
+        //add based on infastructure
+        return value;
+    }
 
 
     public string LandSquareToString() 
@@ -46,7 +62,39 @@ public class LandSquare : MonoBehaviour
             output += "\nFactionOwner: " + "none";
         }
         
-        output += "\nPopulation: " + population;
+        
+        if (population > 1000000)
+        {
+            output += "\nPopulation: " + Math.Round((double)(CalculateLandValue() / 1000000), 3) + " million";
+          
+        }
+        else
+        {
+            output += "\nPopulation: " + Math.Round(population);
+        }
+
+
+        if (CalculateLandValue() > 1000000)
+        {
+            output += "\nLand Value: " + Math.Round((double)(CalculateLandValue() / 1000000), 3) + " million";
+         
+        }
+        else
+        {
+            output += "\nLand Value: " + CalculateLandValue();
+        }
+
+
+        if (CalculateLandValue() > 1000000)
+        {
+            output += "\nLand Annex Cost: " + Math.Round((double)(CalculateLandValue() / 1000000), 3) + " million";
+
+        }
+        else
+        {
+            output += "\nLand Annex Cost: " + CalculateLandValue();
+        }
+        //output += "\nValue: " ;
 
         output += "\n";
 

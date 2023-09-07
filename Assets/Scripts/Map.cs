@@ -54,9 +54,16 @@ public class Map : MonoBehaviour
     }
 
 
+
+
+    public void IncreaseNationGold() 
+    {
+        for (int i = 0; i < nations.Count; i++) 
+        {
+            nations[i].GetComponent<Nation>().IncreaseGoldFor1Hour();
+        }
     
-
-
+    }
 
 
     public void GenerateRandNation() 
@@ -152,7 +159,7 @@ public class Map : MonoBehaviour
             yield return new WaitForSeconds(hourPerTick);
             UpdateTiles();
             UpdateNation();
-
+            IncreaseNationGold();
             for (int i = 0; i < nations.Count; i++) 
             {
             }

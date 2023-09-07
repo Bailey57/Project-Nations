@@ -19,12 +19,17 @@ public class NationActions : MonoBehaviour
     public GameObject map;
 
 
+    //need enough money and influence in the area to annex
     public void AnnexLandSquare(GameObject nation, GameObject landsquare)
     {
+        if (nation.GetComponent<Nation>().gold >= landsquare.GetComponent<LandSquare>().CalculateLandValue()) 
+        {
+            nation.GetComponent<Nation>().gold -= landsquare.GetComponent<LandSquare>().CalculateLandValue();
+            landsquare.GetComponent<LandSquare>().factionOwner = nation.GetComponent<Nation>().nationName;
+            nation.GetComponent<Nation>().ownedLandSquares.Add(landsquare);
+            map.GetComponent<Map>().UpdateBorders();
+        }
         
-        landsquare.GetComponent<LandSquare>().factionOwner = nation.GetComponent<Nation>().nationName;
-        nation.GetComponent<Nation>().ownedLandSquares.Add(landsquare);
-        map.GetComponent<Map>().UpdateBorders();
     }
 
 

@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -27,6 +28,8 @@ public class Nation : MonoBehaviour
 
     public float population = 0;
 
+    public float gold = 0;
+
 
     //have net gain/day for each resource 
 
@@ -45,17 +48,42 @@ public class Nation : MonoBehaviour
         return this.population;
     }
 
+    public float GetGoldIncomePerHour() 
+    {
+        
+        //US makes $1.7235 per person per hour
+        return population * 1.7235f;
+    }
 
-    public string NationToString() 
+    public void IncreaseGoldFor1Hour() 
+    {
+        gold += GetGoldIncomePerHour();
+
+
+    }
+
+   public string NationToString() 
     {
         string output = "";
         output += "Nation: " + nationName;
-        output += "\nPopulation: " + population;
-
+        output += "\nPopulation: " + Math.Round(population);
+        if (gold > 1000000)
+        {
+            output += "\nGold: " + Math.Round((double)(gold / 1000000), 3) + " million";
+            //Math.Round((double)(gold / 1000000), 2);
+        }
+        else 
+        {
+            output += "\nGold: " + gold;
+        }
+        
 
 
         output += "\n";
 
         return output;
     }
+
+
+   
 }
