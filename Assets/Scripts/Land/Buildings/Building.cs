@@ -5,9 +5,14 @@ using UnityEngine;
 public interface Building
 {
     string Name { get; set; }
-    int CooldownDays { get; set; }
 
-    float ProductionInKG { get; set; }
+    bool IsActive { get; set; }
 
-    
+    float HoursToBuild { get; set; }
+
+    float ProductionInKGPerHour { get; set; }
+
+    float MaintenanceCostPerHour { get; set; }
+
+    string BuildingToString() { return ""; }
 }

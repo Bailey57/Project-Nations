@@ -77,8 +77,8 @@ public class Map : MonoBehaviour
 
 
         //(newNation.GetComponent(typeof(Nation)) as Nation).ownedLandSquares.Add(worldLandSquares[0, 0]);
-        int randX = Random.Range(0, 99);
-        int randY = Random.Range(0, 99);
+        int randX = Random.Range(0, worldSize - 1);
+        int randY = Random.Range(0, worldSize - 1);
 
         (newNation.GetComponent(typeof(Nation)) as Nation).ownedLandSquares.Add(worldLandSquares[randX, randY]);
         (newNation.GetComponent(typeof(Nation)) as Nation).ownedLandSquares[0].GetComponent<LandSquare>().population += 40000;
@@ -124,13 +124,7 @@ public class Map : MonoBehaviour
         UpdateBorders();
     }
 
-    //
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
+   
 
     public string GetMapStr() 
     {
@@ -169,7 +163,19 @@ public class Map : MonoBehaviour
     }
 
 
+    public int GetLandSquaresNationIndex(GameObject landSquare) 
+    {
+        for (int i = 0; i < nations.Count; i ++) 
+        {
 
+            if (landSquare.GetComponent<LandSquare>().factionOwner == nations[i].GetComponent<Nation>().nationName) 
+            {
+                return i;
+            }
+        }
+
+        return -1;
+    }
 
     public void UpdateTiles() 
     {
@@ -180,7 +186,53 @@ public class Map : MonoBehaviour
                 if (worldLandSquares[x, y] != null) 
                 {
                     (worldLandSquares[x, y].GetComponent(typeof(LandSquare)) as LandSquare).population += (worldLandSquares[x, y].GetComponent(typeof(LandSquare)) as LandSquare).population * hourPerTick * 0.00000134077f;
+                    int nationIdx = GetLandSquaresNationIndex(worldLandSquares[x, y]);
 
+
+                    for (int i = 0; i < (worldLandSquares[x, y].GetComponent(typeof(LandSquare)) as LandSquare).buildings.Count; i++) 
+                    {
+                        //building production
+
+                        //mines
+                        if ((worldLandSquares[x, y].GetComponent(typeof(LandSquare)) as LandSquare).buildings[i] is Mine)
+                        {
+                            if ((worldLandSquares[x, y].GetComponent(typeof(LandSquare)) as LandSquare).buildings[i].IsActive != false && (worldLandSquares[x, y].GetComponent(typeof(LandSquare)) as LandSquare).buildings[i].HoursToBuild <= 0)
+                            {
+                                float oreCost = (worldLandSquares[x, y].GetComponent(typeof(LandSquare)) as LandSquare).buildings[i].MaintenanceCostPerHour;
+                                if (nations[nationIdx].GetComponent<Nation>().gold >= oreCost)
+                                {
+                                    nations[nationIdx].GetComponent<Nation>().metricTonsOfIronOre += (worldLandSquares[x, y].GetComponent(typeof(LandSquare)) as LandSquare).buildings[i].ProductionInKGPerHour * (worldLandSquares[x, y].GetComponent(typeof(LandSquare)) as LandSquare).ironAvalibility / 1000;//convert kg to metric tons
+                                    nations[nationIdx].GetComponent<Nation>().gold -= oreCost;
+
+                                }
+                            }
+                            else if ((worldLandSquares[x, y].GetComponent(typeof(LandSquare)) as LandSquare).buildings[i].HoursToBuild >= 0) 
+                            {
+                                (worldLandSquares[x, y].GetComponent(typeof(LandSquare)) as LandSquare).buildings[i].HoursToBuild -= hourPerTick;
+
+                                if ((worldLandSquares[x, y].GetComponent(typeof(LandSquare)) as LandSquare).buildings[i].HoursToBuild <= 0) 
+                                {
+                                    (worldLandSquares[x, y].GetComponent(typeof(LandSquare)) as LandSquare).buildings[i].IsActive = true;
+                                }
+
+
+                            }
+
+                            Debug.Log("hours left till mine built: " + (worldLandSquares[x, y].GetComponent(typeof(LandSquare)) as LandSquare).buildings[i].HoursToBuild);
+
+
+                        }
+                        //farms
+                        if ((worldLandSquares[x, y].GetComponent(typeof(LandSquare)) as LandSquare).buildings[i] is Farm)
+                        {
+
+                        }
+                    }
+
+
+                    
+
+                    
                 }
                 
             }
@@ -345,16 +397,20 @@ public class Map : MonoBehaviour
                 {
                     newLandSquare = (GameObject)Instantiate(Resources.Load("Prefabs/LakeTile_50x50"));
                     (newLandSquare.GetComponent(typeof(LandSquare)) as LandSquare).type = "lake";
+                    
+                    (newLandSquare.GetComponent(typeof(LandSquare)) as LandSquare).SetLandSquareResources(0, 1, 0, 0, 1);
                 }
                 else if (randInt >= 15 && randInt <= 30)
                 {
                     newLandSquare = (GameObject)Instantiate(Resources.Load("Prefabs/TreeTile_50x50"));
                     (newLandSquare.GetComponent(typeof(LandSquare)) as LandSquare).type = "forest";
+                    (newLandSquare.GetComponent(typeof(LandSquare)) as LandSquare).SetLandSquareResources(.2f, .2f, .3f, 1, .2f);
                 }
                 else 
                 {
                     newLandSquare = (GameObject)Instantiate(Resources.Load("Prefabs/GrassTile_50x50"));
                     (newLandSquare.GetComponent(typeof(LandSquare)) as LandSquare).type = "grass_fields";
+                    (newLandSquare.GetComponent(typeof(LandSquare)) as LandSquare).SetLandSquareResources(.3f, .1f, .1f, 0, 1);
 
                 }
 
@@ -406,6 +462,7 @@ public class Map : MonoBehaviour
         (players[0].GetComponent(typeof(Nation)) as Nation).ownedLandSquares.Add(worldLandSquares[1,1]);
         (players[0].GetComponent(typeof(Nation)) as Nation).ownedLandSquares[3].GetComponent<LandSquare>().factionOwner = "Nation1";
 
+        (players[0].GetComponent(typeof(Nation)) as Nation).gold = 10000000;
         nations.Add(players[0]);
     }
 

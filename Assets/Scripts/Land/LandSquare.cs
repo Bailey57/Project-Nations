@@ -5,18 +5,7 @@ using UnityEngine;
 
 public class LandSquare : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
-
+    
 
 
     public int x;
@@ -27,11 +16,42 @@ public class LandSquare : MonoBehaviour
 
     //1 = max 
     public float ironAvalibility;
+    public float waterAvalibility;
+    public float oilAvalibility;
+    public float lumberAvalibility;
     public float fertility;
 
-
+    //public float infrastuctureLevel;
 
     public float population;
+
+    public List<Building> buildings = new List<Building>();
+
+    public LandSquare() 
+    {
+    }
+
+
+    public LandSquare(float ironAvalibility, float waterAvalibility, float oilAvalibility, float lumberAvalibility, float fertility) 
+    {
+        this.ironAvalibility = ironAvalibility;
+        this.waterAvalibility = waterAvalibility;   
+        this.oilAvalibility = oilAvalibility;
+        this.lumberAvalibility = lumberAvalibility;
+        this.fertility = fertility;
+    }
+
+
+    public void SetLandSquareResources(float ironAvalibility, float waterAvalibility, float oilAvalibility, float lumberAvalibility, float fertility) 
+    {
+        this.ironAvalibility = ironAvalibility;
+        this.waterAvalibility = waterAvalibility;
+        this.oilAvalibility = oilAvalibility;
+        this.lumberAvalibility = lumberAvalibility;
+        this.fertility = fertility;
+
+    }
+
 
 
     /**
@@ -40,9 +60,14 @@ public class LandSquare : MonoBehaviour
     public float CalculateLandValue() 
     {
         float value = 5000000;//5mil base value
-
+        float resourceWorth = 1000000;
         //add based on pop
         value += population * 1000;
+        value += ironAvalibility * resourceWorth;
+        value += waterAvalibility * resourceWorth;
+        value += oilAvalibility * resourceWorth;
+        value += lumberAvalibility * resourceWorth;
+        value += fertility * resourceWorth;
         //add based on buildings
         //add based on infastructure
         return value;
@@ -97,7 +122,20 @@ public class LandSquare : MonoBehaviour
         //output += "\nValue: " ;
 
         output += "\n";
+        output += "\nIronAvalibility: " + ironAvalibility;
+        output += "\nWaterAvalibility: " + waterAvalibility;
+        output += "\nOilAvalibility: " + oilAvalibility;
+        output += "\nLumberAvalibility: " + lumberAvalibility;
+        output += "\nFertility: " + fertility;
 
+        output += "\n";
+        output += "\nBuildings: ";
+        for (int i = 0; i < buildings.Count; i++) 
+        {
+            output += buildings[i].GetType() + ", ";
+        }
+
+        output += "\n";
         return output;
     }
 

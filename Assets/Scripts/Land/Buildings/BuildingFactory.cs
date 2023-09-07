@@ -2,26 +2,17 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class BuildingFactory : MonoBehaviour
+public class BuildingFactory
 {
-    // Start is called before the first frame update
-    void Start()
-    {
-
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-
-    }
+    
 
     //"NewMine", 1, 
 
 
-    public Mine BuildMine(string Name, int CooldownDays, float ProductionInKG)
+    public Mine BuildMine(string Name, bool IsActive, float HoursToBuild, float ProductionInKGPerHour)
     {
-        Mine newMine = new Mine(Name, CooldownDays, ProductionInKG);
+        //mines make 0.523kg to 1.087kg of ore per $
+        Mine newMine = new Mine(Name, IsActive, HoursToBuild, ProductionInKGPerHour * 1.087f, ProductionInKGPerHour);
 
         return newMine;
     }
@@ -29,8 +20,7 @@ public class BuildingFactory : MonoBehaviour
 
     public Mine BuildMine_lvl1() 
     {
-
-        return BuildMine("NewMine", 1, 100);
+        return BuildMine("NewMine",false, 24, 100);
     }
 
 }

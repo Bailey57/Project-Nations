@@ -5,26 +5,20 @@ using UnityEngine;
 
 public class Nation : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
+  
 
     //public float metricTonOf = 0;
     public string nationName;
+
+    public float metricTonsOfIronOre = 0;
 
     public float metricTonsOfIron = 0;
 
     public float metricTonsOfFood = 0;
 
     public float metricTonsOfWater = 0;
+
+    public float metricTonsOfSteel = 0;
 
     public float population = 0;
 
@@ -74,9 +68,18 @@ public class Nation : MonoBehaviour
         }
         else 
         {
-            output += "\nGold: " + gold;
+            output += "\nGold: " + Math.Round((double)(gold), 3);
         }
-        
+
+        if (metricTonsOfIronOre > 1000000)
+        {
+            output += "\nMetricTonsOfIronOre: " + Math.Round((double)(metricTonsOfIronOre / 1000000), 3) + " million";
+        }
+        else
+        {
+            output += "\nMetricTonsOfIronOre: " + Math.Round((double)(metricTonsOfIronOre), 3);
+        }
+
 
 
         output += "\n";
