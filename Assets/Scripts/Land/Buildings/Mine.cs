@@ -33,6 +33,12 @@ public class Mine : Building
         output += "\nProductionInKGPerHour: " + ProductionInKGPerHour;
         output += "\nMaintenanceCostPerHour: " + MaintenanceCostPerHour;
 
+        output += "\nIsActive: " + IsActive;
+        if (HoursToBuild > 0) 
+        {
+            output += "\nHoursTillBuilt: " + HoursToBuild;
+        }
+
 
         output += "\n";
         return output;

@@ -33,7 +33,7 @@ public class SelectedTileStats : MonoBehaviour
         {
 
             //textMeshTxt.text = (objectClick.selectedObject.GetComponent("LandSquare") as LandSquare).LandSquareToString();
-            textMeshTxt.text = (objectClick.GetComponent<ObjectClick>().selectedObject.GetComponent("LandSquare") as LandSquare).LandSquareToString();
+            textMeshTxt.text = (objectClick.GetComponent<ObjectClick>().selectedObject.GetComponent("LandSquare") as LandSquare).LandSquareToString() + (objectClick.GetComponent<ObjectClick>().selectedObject.GetComponent("LandSquare") as LandSquare).BuildingsToString();
 
 
 

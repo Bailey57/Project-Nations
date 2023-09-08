@@ -74,6 +74,18 @@ public class LandSquare : MonoBehaviour
     }
 
 
+    public string BuildingsToString() 
+    {
+        string output = "";
+        for (int i = 0; i < this.buildings.Count; i++)
+        {
+            output += this.buildings[i].BuildingToString();
+            output += "\n";
+        }
+        
+        return output;
+    }
+
     public string LandSquareToString() 
     {
         string output = "";

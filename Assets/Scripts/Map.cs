@@ -218,7 +218,7 @@ public class Map : MonoBehaviour
 
                             }
 
-                            Debug.Log("hours left till mine built: " + (worldLandSquares[x, y].GetComponent(typeof(LandSquare)) as LandSquare).buildings[i].HoursToBuild);
+                            //Debug.Log("hours left till mine built: " + (worldLandSquares[x, y].GetComponent(typeof(LandSquare)) as LandSquare).buildings[i].HoursToBuild);
 
 
                         }

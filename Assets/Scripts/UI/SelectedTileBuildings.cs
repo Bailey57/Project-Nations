@@ -31,15 +31,7 @@ public class SelectedTileBuildings : MonoBehaviour
             textMeshTxt.text = (objectClick.GetComponent<ObjectClick>().selectedObject.GetComponent("LandSquare") as LandSquare).LandSquareToString();
             string finalString = "";
 
-            for (int i = 0; i < (objectClick.GetComponent<ObjectClick>().selectedObject.GetComponent("LandSquare") as LandSquare).buildings.Count; i++) 
-            {
-                //if () 
-                //{
-
-                //}
-                finalString += (objectClick.GetComponent<ObjectClick>().selectedObject.GetComponent("LandSquare") as LandSquare).buildings[i].BuildingToString();
-                finalString += "\n";
-            }
+            finalString = (objectClick.GetComponent<ObjectClick>().selectedObject.GetComponent("LandSquare") as LandSquare).BuildingsToString();
             textMeshTxt.text = finalString;
             //landsquare buildings
 
