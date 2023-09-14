@@ -1,7 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using UnityEditor.Experimental.GraphView;
+
 using UnityEngine;
 
 
@@ -52,6 +51,7 @@ public class Map : MonoBehaviour
         //UpdateNation();
 
         AddNewSquareTst();
+        SetBaseNationApprovalForTiles();
     }
 
 
@@ -177,6 +177,42 @@ public class Map : MonoBehaviour
 
         return -1;
     }
+
+
+
+    public void SetBaseNationApprovalForTiles() 
+    {
+        for (int x = 0; x < worldLandSquares.GetLength(0); x++)
+        {
+            for (int y = 0; y < worldLandSquares.GetLength(1); y++)
+            {
+                if (worldLandSquares[x, y] != null)
+                {
+                    for (int i = 0; i < this.nations.Count; i++)
+                    {
+                        NationApprovalRatings nar = new NationApprovalRatings();
+                        (worldLandSquares[x, y].GetComponent(typeof(LandSquare)) as LandSquare).nationApprovalRatings.Add(nations[i], nar);
+
+                        //if tile is owned already, then set approval to 80%, else neutral
+                        if ((worldLandSquares[x, y].GetComponent(typeof(LandSquare)) as LandSquare).factionOwner != "")
+                        {
+                            nar.IncreaseApproval(80);
+
+                        } 
+
+                        
+                    }
+                   
+
+
+                }
+
+            }
+        }
+
+         
+    }
+
 
     public void UpdateTiles() 
     {
@@ -468,6 +504,10 @@ public class Map : MonoBehaviour
                 int newLandSquarey = (newLandSquare.GetComponent(typeof(LandSquare)) as LandSquare).y;
                 //newObject.transform.position = new Vector3(x * squareLength, y * squareLength, 0);
                 newLandSquare.transform.position = new Vector3(newLandSquarex * squareLength, newLandSquarey * squareLength, 0);
+
+
+
+               
             }
         }
     }

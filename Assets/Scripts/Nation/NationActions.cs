@@ -16,11 +16,8 @@ public class NationActions : MonoBehaviour
         
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
+    public float annexNegativeApprovalPercent = .5f;
+    
 
     BuildingFactory buildingFactory = new BuildingFactory();
     public GameObject mainCamera;//null if npc 
@@ -36,11 +33,14 @@ public class NationActions : MonoBehaviour
             landsquare.GetComponent<LandSquare>().factionOwner = nation.GetComponent<Nation>().nationName;
             nation.GetComponent<Nation>().ownedLandSquares.Add(landsquare);
             map.GetComponent<Map>().UpdateBorders();
+
+            //adds 20% dissaproval rating 
+            landsquare.GetComponent<LandSquare>().nationApprovalRatings[nation].DecreaseApproval(landsquare.GetComponent<LandSquare>().nationApprovalRatings[nation].neutralApproval * annexNegativeApprovalPercent);
+
+
         }
         
     }
-
-
 
     public void Player1AnnexLandSquare()
     {
@@ -78,11 +78,6 @@ public class NationActions : MonoBehaviour
                 landSquare.GetComponent<LandSquare>().buildings.Add(buildingFactory.BuildMine_lvl1());
             }
         }
-
-        
-        
-
-
     }
 
     public void PlayerBuildMine() 
@@ -97,6 +92,15 @@ public class NationActions : MonoBehaviour
         }
     }
 
+
+    public void LobbyInSquare(GameObject nation, GameObject landsquare) 
+    {
+
+        nation.GetComponent<Nation>().gold -= landsquare.GetComponent<LandSquare>().CalculateLandValue();
+        landsquare.GetComponent<LandSquare>().factionOwner = nation.GetComponent<Nation>().nationName;
+        nation.GetComponent<Nation>().ownedLandSquares.Add(landsquare);
+        map.GetComponent<Map>().UpdateBorders();
+    }
 
 
     public void CalculateBestDecision() 

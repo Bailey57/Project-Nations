@@ -25,6 +25,9 @@ public class LandSquare : MonoBehaviour
 
     public float population;
 
+    public Dictionary<GameObject, NationApprovalRatings> nationApprovalRatings = new Dictionary<GameObject, NationApprovalRatings>();
+    //public List<NationApprovalRatings> nationApprovalRatings = new List<NationApprovalRatings>();
+
     public List<Building> buildings = new List<Building>();
 
     public LandSquare() 
@@ -74,6 +77,12 @@ public class LandSquare : MonoBehaviour
     }
 
 
+    public string GetApprovalRatingsString(GameObject nation) 
+    {
+        return nationApprovalRatings[nation].NationApprovalRatingsToString();
+    }
+
+
     public string BuildingsToString() 
     {
         string output = "";
@@ -98,8 +107,10 @@ public class LandSquare : MonoBehaviour
         {
             output += "\nFactionOwner: " + "none";
         }
+
         
-        
+
+
         if (population > 1000000)
         {
             output += "\nPopulation: " + Math.Round((double)(CalculateLandValue() / 1000000), 3) + " million";
