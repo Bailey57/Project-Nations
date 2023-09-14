@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 
 
@@ -397,26 +398,51 @@ public class Map : MonoBehaviour
                 {
                     newLandSquare = (GameObject)Instantiate(Resources.Load("Prefabs/LakeTile_50x50"));
                     (newLandSquare.GetComponent(typeof(LandSquare)) as LandSquare).type = "lake";
-                    
                     (newLandSquare.GetComponent(typeof(LandSquare)) as LandSquare).SetLandSquareResources(0, 1, 0, 0, 1);
+                    //rand pop count
+                    randInt = Random.Range(0, 4000);
+                    (newLandSquare.GetComponent(typeof(LandSquare)) as LandSquare).population = randInt;
                 }
                 else if (randInt >= 15 && randInt <= 30)
                 {
                     newLandSquare = (GameObject)Instantiate(Resources.Load("Prefabs/TreeTile_50x50"));
                     (newLandSquare.GetComponent(typeof(LandSquare)) as LandSquare).type = "forest";
-                    (newLandSquare.GetComponent(typeof(LandSquare)) as LandSquare).SetLandSquareResources(.2f, .2f, .3f, 1, .2f);
+                    (newLandSquare.GetComponent(typeof(LandSquare)) as LandSquare).SetLandSquareResources(.08f, .2f, .3f, 1, .2f);
+                    //rand pop count
+                    randInt = Random.Range(0, 4000);
+                    (newLandSquare.GetComponent(typeof(LandSquare)) as LandSquare).population = randInt;
+                }
+                
+                else if (randInt >= 30 && randInt <= 45) 
+                {
+                    newLandSquare = (GameObject)Instantiate(Resources.Load("Prefabs/HillTile_50x50"));
+                    (newLandSquare.GetComponent(typeof(LandSquare)) as LandSquare).type = "hills";
+                    (newLandSquare.GetComponent(typeof(LandSquare)) as LandSquare).SetLandSquareResources(.3f, .1f, .1f, 0, .2f);
+                    //rand pop count
+                    randInt = Random.Range(0, 4000);
+                    (newLandSquare.GetComponent(typeof(LandSquare)) as LandSquare).population = randInt;
+                }
+                else if (randInt >= 98 && randInt <= 100)
+                {
+                    newLandSquare = (GameObject)Instantiate(Resources.Load("Prefabs/MountainTile_50x50"));
+                    (newLandSquare.GetComponent(typeof(LandSquare)) as LandSquare).type = "mountain";
+                    (newLandSquare.GetComponent(typeof(LandSquare)) as LandSquare).SetLandSquareResources(1f, .1f, .1f, .1f, 0);
+                    //rand pop count
+                    randInt = Random.Range(0, 200);
+                    (newLandSquare.GetComponent(typeof(LandSquare)) as LandSquare).population = randInt;
                 }
                 else 
                 {
                     newLandSquare = (GameObject)Instantiate(Resources.Load("Prefabs/GrassTile_50x50"));
                     (newLandSquare.GetComponent(typeof(LandSquare)) as LandSquare).type = "grass_fields";
-                    (newLandSquare.GetComponent(typeof(LandSquare)) as LandSquare).SetLandSquareResources(.3f, .1f, .1f, 0, 1);
+                    (newLandSquare.GetComponent(typeof(LandSquare)) as LandSquare).SetLandSquareResources(.08f, .1f, .1f, 0, 1);
+                    //rand pop count
+                    randInt = Random.Range(0, 4000);
+                    (newLandSquare.GetComponent(typeof(LandSquare)) as LandSquare).population = randInt;
 
                 }
 
-                //rand pop count
-                randInt = Random.Range(0, 4000);
-                (newLandSquare.GetComponent(typeof(LandSquare)) as LandSquare).population = randInt;
+
 
                 // GetSpriteForLand()
                 (newLandSquare.GetComponent(typeof(SpriteRenderer)) as SpriteRenderer).sprite = GetSpriteForLand((newLandSquare.GetComponent(typeof(LandSquare)) as LandSquare).type);
@@ -478,10 +504,10 @@ public class Map : MonoBehaviour
     public Sprite GetSpriteForLand(string type) 
     {
         Sprite sprite = null;
-        if (type == "grass_fields") 
+        if (type == "grass_fields")
         {
             sprite = Resources.Load<Sprite>("Sprites/Land/GrassTile_50x50");
-            
+
         }
         else if (type == "wheat_fields")
         {
@@ -499,6 +525,15 @@ public class Map : MonoBehaviour
         else if (type == "lake")
         {
             sprite = Resources.Load<Sprite>("Sprites/Land/LakeTile_50x50");
+        }
+        else if (type == "mountain")
+        {
+            sprite = Resources.Load<Sprite>("Sprites/Land/MountainTile_50x50");
+
+        }
+        else if (type == "hills") 
+        {
+            sprite = Resources.Load<Sprite>("Sprites/Land/HillTile_50x50");
         }
         //Debug.Log(sprite);
 
