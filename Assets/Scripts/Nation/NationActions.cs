@@ -16,12 +16,36 @@ public class NationActions : MonoBehaviour
         
     }
 
-    public float annexNegativeApprovalPercent = .5f;
-    
+    public float annexMaxNegativeApprovalPercent = .7f;
+    public float annexMinNegativeApprovalPercent = .2f;
 
     BuildingFactory buildingFactory = new BuildingFactory();
     public GameObject mainCamera;//null if npc 
     public GameObject map;
+
+
+
+
+
+
+
+
+
+
+    public void LobbyInLandSquare(GameObject nation, GameObject landsquare) 
+    { 
+    
+    
+    
+    }
+
+    public void MovePopulationToSquare(GameObject nation, GameObject landsquare)
+    {
+
+
+
+    }
+
 
 
     //need enough money and influence in the area to annex
@@ -34,8 +58,9 @@ public class NationActions : MonoBehaviour
             nation.GetComponent<Nation>().ownedLandSquares.Add(landsquare);
             map.GetComponent<Map>().UpdateBorders();
 
-            //adds 20% dissaproval rating 
-            landsquare.GetComponent<LandSquare>().nationApprovalRatings[nation].DecreaseApproval(landsquare.GetComponent<LandSquare>().nationApprovalRatings[nation].neutralApproval * annexNegativeApprovalPercent);
+            //adds dissaproval rating 
+            float dissaprovalRating = Random.Range(annexMinNegativeApprovalPercent, annexMaxNegativeApprovalPercent);
+            landsquare.GetComponent<LandSquare>().nationApprovalRatings[nation].DecreaseApproval(landsquare.GetComponent<LandSquare>().nationApprovalRatings[nation].neutralApproval * dissaprovalRating);
 
 
         }
