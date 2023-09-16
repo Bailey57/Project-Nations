@@ -13,11 +13,22 @@ public class NationActions : MonoBehaviour
             mainCamera = new GameObject();
             mainCamera.transform.SetParent(gameObject.transform);
         }
-        
+
+        annexMinNegativeApprovalPercent = .2f;
+        annexMaxNegativeApprovalPercent = .7f;
+        minHourSupportIncrease = .05f;
+        maxHourSupportIncrease = .35f;
+        hoursToLobby = 168;
     }
 
-    public float annexMaxNegativeApprovalPercent = .7f;
     public float annexMinNegativeApprovalPercent = .2f;
+    public float annexMaxNegativeApprovalPercent = .7f;
+
+
+    
+    public float minHourSupportIncrease = .05f;
+    public float maxHourSupportIncrease = .35f;
+    public float hoursToLobby = 168;
 
     BuildingFactory buildingFactory = new BuildingFactory();
     public GameObject mainCamera;//null if npc 
@@ -32,12 +43,38 @@ public class NationActions : MonoBehaviour
 
 
 
-    public void LobbyInLandSquare(GameObject nation, GameObject landsquare) 
-    { 
-    
-    
-    
+    public IEnumerator LobbyInLandSquare(GameObject nation, GameObject landsquare) 
+    {
+
+        if (nation.GetComponent<Nation>().gold >= landsquare.GetComponent<LandSquare>().CalculateLandValue() / 2 && nation.GetComponent<Nation>().nationName != landsquare.GetComponent<LandSquare>().factionOwner)
+        {
+            nation.GetComponent<Nation>().gold -= landsquare.GetComponent<LandSquare>().CalculateLandValue() / 2; //lobbying costs half the value of the tile
+
+            for (int i = 0; i < hoursToLobby; i++)
+            {
+                yield return new WaitForSeconds(1);
+
+                float ratingIncrease = Random.Range(minHourSupportIncrease, maxHourSupportIncrease);
+                landsquare.GetComponent<LandSquare>().nationApprovalRatings[nation].IncreaseApproval(ratingIncrease);
+                Debug.Log("Lobby hours left: " + (hoursToLobby) + " ratingIncrease: " + ratingIncrease);
+            }
+
+        }
+
     }
+
+    public void PlayerLobbyInLandSquare()
+    {
+        if (mainCamera.GetComponent<ObjectClick>().selectedObject != null)
+        {
+            StartCoroutine(LobbyInLandSquare(gameObject.transform.parent.GetComponent<Nation>().gameObject, mainCamera.GetComponent<ObjectClick>().selectedObject));
+            
+        }
+
+    }
+
+
+
 
     public void MovePopulationToSquare(GameObject nation, GameObject landsquare)
     {
