@@ -9,18 +9,19 @@ public class BuildingFactory
     //"NewMine", 1, 
 
 
-    public Mine BuildMine(string Name, bool IsActive, float HoursToBuild, float ProductionInKGPerHour)
+    public Mine BuildMine(string Name, bool IsActive, float HoursToBuild, float MaxProductionInKGPerHour, string factionOwner)
     {
         //mines make 0.523kg to 1.087kg of ore per $
-        Mine newMine = new Mine(Name, IsActive, HoursToBuild, ProductionInKGPerHour * 1.087f, ProductionInKGPerHour);
+        Mine newMine = new Mine(Name, IsActive, HoursToBuild, MaxProductionInKGPerHour * 1.087f, MaxProductionInKGPerHour);
+        newMine.FactionOwner = factionOwner;
 
         return newMine;
     }
 
 
-    public Mine BuildMine_lvl1() 
+    public Mine BuildMine_lvl1(string factionOwner) 
     {
-        return BuildMine("NewMine",false, 24, 100);
+        return BuildMine("Mine",false, 24, 100, factionOwner);
     }
 
 }

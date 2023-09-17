@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -6,12 +7,12 @@ public class Mine : Building
 {
    
 
-    public Mine(string Name, bool IsActive, float HoursToBuild, float MaintenanceCostPerHour, float ProductionInKGPerHour) 
+    public Mine(string Name, bool IsActive, float HoursToBuild, float MaintenanceCostPerHour, float MaxProductionInKGPerHour) 
     {
         this.Name = Name;
         this.IsActive = IsActive;
         this.HoursToBuild = HoursToBuild;
-        this.ProductionInKGPerHour = ProductionInKGPerHour;
+        this.MaxProductionInKGPerHour = MaxProductionInKGPerHour;
         this.MaintenanceCostPerHour = MaintenanceCostPerHour;
 
 
@@ -23,15 +24,22 @@ public class Mine : Building
     public float HoursToBuild { get; set; }
     public float ProductionInKGPerHour { get; set; }
 
+    public float MaxProductionInKGPerHour { get; set; }
+
     public float MaintenanceCostPerHour { get; set; }
 
+    public float Efficency { get; set; }
 
+    public string FactionOwner { get; set; }
+
+    /*
     public string BuildingToString() 
     {
         string output = "";
         output += "\nBuilding: " + "Mine";
-        output += "\nProductionInKGPerHour: " + ProductionInKGPerHour;
-        output += "\nMaintenanceCostPerHour: " + MaintenanceCostPerHour;
+        output += "\nProductionInKGPerHour: " + Math.Round((double)(ProductionInKGPerHour));
+        output += "\nMaintenanceCostPerHour: " + Math.Round((double)(MaintenanceCostPerHour));
+        output += "\nEfficency: " + Math.Round((double)(Efficency)) + "%";
 
         output += "\nIsActive: " + IsActive;
         if (HoursToBuild > 0) 
@@ -43,6 +51,7 @@ public class Mine : Building
         output += "\n";
         return output;
     }
+    */
 
 
 }

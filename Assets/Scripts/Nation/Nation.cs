@@ -24,11 +24,41 @@ public class Nation : MonoBehaviour
 
     public float gold = 0;
 
+    public float goldIncomePerHour = 0;
+
+    public float goldExpencesPerHour = 0;
+
 
     //have net gain/day for each resource 
 
 
+
+
     public List<GameObject> ownedLandSquares = new List<GameObject>();
+
+
+    public float GetAndSetGoldExpencesPerHour() 
+    {
+        float goldExpencesPerHour = 0;
+        for (int i = 0; i < ownedLandSquares.Count; i++) 
+        {
+            if (ownedLandSquares[i].GetComponent<LandSquare>().buildings.Count > 0) 
+            {
+                for (int k = 0; k < ownedLandSquares[i].GetComponent<LandSquare>().buildings.Count; k++) 
+                {
+                    if (ownedLandSquares[i].GetComponent<LandSquare>().buildings[k].IsActive) 
+                    {
+                        goldExpencesPerHour += ownedLandSquares[i].GetComponent<LandSquare>().buildings[k].MaintenanceCostPerHour;
+                    }
+                    
+                }
+                //goldExpencesPerHour 
+            }
+            
+        }
+        this.goldExpencesPerHour = goldExpencesPerHour;
+        return goldExpencesPerHour;
+    }
 
     public float GetAndSetPopulation() 
     {
@@ -42,16 +72,17 @@ public class Nation : MonoBehaviour
         return this.population;
     }
 
-    public float GetGoldIncomePerHour() 
+    public float GetAndSetGoldIncomePerHour() 
     {
-        
+
         //US makes $1.7235 per person per hour
+        this.goldIncomePerHour = population * 1.7235f;
         return population * 1.7235f;
     }
 
     public void IncreaseGoldFor1Hour() 
     {
-        gold += GetGoldIncomePerHour();
+        gold += GetAndSetGoldIncomePerHour();
 
 
     }
@@ -80,6 +111,34 @@ public class Nation : MonoBehaviour
             output += "\nMetricTonsOfIronOre: " + Math.Round((double)(metricTonsOfIronOre), 3);
         }
 
+
+
+        if (goldIncomePerHour > 1000000)
+        {
+            output += "\nGoldIncomePerHour: " + Math.Round((double)(goldIncomePerHour / 1000000), 3) + " million";
+        }
+        else
+        {
+            output += "\nGoldIncomePerHour: " + Math.Round((double)(goldIncomePerHour), 3);
+        }
+
+        if (goldExpencesPerHour > 1000000)
+        {
+            output += "\nGoldExpencesPerHour: " + Math.Round((double)(goldExpencesPerHour / 1000000), 3) + " million";
+        }
+        else
+        {
+            output += "\nGoldExpencesPerHour: " + Math.Round((double)(goldExpencesPerHour), 3);
+        }
+
+        if (goldIncomePerHour - goldExpencesPerHour > 1000000)
+        {
+            output += "\nNetGoldPerHour: " + Math.Round((double)((goldIncomePerHour - goldExpencesPerHour) / 1000000), 3) + " million";
+        }
+        else
+        {
+            output += "\nNetGoldPerHour: " + Math.Round((double)((goldIncomePerHour - goldExpencesPerHour)), 3);
+        }
 
 
         output += "\n";

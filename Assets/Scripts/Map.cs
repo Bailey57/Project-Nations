@@ -36,7 +36,16 @@ public class Map : MonoBehaviour
         MakeMap1();
         //GetMapStr();
         MakeNation1();
+
+
         StartCoroutine(PassTime());
+        //StartCoroutine(UpdateTilesCR());
+        //StartCoroutine(UpdateNationCR());
+        //StartCoroutine(IncreaseNationGoldCRCR());
+        //StartCoroutine(UpdateExpencesCR());
+        
+
+
 
         GenerateRandNation();
         GenerateRandNation();
@@ -145,6 +154,48 @@ public class Map : MonoBehaviour
         return output;
     }
 
+
+
+
+    
+    public IEnumerator UpdateTilesCR()
+    {
+        while (true)
+        {
+            yield return new WaitForSeconds(hourPerTick);
+            UpdateTiles();
+        }
+    }
+    public IEnumerator UpdateNationCR()
+    {
+        while (true)
+        {
+            yield return new WaitForSeconds(hourPerTick);
+            UpdateNation();
+        }
+    }
+    public IEnumerator IncreaseNationGoldCRCR()
+    {
+        while (true)
+        {
+            yield return new WaitForSeconds(hourPerTick);
+            IncreaseNationGold();
+        }
+    }
+    public IEnumerator UpdateExpencesCR()
+    {
+        while (true)
+        {
+            yield return new WaitForSeconds(hourPerTick);
+
+            for (int i = 0; i < nations.Count; i++)
+            {
+                nations[i].GetComponent<Nation>().GetAndSetGoldExpencesPerHour();
+            }
+          
+        }
+    }
+
     public IEnumerator PassTime()
     {
         
@@ -155,14 +206,24 @@ public class Map : MonoBehaviour
             UpdateTiles();
             UpdateNation();
             IncreaseNationGold();
-            for (int i = 0; i < nations.Count; i++) 
-            {
-            }
+            UpdateExpences();
+            //for (int i = 0; i < nations.Count; i++) 
+            //{
+            //}
 
             //(players[0].GetComponent(typeof(Nation)) as Nation).population += 55;
         }
     }
 
+
+    public void UpdateExpences() 
+    {
+        for (int i = 0; i < nations.Count; i++)
+        {
+            nations[i].GetComponent<Nation>().GetAndSetGoldExpencesPerHour();
+        }
+
+    }
 
     public int GetLandSquaresNationIndex(GameObject landSquare) 
     {
@@ -191,7 +252,7 @@ public class Map : MonoBehaviour
                     for (int i = 0; i < this.nations.Count; i++)
                     {
                         NationApprovalRatings nar = new NationApprovalRatings();
-                        (worldLandSquares[x, y].GetComponent(typeof(LandSquare)) as LandSquare).nationApprovalRatings.Add(nations[i], nar);
+                        (worldLandSquares[x, y].GetComponent(typeof(LandSquare)) as LandSquare).nationApprovalRatings.Add(nations[i].GetComponent<Nation>().nationName, nar);
 
                         //if tile is owned already, then set approval to 80%, else neutral
                         if ((worldLandSquares[x, y].GetComponent(typeof(LandSquare)) as LandSquare).factionOwner != "")
@@ -230,6 +291,7 @@ public class Map : MonoBehaviour
                     {
                         //building production
 
+                        //TODO: make buildings give resources to who owns them instead of who owns the land square
                         //mines
                         if ((worldLandSquares[x, y].GetComponent(typeof(LandSquare)) as LandSquare).buildings[i] is Mine)
                         {
@@ -238,7 +300,20 @@ public class Map : MonoBehaviour
                                 float oreCost = (worldLandSquares[x, y].GetComponent(typeof(LandSquare)) as LandSquare).buildings[i].MaintenanceCostPerHour;
                                 if (nations[nationIdx].GetComponent<Nation>().gold >= oreCost)
                                 {
-                                    nations[nationIdx].GetComponent<Nation>().metricTonsOfIronOre += (worldLandSquares[x, y].GetComponent(typeof(LandSquare)) as LandSquare).buildings[i].ProductionInKGPerHour * (worldLandSquares[x, y].GetComponent(typeof(LandSquare)) as LandSquare).ironAvalibility / 1000;//convert kg to metric tons
+                                    //(worldLandSquares[x, y].GetComponent<LandSquare>().buildings[i].NationOwner
+                                    //(worldLandSquares[x, y].GetComponent(typeof(LandSquare)) as LandSquare).buildings[i].NationOwner
+
+                                    float negativeApprovalInSquare = worldLandSquares[x, y].GetComponent<LandSquare>().nationApprovalRatings[(worldLandSquares[x, y].GetComponent(typeof(LandSquare)) as LandSquare).buildings[i].FactionOwner].negativeApproval;
+                                    float positiveApprovalInSquare = worldLandSquares[x, y].GetComponent<LandSquare>().nationApprovalRatings[(worldLandSquares[x, y].GetComponent(typeof(LandSquare)) as LandSquare).buildings[i].FactionOwner].positiveApproval;
+                                    float ironAvalability = (worldLandSquares[x, y].GetComponent(typeof(LandSquare)) as LandSquare).ironAvalibility;
+                                    
+                                    worldLandSquares[x, y].GetComponent<LandSquare>().buildings[i].SetEfficencyAndProductionRate(negativeApprovalInSquare, positiveApprovalInSquare, ironAvalability);
+                                    //worldLandSquares[x, y].GetComponent<LandSquare>().ironAvalibility * 
+                                    //Debug.Log("negativeApprovalInSquare: " + negativeApprovalInSquare + " positiveApprovalInSquare: " + positiveApprovalInSquare + " ironAvalability: " + ironAvalability);
+
+                                    //return how much was gained
+                                    nations[nationIdx].GetComponent<Nation>().metricTonsOfIronOre += worldLandSquares[x, y].GetComponent<LandSquare>().buildings[i].ProductionInKGPerHour / 1000;//convert kg to metric tons
+                                    
                                     nations[nationIdx].GetComponent<Nation>().gold -= oreCost;
 
                                 }

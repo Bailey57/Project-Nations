@@ -5,8 +5,12 @@ using UnityEngine;
 
 public class LandSquare : MonoBehaviour
 {
-    
 
+    void Start()
+    {
+        //TODO: update everything there needs to be updated ex: population increase, building production
+
+    }
 
     public int x;
     public int y;
@@ -25,7 +29,7 @@ public class LandSquare : MonoBehaviour
 
     public float population;
 
-    public Dictionary<GameObject, NationApprovalRatings> nationApprovalRatings = new Dictionary<GameObject, NationApprovalRatings>();
+    public Dictionary<string, NationApprovalRatings> nationApprovalRatings = new Dictionary<string, NationApprovalRatings>();
     //public List<NationApprovalRatings> nationApprovalRatings = new List<NationApprovalRatings>();
 
     public List<Building> buildings = new List<Building>();
@@ -57,6 +61,9 @@ public class LandSquare : MonoBehaviour
 
 
 
+    
+
+
     /**
      * Based on buildings, population, infastructure ect...
      */
@@ -79,7 +86,7 @@ public class LandSquare : MonoBehaviour
 
     public string GetApprovalRatingsString(GameObject nation) 
     {
-        return nationApprovalRatings[nation].NationApprovalRatingsToString();
+        return nationApprovalRatings[nation.GetComponent<Nation>().nationName].NationApprovalRatingsToString();
     }
 
 

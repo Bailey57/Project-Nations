@@ -55,7 +55,7 @@ public class NationActions : MonoBehaviour
                 yield return new WaitForSeconds(1);
 
                 float ratingIncrease = Random.Range(minHourSupportIncrease, maxHourSupportIncrease);
-                landsquare.GetComponent<LandSquare>().nationApprovalRatings[nation].IncreaseApproval(ratingIncrease);
+                landsquare.GetComponent<LandSquare>().nationApprovalRatings[nation.GetComponent<Nation>().nationName].IncreaseApproval(ratingIncrease);
                 Debug.Log("Lobby hours left: " + (hoursToLobby) + " ratingIncrease: " + ratingIncrease);
             }
 
@@ -97,7 +97,7 @@ public class NationActions : MonoBehaviour
 
             //adds dissaproval rating 
             float dissaprovalRating = Random.Range(annexMinNegativeApprovalPercent, annexMaxNegativeApprovalPercent);
-            landsquare.GetComponent<LandSquare>().nationApprovalRatings[nation].DecreaseApproval(landsquare.GetComponent<LandSquare>().nationApprovalRatings[nation].neutralApproval * dissaprovalRating);
+            landsquare.GetComponent<LandSquare>().nationApprovalRatings[nation.GetComponent<Nation>().nationName].DecreaseApproval(landsquare.GetComponent<LandSquare>().nationApprovalRatings[nation.GetComponent<Nation>().nationName].neutralApproval * dissaprovalRating);
 
 
         }
@@ -137,7 +137,9 @@ public class NationActions : MonoBehaviour
             if (gameObject.transform.parent.GetComponent<Nation>().gold >= buildCost)
             {
                 gameObject.transform.parent.GetComponent<Nation>().gold -= buildCost;
-                landSquare.GetComponent<LandSquare>().buildings.Add(buildingFactory.BuildMine_lvl1());
+                landSquare.GetComponent<LandSquare>().buildings.Add(buildingFactory.BuildMine_lvl1(gameObject.transform.parent.GetComponent<Nation>().nationName));
+
+                
             }
         }
     }
