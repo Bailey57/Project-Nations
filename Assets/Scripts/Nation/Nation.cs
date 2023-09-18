@@ -5,7 +5,8 @@ using UnityEngine;
 
 public class Nation : MonoBehaviour
 {
-  
+
+    
 
     //public float metricTonOf = 0;
     public string nationName;
@@ -31,7 +32,7 @@ public class Nation : MonoBehaviour
 
     //have net gain/day for each resource 
 
-
+    public bool botControlled;
 
 
     public List<GameObject> ownedLandSquares = new List<GameObject>();

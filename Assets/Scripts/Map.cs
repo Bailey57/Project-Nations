@@ -24,16 +24,22 @@ public class Map : MonoBehaviour
     //public List<GameObject> worldLandSquares = new List<GameObject>();
 
     //public List<List<GameObject>> worldLandSquares = new List<List<GameObject>>();
-    public static int worldSize = 100;
-    public GameObject[,] worldLandSquares = new GameObject[worldSize, worldSize];
+    public int worldSize;
+    public GameObject[,] worldLandSquares;
     public string mapStr = "";
 
 
     // Start is called before the first frame update
     void Start()
     {
+        //set this worlds size
+        worldSize = 100;
+
+
+        worldLandSquares = new GameObject[worldSize, worldSize];
         players.Add(GameObject.Find("Player1"));
         MakeMap1();
+
         //GetMapStr();
         MakeNation1();
 
@@ -45,15 +51,14 @@ public class Map : MonoBehaviour
         //StartCoroutine(UpdateExpencesCR());
         
 
+        for(int i = 0; i < 15; i ++)
+        {
+            GenerateRandNation();
+        }
 
-
-        GenerateRandNation();
-        GenerateRandNation();
-        GenerateRandNation();
-        GenerateRandNation();
 
         UpdateBorders();
-        //DrawMap();
+        //DrawMap();//old
 
 
 
@@ -80,6 +85,14 @@ public class Map : MonoBehaviour
     {
         //(players[0].GetComponent(typeof(Nation)) as Nation).population = 1000000;
         GameObject newNation = new GameObject();
+
+
+        GameObject newNationActions = new GameObject();
+        newNationActions.AddComponent<NationActions>();
+        newNationActions.transform.parent = newNation.transform;
+        newNationActions.GetComponent<NationActions>().nation = newNation;
+        newNationActions.GetComponent<NationActions>().map = this.gameObject;
+
         newNation.AddComponent<Nation>();
         (newNation.GetComponent(typeof(Nation)) as Nation).nationName = "NewNation " + this.nations.Count;
 
@@ -92,17 +105,24 @@ public class Map : MonoBehaviour
 
         (newNation.GetComponent(typeof(Nation)) as Nation).ownedLandSquares.Add(worldLandSquares[randX, randY]);
         (newNation.GetComponent(typeof(Nation)) as Nation).ownedLandSquares[0].GetComponent<LandSquare>().population += 40000;
-
         (newNation.GetComponent(typeof(Nation)) as Nation).ownedLandSquares[0].GetComponent<LandSquare>().factionOwner = "NewNation " + this.nations.Count;
+        
+
+        /*
+        //extra squares
         (newNation.GetComponent(typeof(Nation)) as Nation).ownedLandSquares.Add(worldLandSquares[randX + 1, randY]);
         (newNation.GetComponent(typeof(Nation)) as Nation).ownedLandSquares[1].GetComponent<LandSquare>().factionOwner = "NewNation " + this.nations.Count;
         (newNation.GetComponent(typeof(Nation)) as Nation).ownedLandSquares.Add(worldLandSquares[randX, randY + 1]);
         (newNation.GetComponent(typeof(Nation)) as Nation).ownedLandSquares[2].GetComponent<LandSquare>().factionOwner = "NewNation " + this.nations.Count;
-        
+        */
         //(newNation.GetComponent(typeof(Nation)) as Nation).ownedLandSquares[3].GetComponent<LandSquare>().factionOwner = "NewNation " + this.nations.Count;
 
+        (newNation.GetComponent(typeof(Nation)) as Nation).botControlled = true;
         nations.Add(newNation);
 
+        newNation.name = (newNation.GetComponent(typeof(Nation)) as Nation).nationName;
+        float million = 1000000;
+        (newNation.GetComponent(typeof(Nation)) as Nation).gold += 9 * million;//start with 6 mil usually 
     }
 
 
@@ -133,6 +153,7 @@ public class Map : MonoBehaviour
         **/
         UpdateBorders();
     }
+
 
    
 
@@ -271,8 +292,11 @@ public class Map : MonoBehaviour
             }
         }
 
-         
+
     }
+
+
+    
 
 
     public void UpdateTiles() 
@@ -283,7 +307,9 @@ public class Map : MonoBehaviour
             {
                 if (worldLandSquares[x, y] != null) 
                 {
-                    (worldLandSquares[x, y].GetComponent(typeof(LandSquare)) as LandSquare).population += (worldLandSquares[x, y].GetComponent(typeof(LandSquare)) as LandSquare).population * hourPerTick * 0.00000134077f;
+                    
+                    worldLandSquares[x, y].GetComponent<LandSquare>().IncreasePopulationInLandSquare(this.hourPerTick);
+                    
                     int nationIdx = GetLandSquaresNationIndex(worldLandSquares[x, y]);
 
 
@@ -383,7 +409,7 @@ public class Map : MonoBehaviour
                 }
 
                 //if border, then add border, else removes border drawing
-                Debug.Log("+x: " + (landSquareX + 1 >= worldLandSquares.GetLength(0)) );
+                Debug.Log("+x: " + (landSquareX + 1 >= worldLandSquares.GetLength(0)));
                 //+x
                 if ((landSquareX + 1 >= worldLandSquares.GetLength(0)) || (this.worldLandSquares[landSquareX + 1, landSquareY] == null) || this.worldLandSquares[landSquareX + 1, landSquareY].GetComponent<LandSquare>().factionOwner != landSquareFaction)
                 {

@@ -15,7 +15,7 @@ public class LandSquare : MonoBehaviour
     public int x;
     public int y;
 
-    public string factionOwner;
+    public string factionOwner = "";
     public string type;//forest, grass_fields, wheat_fields, ocean, forest, lake
 
     //1 = max 
@@ -89,6 +89,16 @@ public class LandSquare : MonoBehaviour
         return nationApprovalRatings[nation.GetComponent<Nation>().nationName].NationApprovalRatingsToString();
     }
 
+
+
+    public void IncreasePopulationInLandSquare(double hoursPassed)
+    {
+        double e = 2.71828;//euler's number
+        double r = 1.1; //rate, 1 = 100%
+        population *= (float)Math.Pow(e, (r * hoursPassed / 8760));//8760 = hors in a year
+        //(worldLandSquares[x, y].GetComponent(typeof(LandSquare)) as LandSquare).population += (worldLandSquares[x, y].GetComponent(typeof(LandSquare)) as LandSquare).population * hourPerTick * 0.00000134077f;//old pop equation
+
+    }
 
     public string BuildingsToString() 
     {

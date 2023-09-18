@@ -19,7 +19,16 @@ public class NationActions : MonoBehaviour
         minHourSupportIncrease = .05f;
         maxHourSupportIncrease = .35f;
         hoursToLobby = 168;
+
+
+        if (nation.GetComponent<Nation>().botControlled) 
+        {
+            StartCoroutine(ChooseNextAction());
+        }
     }
+
+
+    public GameObject nation;
 
     public float annexMinNegativeApprovalPercent = .2f;
     public float annexMaxNegativeApprovalPercent = .7f;
@@ -38,15 +47,191 @@ public class NationActions : MonoBehaviour
 
 
 
+    public IEnumerator ChooseNextAction() 
+    {
+        while (true) 
+        {
+            yield return new WaitForSeconds(1);
+
+            for (int i = 0; i < nation.GetComponent<Nation>().ownedLandSquares.Count; i++) 
+            {
+
+                //if no mine and ironAvalibility >= .3, then build mine 
+                if (nation.GetComponent<Nation>().ownedLandSquares[i].GetComponent<LandSquare>().ironAvalibility >= .3 && nation.GetComponent<Nation>().ownedLandSquares[i].GetComponent<LandSquare>().buildings.Count < 1) 
+                {
+                    BuildMine(nation.GetComponent<Nation>().ownedLandSquares[i]);
+                }
+
+                
+                (int, int) mostValubleBorderLandSquare = FindMostValubleBorderLandSquare(nation.GetComponent<Nation>().ownedLandSquares);
+                if (mostValubleBorderLandSquare.Item1 >= 0 && mostValubleBorderLandSquare.Item2 >= 0)
+                {
+                    if (map.GetComponent<Map>().worldLandSquares[mostValubleBorderLandSquare.Item1, mostValubleBorderLandSquare.Item2].GetComponent<LandSquare>().factionOwner == "" && map.GetComponent<Map>().worldLandSquares[mostValubleBorderLandSquare.Item1, mostValubleBorderLandSquare.Item2].GetComponent<LandSquare>().nationApprovalRatings[nation.GetComponent<Nation>().nationName].positiveApproval <= 0)// 0
+                    {
+                        StartCoroutine(LobbyInLandSquare(nation, map.GetComponent<Map>().worldLandSquares[mostValubleBorderLandSquare.Item1, mostValubleBorderLandSquare.Item2]));
+                        Debug.Log("Nation: " + nation.GetComponent<Nation>().name + " \nStarted Lobying in square: x" + mostValubleBorderLandSquare.Item1 + " y" + mostValubleBorderLandSquare.Item2);
+                    }
+                    else
+                    {
+                        AnnexLandSquare(nation, map.GetComponent<Map>().worldLandSquares[mostValubleBorderLandSquare.Item1, mostValubleBorderLandSquare.Item2]);
+                        Debug.Log("Nation: " + nation.GetComponent<Nation>().name + " \nAnnexed square: x" + mostValubleBorderLandSquare.Item1 + " y" + mostValubleBorderLandSquare.Item2);
+                    }
+                    
+
+                }
+                
+
+            }
+        }
+        
+    }
+
+    /**
+     * Runs through the owned landSquare list and finds the most valuble that borders that is not owned 
+     * Return x and y of the mostValubleBorderLandSquare
+     */
+    public (int, int) FindMostValubleBorderLandSquare(List<GameObject> landSquareList) 
+    {
+        //only used when refering to non owned tiles
+        int xPos = -1;
+        int yPos = -1;
+        float landValue = -1;
+        //float nationOpinionInSquare;
+
+        int xPosTmp;
+        int yPosTmp;
+
+        //only used when refering to owned landSquareList squares
+        int landSquareListX;
+        int landSquareListY;
+
+        for (int i = 0;i < landSquareList.Count;i++) 
+        {
+            landSquareListX = landSquareList[i].GetComponent<LandSquare>().x;
+            landSquareListY = landSquareList[i].GetComponent<LandSquare>().y;
+
+            xPosTmp = landSquareListX + 1;
+            yPosTmp = landSquareListY + 1;
+            //Debug.Log("xPosTmp: " + xPosTmp + " yPosTmp: " + yPosTmp + " ");
+            //Debug.Log(" Map1: " + map);
+            //Debug.Log(" Map2: " + map.GetComponent<Map>().worldLandSquares[xPosTmp, yPosTmp]);
+            //Debug.Log("MaxSize: " + map.GetComponent<Map>().worldSize);
+            if (xPosTmp >= 0 && xPosTmp < map.GetComponent<Map>().worldSize && yPosTmp >= 0 && yPosTmp < map.GetComponent<Map>().worldSize && map.GetComponent<Map>().worldLandSquares[xPosTmp, yPosTmp].GetComponent<LandSquare>().factionOwner == "") 
+            {
+                
+                if (map.GetComponent<Map>().worldLandSquares[xPosTmp, yPosTmp].GetComponent<LandSquare>().CalculateLandValue() > landValue) 
+                {
+                    xPos = xPosTmp;
+                    yPos = yPosTmp;
+                    landValue = map.GetComponent<Map>().worldLandSquares[xPos, yPos].GetComponent<LandSquare>().CalculateLandValue();
+                }
+            }
+            xPosTmp = landSquareListX - 1;
+            yPosTmp = landSquareListY - 1;
+            if (xPosTmp >= 0 && xPosTmp < map.GetComponent<Map>().worldSize && yPosTmp >= 0 && yPosTmp < map.GetComponent<Map>().worldSize && map.GetComponent<Map>().worldLandSquares[xPosTmp, yPosTmp].GetComponent<LandSquare>().factionOwner == "")
+            {
+
+                if (map.GetComponent<Map>().worldLandSquares[xPosTmp, yPosTmp].GetComponent<LandSquare>().CalculateLandValue() > landValue)
+                {
+                    xPos = xPosTmp;
+                    yPos = yPosTmp;
+                    landValue = map.GetComponent<Map>().worldLandSquares[xPos, yPos].GetComponent<LandSquare>().CalculateLandValue();
+                }
+            }
+            xPosTmp = landSquareListX + 1;
+            yPosTmp = landSquareListY - 1;
+            if (xPosTmp >= 0 && xPosTmp < map.GetComponent<Map>().worldSize && yPosTmp >= 0 && yPosTmp < map.GetComponent<Map>().worldSize && map.GetComponent<Map>().worldLandSquares[xPosTmp, yPosTmp].GetComponent<LandSquare>().factionOwner == "")
+            {
+
+                if (map.GetComponent<Map>().worldLandSquares[xPosTmp, yPosTmp].GetComponent<LandSquare>().CalculateLandValue() > landValue)
+                {
+                    xPos = xPosTmp;
+                    yPos = yPosTmp;
+                    landValue = map.GetComponent<Map>().worldLandSquares[xPos, yPos].GetComponent<LandSquare>().CalculateLandValue();
+                }
+            }
+            xPosTmp = landSquareListX - 1;
+            yPosTmp = landSquareListY + 1;
+            if (xPosTmp >= 0 && xPosTmp < map.GetComponent<Map>().worldSize && yPosTmp >= 0 && yPosTmp < map.GetComponent<Map>().worldSize && map.GetComponent<Map>().worldLandSquares[xPosTmp, yPosTmp].GetComponent<LandSquare>().factionOwner == "")
+            {
+
+                if (map.GetComponent<Map>().worldLandSquares[xPosTmp, yPosTmp].GetComponent<LandSquare>().CalculateLandValue() > landValue)
+                {
+                    xPos = xPosTmp;
+                    yPos = yPosTmp;
+                    landValue = map.GetComponent<Map>().worldLandSquares[xPos, yPos].GetComponent<LandSquare>().CalculateLandValue();
+                }
+            }
+            xPosTmp = landSquareListX + 1;
+            yPosTmp = landSquareListY;
+            if (xPosTmp >= 0 && xPosTmp < map.GetComponent<Map>().worldSize && yPosTmp >= 0 && yPosTmp < map.GetComponent<Map>().worldSize && map.GetComponent<Map>().worldLandSquares[xPosTmp, yPosTmp].GetComponent<LandSquare>().factionOwner == "")
+            {
+
+                if (map.GetComponent<Map>().worldLandSquares[xPosTmp, yPosTmp].GetComponent<LandSquare>().CalculateLandValue() > landValue)
+                {
+                    xPos = xPosTmp;
+                    yPos = yPosTmp;
+                    landValue = map.GetComponent<Map>().worldLandSquares[xPos, yPos].GetComponent<LandSquare>().CalculateLandValue();
+                }
+            }
+            xPosTmp = landSquareListX - 1;
+            yPosTmp = landSquareListY;
+            if (xPosTmp >= 0 && xPosTmp < map.GetComponent<Map>().worldSize && yPosTmp >= 0 && yPosTmp < map.GetComponent<Map>().worldSize && map.GetComponent<Map>().worldLandSquares[xPosTmp, yPosTmp].GetComponent<LandSquare>().factionOwner == "")
+            {
+
+                if (map.GetComponent<Map>().worldLandSquares[xPosTmp, yPosTmp].GetComponent<LandSquare>().CalculateLandValue() > landValue)
+                {
+                    xPos = xPosTmp;
+                    yPos = yPosTmp;
+                    landValue = map.GetComponent<Map>().worldLandSquares[xPos, yPos].GetComponent<LandSquare>().CalculateLandValue();
+                }
+            }
+            xPosTmp = landSquareListX;
+            yPosTmp = landSquareListY + 1;
+            if (xPosTmp >= 0 && xPosTmp < map.GetComponent<Map>().worldSize && yPosTmp >= 0 && yPosTmp < map.GetComponent<Map>().worldSize && map.GetComponent<Map>().worldLandSquares[xPosTmp, yPosTmp].GetComponent<LandSquare>().factionOwner == "")
+            {
+
+                if (map.GetComponent<Map>().worldLandSquares[xPosTmp, yPosTmp].GetComponent<LandSquare>().CalculateLandValue() > landValue)
+                {
+                    xPos = xPosTmp;
+                    yPos = yPosTmp;
+                    landValue = map.GetComponent<Map>().worldLandSquares[xPos, yPos].GetComponent<LandSquare>().CalculateLandValue();
+                }
+            }
+            xPosTmp = landSquareListX;
+            yPosTmp = landSquareListY - 1;
+            if (xPosTmp >= 0 && xPosTmp < map.GetComponent<Map>().worldSize && yPosTmp >= 0 && yPosTmp < map.GetComponent<Map>().worldSize && map.GetComponent<Map>().worldLandSquares[xPosTmp, yPosTmp].GetComponent<LandSquare>().factionOwner == "")
+            {
+
+                if (map.GetComponent<Map>().worldLandSquares[xPosTmp, yPosTmp].GetComponent<LandSquare>().CalculateLandValue() > landValue)
+                {
+                    xPos = xPosTmp;
+                    yPos = yPosTmp;
+                    landValue = map.GetComponent<Map>().worldLandSquares[xPos, yPos].GetComponent<LandSquare>().CalculateLandValue();
+                }
+            }
+
+        }
+
+        return (xPos, yPos);
+    }
 
 
+
+
+    public LandSquare ChooseLandSquareToAnnex() 
+    {
+    
+
+        return new LandSquare();
+    }
 
 
 
     public IEnumerator LobbyInLandSquare(GameObject nation, GameObject landsquare) 
     {
 
-        if (nation.GetComponent<Nation>().gold >= landsquare.GetComponent<LandSquare>().CalculateLandValue() / 2 && nation.GetComponent<Nation>().nationName != landsquare.GetComponent<LandSquare>().factionOwner)
+        if (nation.GetComponent<Nation>().gold >= landsquare.GetComponent<LandSquare>().CalculateLandValue() / 2 && (landsquare.GetComponent<LandSquare>().factionOwner == null || nation.GetComponent<Nation>().nationName != landsquare.GetComponent<LandSquare>().factionOwner))
         {
             nation.GetComponent<Nation>().gold -= landsquare.GetComponent<LandSquare>().CalculateLandValue() / 2; //lobbying costs half the value of the tile
 
@@ -56,7 +241,7 @@ public class NationActions : MonoBehaviour
 
                 float ratingIncrease = Random.Range(minHourSupportIncrease, maxHourSupportIncrease);
                 landsquare.GetComponent<LandSquare>().nationApprovalRatings[nation.GetComponent<Nation>().nationName].IncreaseApproval(ratingIncrease);
-                Debug.Log("Lobby hours left: " + (hoursToLobby) + " ratingIncrease: " + ratingIncrease);
+                //Debug.Log("Lobby hours left: " + (hoursToLobby - i) + " ratingIncrease: " + ratingIncrease);
             }
 
         }
