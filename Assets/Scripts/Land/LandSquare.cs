@@ -29,6 +29,8 @@ public class LandSquare : MonoBehaviour
 
     public float population;
 
+    public GameObject map;
+
     public Dictionary<string, NationApprovalRatings> nationApprovalRatings = new Dictionary<string, NationApprovalRatings>();
     //public List<NationApprovalRatings> nationApprovalRatings = new List<NationApprovalRatings>();
 

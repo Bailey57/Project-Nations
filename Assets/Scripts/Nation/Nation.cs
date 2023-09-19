@@ -34,6 +34,7 @@ public class Nation : MonoBehaviour
 
     public bool botControlled;
 
+    public Color nationMainColor;
 
     public List<GameObject> ownedLandSquares = new List<GameObject>();
 
