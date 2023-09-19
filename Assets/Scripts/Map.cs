@@ -1,8 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
-
 using UnityEngine;
-using static UnityEditor.Progress;
+
 
 
 public class Map : MonoBehaviour
@@ -31,7 +30,7 @@ public class Map : MonoBehaviour
     void Start()
     {
         //set this worlds size
-        worldSize = 30;//250 max for now 
+        worldSize = 30;//250 max for now //30 good size
         allSquaresAnnexed = false;
 
         worldLandSquares = new GameObject[worldSize, worldSize];
@@ -688,7 +687,8 @@ public class Map : MonoBehaviour
         (players[0].GetComponent(typeof(Nation)) as Nation).ownedLandSquares.Add(worldLandSquares[1,1]);
         (players[0].GetComponent(typeof(Nation)) as Nation).ownedLandSquares[3].GetComponent<LandSquare>().factionOwner = "Nation1";
 
-        (players[0].GetComponent(typeof(Nation)) as Nation).gold = 10000000;
+        float million = 1000000;
+        (players[0].GetComponent(typeof(Nation)) as Nation).gold = 10 * million;
         nations.Add("Nation1", players[0]);
 
         players[0].GetComponent<Nation>().nationMainColor = new Color(0.59f, .75f, .18f, 1);//Green(0,1,0,1) //Darker Green(0.41f, .56f, .2f, 1) //Brigheter Green(0.59f, .75f, .18f, 1) //
