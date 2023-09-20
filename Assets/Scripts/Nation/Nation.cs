@@ -36,6 +36,8 @@ public class Nation : MonoBehaviour
 
     public Color nationMainColor;
 
+    public Military military = new Military();
+
     public List<GameObject> ownedLandSquares = new List<GameObject>();
 
 

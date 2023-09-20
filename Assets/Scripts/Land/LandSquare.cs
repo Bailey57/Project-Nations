@@ -85,6 +85,99 @@ public class LandSquare : MonoBehaviour
         return value;
     }
 
+ 
+
+    public bool IsBorderWithNation(GameObject nation)
+    {
+       
+        int xPosTmp;
+        int yPosTmp;
+
+        
+        xPosTmp = this.x + 1;
+        yPosTmp = this.y + 1;
+        if (xPosTmp >= 0 && xPosTmp < map.GetComponent<Map>().worldSize && yPosTmp >= 0 && yPosTmp < map.GetComponent<Map>().worldSize)
+        {
+
+            if (map.GetComponent<Map>().worldLandSquares[xPosTmp, yPosTmp].GetComponent<LandSquare>().factionOwner == nation.GetComponent<Nation>().nationName)
+            {
+                return true;
+            }
+        }
+        xPosTmp = this.x - 1;
+        yPosTmp = this.y - 1;
+        if (xPosTmp >= 0 && xPosTmp < map.GetComponent<Map>().worldSize && yPosTmp >= 0 && yPosTmp < map.GetComponent<Map>().worldSize)
+        {
+
+            if (map.GetComponent<Map>().worldLandSquares[xPosTmp, yPosTmp].GetComponent<LandSquare>().factionOwner == nation.GetComponent<Nation>().nationName)
+            {
+                return true;
+            }
+        }
+        xPosTmp = this.x + 1;
+        yPosTmp = this.y - 1;
+        if (xPosTmp >= 0 && xPosTmp < map.GetComponent<Map>().worldSize && yPosTmp >= 0 && yPosTmp < map.GetComponent<Map>().worldSize)
+        {
+
+            if (map.GetComponent<Map>().worldLandSquares[xPosTmp, yPosTmp].GetComponent<LandSquare>().factionOwner == nation.GetComponent<Nation>().nationName)
+            {
+                return true;
+            }
+        }
+        xPosTmp = this.x - 1;
+        yPosTmp = this.y + 1;
+        if (xPosTmp >= 0 && xPosTmp < map.GetComponent<Map>().worldSize && yPosTmp >= 0 && yPosTmp < map.GetComponent<Map>().worldSize)
+        {
+
+            if (map.GetComponent<Map>().worldLandSquares[xPosTmp, yPosTmp].GetComponent<LandSquare>().factionOwner == nation.GetComponent<Nation>().nationName)
+            {
+                return true;
+            }
+        }
+        xPosTmp = this.x + 1;
+        yPosTmp = this.y;
+        if (xPosTmp >= 0 && xPosTmp < map.GetComponent<Map>().worldSize && yPosTmp >= 0 && yPosTmp < map.GetComponent<Map>().worldSize)
+        {
+
+            if (map.GetComponent<Map>().worldLandSquares[xPosTmp, yPosTmp].GetComponent<LandSquare>().factionOwner == nation.GetComponent<Nation>().nationName)
+            {
+                return true;
+            }
+        }
+        xPosTmp = this.x - 1;
+        yPosTmp = this.y;
+        if (xPosTmp >= 0 && xPosTmp < map.GetComponent<Map>().worldSize && yPosTmp >= 0 && yPosTmp < map.GetComponent<Map>().worldSize)
+        {
+
+            if (map.GetComponent<Map>().worldLandSquares[xPosTmp, yPosTmp].GetComponent<LandSquare>().factionOwner == nation.GetComponent<Nation>().nationName)
+            {
+                return true;
+            }
+        }
+        xPosTmp = this.x;
+        yPosTmp = this.y + 1;
+        if (xPosTmp >= 0 && xPosTmp < map.GetComponent<Map>().worldSize && yPosTmp >= 0 && yPosTmp < map.GetComponent<Map>().worldSize)
+        {
+
+            if (map.GetComponent<Map>().worldLandSquares[xPosTmp, yPosTmp].GetComponent<LandSquare>().factionOwner == nation.GetComponent<Nation>().nationName)
+            {
+                return true;
+            }
+        }
+        xPosTmp = this.x;
+        yPosTmp = this.y - 1;
+        if (xPosTmp >= 0 && xPosTmp < map.GetComponent<Map>().worldSize && yPosTmp >= 0 && yPosTmp < map.GetComponent<Map>().worldSize)
+        {
+
+            if (map.GetComponent<Map>().worldLandSquares[xPosTmp, yPosTmp].GetComponent<LandSquare>().factionOwner == nation.GetComponent<Nation>().nationName)
+            {
+                return true;
+            }
+        }
+
+
+        return false;
+    }
 
     public string GetApprovalRatingsString(GameObject nation) 
     {

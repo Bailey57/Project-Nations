@@ -15,4 +15,7 @@ public class Military : MonoBehaviour
     {
         
     }
+
+
+    public float totalForce;
 }

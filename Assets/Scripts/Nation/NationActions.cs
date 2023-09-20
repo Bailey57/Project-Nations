@@ -43,6 +43,8 @@ public class NationActions : MonoBehaviour
     public GameObject mainCamera;//null if npc 
     public GameObject map;
 
+    
+
 
 
 
@@ -105,6 +107,28 @@ public class NationActions : MonoBehaviour
         }
         
     }
+
+    /**
+     * Owned landsquares gain negative approval on the denounced nation based on their positive approval on their owner.
+     */
+    public void DenounceNation(GameObject nation) 
+    {
+        //TODO
+    
+    }
+
+
+    /**
+     * Claim a landsquare 
+     */
+    public void ClaimLandSquare(GameObject landSquare) 
+    {
+        //TODO
+
+    }
+
+
+
 
     /**
      * Runs through the owned landSquare list and finds the most valuble that borders that is not owned 
@@ -185,6 +209,7 @@ public class NationActions : MonoBehaviour
                     landValue = map.GetComponent<Map>().worldLandSquares[xPos, yPos].GetComponent<LandSquare>().CalculateLandValue();
                 }
             }
+            */
             xPosTmp = landSquareListX + 1;
             yPosTmp = landSquareListY;
             if (xPosTmp >= 0 && xPosTmp < map.GetComponent<Map>().worldSize && yPosTmp >= 0 && yPosTmp < map.GetComponent<Map>().worldSize && map.GetComponent<Map>().worldLandSquares[xPosTmp, yPosTmp].GetComponent<LandSquare>().factionOwner == "")
@@ -197,7 +222,7 @@ public class NationActions : MonoBehaviour
                     landValue = map.GetComponent<Map>().worldLandSquares[xPos, yPos].GetComponent<LandSquare>().CalculateLandValue();
                 }
             }
-            */
+            
             xPosTmp = landSquareListX - 1;
             yPosTmp = landSquareListY;
             if (xPosTmp >= 0 && xPosTmp < map.GetComponent<Map>().worldSize && yPosTmp >= 0 && yPosTmp < map.GetComponent<Map>().worldSize && map.GetComponent<Map>().worldLandSquares[xPosTmp, yPosTmp].GetComponent<LandSquare>().factionOwner == "")
@@ -431,9 +456,11 @@ public class NationActions : MonoBehaviour
 
 
     //need enough money and influence in the area to annex
+    //TODO: Make farther landsquares cost more based on how far they are from capitol
+    //TODO: Can only annex land squares that are borders
     public void AnnexLandSquare(GameObject nation, GameObject landsquare)
     {
-        if (nation.GetComponent<Nation>().gold >= landsquare.GetComponent<LandSquare>().CalculateLandValue() && nation.GetComponent<Nation>().nationName != landsquare.GetComponent<LandSquare>().factionOwner) 
+        if (nation.GetComponent<Nation>().gold >= landsquare.GetComponent<LandSquare>().CalculateLandValue() && nation.GetComponent<Nation>().nationName != landsquare.GetComponent<LandSquare>().factionOwner && landsquare.GetComponent<LandSquare>().IsBorderWithNation(nation)) 
         {
             nation.GetComponent<Nation>().gold -= landsquare.GetComponent<LandSquare>().CalculateLandValue();
             landsquare.GetComponent<LandSquare>().factionOwner = nation.GetComponent<Nation>().nationName;
