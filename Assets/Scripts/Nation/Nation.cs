@@ -40,6 +40,11 @@ public class Nation : MonoBehaviour
 
     public List<GameObject> ownedLandSquares = new List<GameObject>();
 
+    public GameObject capitalLandSquare;
+
+    public Dictionary<string, (int x, int y)> majorCities = new Dictionary<string, (int x, int y)>();
+
+    //public bool 
 
     public float GetAndSetGoldExpencesPerHour() 
     {
@@ -96,6 +101,10 @@ public class Nation : MonoBehaviour
         string output = "";
         output += "Nation: " + nationName;
         output += "\nPopulation: " + Math.Round(population);
+
+        output += "\n";
+
+
         if (gold > 1000000)
         {
             output += "\nGold: " + Math.Round((double)(gold / 1000000), 3) + " million";
@@ -106,17 +115,7 @@ public class Nation : MonoBehaviour
             output += "\nGold: " + Math.Round((double)(gold), 3);
         }
 
-        if (metricTonsOfIronOre > 1000000)
-        {
-            output += "\nMetricTonsOfIronOre: " + Math.Round((double)(metricTonsOfIronOre / 1000000), 3) + " million";
-        }
-        else
-        {
-            output += "\nMetricTonsOfIronOre: " + Math.Round((double)(metricTonsOfIronOre), 3);
-        }
-
-
-
+        
         if (goldIncomePerHour > 1000000)
         {
             output += "\nGoldIncomePerHour: " + Math.Round((double)(goldIncomePerHour / 1000000), 3) + " million";
@@ -144,6 +143,16 @@ public class Nation : MonoBehaviour
             output += "\nNetGoldPerHour: " + Math.Round((double)((goldIncomePerHour - goldExpencesPerHour)), 3);
         }
 
+        output += "\n";
+
+        if (metricTonsOfIronOre > 1000000)
+        {
+            output += "\nMetricTonsOfIronOre: " + Math.Round((double)(metricTonsOfIronOre / 1000000), 3) + " million";
+        }
+        else
+        {
+            output += "\nMetricTonsOfIronOre: " + Math.Round((double)(metricTonsOfIronOre), 3);
+        }
 
         output += "\n";
 

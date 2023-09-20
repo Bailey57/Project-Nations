@@ -29,6 +29,9 @@ public class LandSquare : MonoBehaviour
 
     public float population;
 
+    //
+    public float infrastructureLevel;
+
     public GameObject map;
 
     public Dictionary<string, NationApprovalRatings> nationApprovalRatings = new Dictionary<string, NationApprovalRatings>();
@@ -64,7 +67,7 @@ public class LandSquare : MonoBehaviour
 
 
     
-
+    
 
     /**
      * Based on buildings, population, infastructure ect...
@@ -85,7 +88,28 @@ public class LandSquare : MonoBehaviour
         return value;
     }
 
- 
+    /**
+     * Based on buildings, population, infastructure ect...
+     */
+    public float CalculateLandValuePerNation(GameObject nation)
+    {
+        //TODO: make more expensive the further away and if no infrastructure on the way from a capitol
+
+        float value = 5000000;//5mil base value
+        float resourceWorth = 1000000;
+        //add based on pop
+        value += population * 1000;
+        value += ironAvalibility * resourceWorth;
+        value += waterAvalibility * resourceWorth;
+        value += oilAvalibility * resourceWorth;
+        value += lumberAvalibility * resourceWorth;
+        value += fertility * resourceWorth;
+        //add based on buildings
+        //add based on infastructure
+        return value;
+    }
+
+
 
     public bool IsBorderWithNation(GameObject nation)
     {

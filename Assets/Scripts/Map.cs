@@ -30,7 +30,7 @@ public class Map : MonoBehaviour
     void Start()
     {
         //set this worlds size
-        worldSize = 30;//250 max for now //30 good size
+        worldSize = 300;//250 max for now //30 good size
         allSquaresAnnexed = false;
 
         worldLandSquares = new GameObject[worldSize, worldSize];
