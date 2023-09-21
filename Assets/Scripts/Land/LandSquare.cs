@@ -91,9 +91,16 @@ public class LandSquare : MonoBehaviour
     /**
      * Based on buildings, population, infastructure ect...
      */
-    public float CalculateLandValuePerNation(GameObject nation)
+    public float CalculateAnnexCost(GameObject nation)
     {
+        float priceIncrease = .10f;//1 = 100%
+
         //TODO: make more expensive the further away and if no infrastructure on the way from a capitol
+        int capitalX = nation.GetComponent<Nation>().capitalLandSquare.GetComponent<LandSquare>().x;
+        int capitalY = nation.GetComponent<Nation>().capitalLandSquare.GetComponent<LandSquare>().y;
+
+        int distance = (int)Math.Sqrt(Math.Pow(x - capitalX, 2) + Math.Pow(this.y - capitalY, 2));
+
 
         float value = 5000000;//5mil base value
         float resourceWorth = 1000000;
@@ -106,6 +113,8 @@ public class LandSquare : MonoBehaviour
         value += fertility * resourceWorth;
         //add based on buildings
         //add based on infastructure
+
+        value += value * priceIncrease;
         return value;
     }
 
@@ -298,5 +307,70 @@ public class LandSquare : MonoBehaviour
         return output;
     }
 
+    public string LandSquareToString(GameObject nation)
+    {
+        string output = "";
+        output += "x: " + x + " y: " + y;
+        if (factionOwner != "")
+        {
+            output += "\nFactionOwner: " + factionOwner;
+        }
+        else
+        {
+            output += "\nFactionOwner: " + "none";
+        }
 
+
+
+
+        if (population > 1000000)
+        {
+            output += "\nPopulation: " + Math.Round((double)(CalculateLandValue() / 1000000), 3) + " million";
+
+        }
+        else
+        {
+            output += "\nPopulation: " + Math.Round(population);
+        }
+
+
+        if (CalculateLandValue() > 1000000)
+        {
+            output += "\nLand Value: " + Math.Round((double)(CalculateLandValue() / 1000000), 3) + " million";
+
+        }
+        else
+        {
+            output += "\nLand Value: " + CalculateLandValue();
+        }
+
+
+        if (CalculateLandValue() > 1000000)
+        {
+            output += "\nLand Annex Cost: " + Math.Round((double)(CalculateLandValue() / 1000000), 3) + " million";
+
+        }
+        else
+        {
+            output += "\nLand Annex Cost: " + CalculateLandValue();
+        }
+        //output += "\nValue: " ;
+
+        output += "\n";
+        output += "\nIronAvalibility: " + ironAvalibility;
+        output += "\nWaterAvalibility: " + waterAvalibility;
+        output += "\nOilAvalibility: " + oilAvalibility;
+        output += "\nLumberAvalibility: " + lumberAvalibility;
+        output += "\nFertility: " + fertility;
+
+        output += "\n";
+        output += "\nBuildings: ";
+        for (int i = 0; i < buildings.Count; i++)
+        {
+            output += buildings[i].GetType() + ", ";
+        }
+
+        output += "\n";
+        return output;
+    }
 }

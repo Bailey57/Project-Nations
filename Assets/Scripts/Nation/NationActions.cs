@@ -108,6 +108,21 @@ public class NationActions : MonoBehaviour
         
     }
 
+    public void SetCapital(GameObject landSquare) 
+    {
+        nation.GetComponent<Nation>().capitalLandSquare = landSquare;
+    }
+
+
+
+    /**
+     * If Nation looses control of capital square, move to new landSquare if it owns another city
+     */
+    public void ChangeCapital() 
+    {
+        //TODO
+    }
+
     /**
      * Owned landsquares gain negative approval on the denounced nation based on their positive approval on their owner.
      */
