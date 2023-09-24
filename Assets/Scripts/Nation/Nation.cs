@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class Nation : MonoBehaviour
@@ -94,6 +95,19 @@ public class Nation : MonoBehaviour
         gold += GetAndSetGoldIncomePerHour();
 
 
+    }
+
+    public float GetDistanceFromCapitol(GameObject landSquare) 
+    {
+        int capitalX = capitalLandSquare.GetComponent<LandSquare>().x;
+        int capitalY = capitalLandSquare.GetComponent<LandSquare>().y;
+
+        int landSquareX = landSquare.GetComponent<LandSquare>().x;
+        int landSquareY = landSquare.GetComponent<LandSquare>().y;
+
+        int distance = (int)Math.Sqrt(Math.Pow(landSquareX - capitalX, 2) + Math.Pow(landSquareY - capitalY, 2));
+        return distance;
+    
     }
 
    public string NationToString() 

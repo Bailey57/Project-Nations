@@ -9,7 +9,7 @@ public class SelectedTileStats : MonoBehaviour
 
     [SerializeField] public TMP_Text textMeshTxt;
     [SerializeField] public GameObject objectClick;
-
+    [SerializeField] public GameObject nation;
 
 
     // Start is called before the first frame update
@@ -33,7 +33,7 @@ public class SelectedTileStats : MonoBehaviour
         {
 
             //textMeshTxt.text = (objectClick.selectedObject.GetComponent("LandSquare") as LandSquare).LandSquareToString();
-            textMeshTxt.text = (objectClick.GetComponent<ObjectClick>().selectedObject.GetComponent("LandSquare") as LandSquare).LandSquareToString() + (objectClick.GetComponent<ObjectClick>().selectedObject.GetComponent("LandSquare") as LandSquare).BuildingsToString();
+            textMeshTxt.text = (objectClick.GetComponent<ObjectClick>().selectedObject.GetComponent("LandSquare") as LandSquare).LandSquareToString(nation) + (objectClick.GetComponent<ObjectClick>().selectedObject.GetComponent("LandSquare") as LandSquare).BuildingsToString();
 
 
 

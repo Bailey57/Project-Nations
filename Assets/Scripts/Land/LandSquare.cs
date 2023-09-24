@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class LandSquare : MonoBehaviour
@@ -89,17 +90,19 @@ public class LandSquare : MonoBehaviour
     }
 
     /**
-     * Based on buildings, population, infastructure ect...
+     * Based on buildings, population, infrastructure ect...
      */
     public float CalculateAnnexCost(GameObject nation)
     {
-        float priceIncrease = .10f;//1 = 100%
+        float priceIncrease = .15f;//1 = 100%
 
         //TODO: make more expensive the further away and if no infrastructure on the way from a capitol
         int capitalX = nation.GetComponent<Nation>().capitalLandSquare.GetComponent<LandSquare>().x;
         int capitalY = nation.GetComponent<Nation>().capitalLandSquare.GetComponent<LandSquare>().y;
 
-        int distance = (int)Math.Sqrt(Math.Pow(x - capitalX, 2) + Math.Pow(this.y - capitalY, 2));
+        float distance = nation.GetComponent<Nation>().GetDistanceFromCapitol(this.gameObject);
+
+        priceIncrease *= distance;
 
 
         float value = 5000000;//5mil base value
@@ -307,6 +310,11 @@ public class LandSquare : MonoBehaviour
         return output;
     }
 
+
+
+
+
+
     public string LandSquareToString(GameObject nation)
     {
         string output = "";
@@ -319,9 +327,6 @@ public class LandSquare : MonoBehaviour
         {
             output += "\nFactionOwner: " + "none";
         }
-
-
-
 
         if (population > 1000000)
         {
@@ -344,15 +349,15 @@ public class LandSquare : MonoBehaviour
             output += "\nLand Value: " + CalculateLandValue();
         }
 
-
-        if (CalculateLandValue() > 1000000)
+        float landAnnexCost = CalculateAnnexCost(nation);
+        if (landAnnexCost > 1000000)
         {
-            output += "\nLand Annex Cost: " + Math.Round((double)(CalculateLandValue() / 1000000), 3) + " million";
+            output += "\nLand Annex Cost: " + Math.Round((double)(landAnnexCost / 1000000), 3) + " million";
 
         }
         else
         {
-            output += "\nLand Annex Cost: " + CalculateLandValue();
+            output += "\nLand Annex Cost: " + landAnnexCost;
         }
         //output += "\nValue: " ;
 
@@ -373,4 +378,7 @@ public class LandSquare : MonoBehaviour
         output += "\n";
         return output;
     }
+
+
+
 }

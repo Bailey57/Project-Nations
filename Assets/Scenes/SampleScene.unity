@@ -4647,8 +4647,8 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1482159153}
   m_HandleRect: {fileID: 1482159152}
   m_Direction: 2
-  m_Value: 1.0000118
-  m_Size: 0.7614279
+  m_Value: 1.0000114
+  m_Size: 0.7614278
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -4940,6 +4940,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   textMeshTxt: {fileID: 1672514317}
   objectClick: {fileID: 519420028}
+  nation: {fileID: 1786746470}
 --- !u!114 &1672514317
 MonoBehaviour:
   m_ObjectHideFlags: 0

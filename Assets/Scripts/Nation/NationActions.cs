@@ -71,8 +71,8 @@ public class NationActions : MonoBehaviour
 
                 (int, int) selectedLandSquare;
                 //choose weather to buy the most or least expensive
-                int randInt = Random.Range(0, 1);
-                if (randInt == 0) 
+                int randInt = Random.Range(0, 100);
+                if (randInt <= 1) 
                 {
                     selectedLandSquare = FindMostValuableBorderLandSquare(nation.GetComponent<Nation>().ownedLandSquares);
 
@@ -142,6 +142,26 @@ public class NationActions : MonoBehaviour
 
     }
 
+
+    /**
+     * Improves approval, decreases negative approval, then starts  
+     */
+    public void AnnounceInfrastructureImprovement() 
+    {
+        //TODO
+        //ImproveLandSquareApproval
+        //takes some time
+        ImproveInfrastructure();
+    }
+
+    /**
+     * 
+     */
+    public void ImproveInfrastructure()
+    {
+        //TODO
+        //build time
+    }
 
 
 
@@ -304,8 +324,6 @@ public class NationActions : MonoBehaviour
         {
             landSquareListX = landSquareList[i].GetComponent<LandSquare>().x;
             landSquareListY = landSquareList[i].GetComponent<LandSquare>().y;
-
-
 
 
 
@@ -472,12 +490,13 @@ public class NationActions : MonoBehaviour
 
     //need enough money and influence in the area to annex
     //TODO: Make farther landsquares cost more based on how far they are from capitol
-    //TODO: Can only annex land squares that are borders
     public void AnnexLandSquare(GameObject nation, GameObject landsquare)
     {
-        if (nation.GetComponent<Nation>().gold >= landsquare.GetComponent<LandSquare>().CalculateLandValue() && nation.GetComponent<Nation>().nationName != landsquare.GetComponent<LandSquare>().factionOwner && landsquare.GetComponent<LandSquare>().IsBorderWithNation(nation)) 
+        if (nation.GetComponent<Nation>().gold >= landsquare.GetComponent<LandSquare>().CalculateAnnexCost(nation) && nation.GetComponent<Nation>().nationName != landsquare.GetComponent<LandSquare>().factionOwner && landsquare.GetComponent<LandSquare>().IsBorderWithNation(nation)) 
         {
-            nation.GetComponent<Nation>().gold -= landsquare.GetComponent<LandSquare>().CalculateLandValue();
+            //nation.GetComponent<Nation>().gold -= landsquare.GetComponent<LandSquare>().CalculateLandValue();
+            nation.GetComponent<Nation>().gold -= landsquare.GetComponent<LandSquare>().CalculateAnnexCost(nation);
+
             landsquare.GetComponent<LandSquare>().factionOwner = nation.GetComponent<Nation>().nationName;
             nation.GetComponent<Nation>().ownedLandSquares.Add(landsquare);
             map.GetComponent<Map>().UpdateBorders();

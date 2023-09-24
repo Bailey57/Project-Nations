@@ -25,6 +25,7 @@ public class Map : MonoBehaviour
     public string mapStr = "";
 
     public bool allSquaresAnnexed;
+    public bool highlightLandSquares = false;
 
     // Start is called before the first frame update
     void Start()
@@ -55,6 +56,7 @@ public class Map : MonoBehaviour
 
 
         UpdateBorders();
+      
         //DrawMap();//old
 
 
@@ -127,6 +129,9 @@ public class Map : MonoBehaviour
         newNation.name = (newNation.GetComponent(typeof(Nation)) as Nation).nationName;
         float million = 1000000;
         newNation.GetComponent<Nation>().gold += 9 * million;//start with 6 mil usually 
+
+        (newNation.GetComponent(typeof(Nation)) as Nation).capitalLandSquare = (newNation.GetComponent(typeof(Nation)) as Nation).ownedLandSquares[0];
+
 
         //make nation have a rand color
         newNation.GetComponent<Nation>().nationMainColor = Random.ColorHSV();
@@ -437,6 +442,21 @@ public class Map : MonoBehaviour
 
 
 
+    
+    /**
+     * 
+     */
+    public void HighlightLandSquare(GameObject landSquare) 
+    {
+        if (landSquare.GetComponent<LandSquare>().factionOwner != null && highlightLandSquares) 
+        {
+        
+        }
+        
+    
+    }
+
+
     public void UpdateBorders() 
     {
 
@@ -452,6 +472,10 @@ public class Map : MonoBehaviour
                 int landSquareX = (nations[item.Key].GetComponent(typeof(Nation)) as Nation).ownedLandSquares[k].GetComponent<LandSquare>().x;
                 int landSquareY = (nations[item.Key].GetComponent(typeof(Nation)) as Nation).ownedLandSquares[k].GetComponent<LandSquare>().y;
                 string landSquareFaction = (nations[item.Key].GetComponent(typeof(Nation)) as Nation).ownedLandSquares[k].GetComponent<LandSquare>().factionOwner;
+
+                HighlightLandSquare((nations[item.Key].GetComponent(typeof(Nation)) as Nation).ownedLandSquares[k]);
+
+
 
 
                 //clear current borders
@@ -690,6 +714,9 @@ public class Map : MonoBehaviour
         float million = 1000000;
         (players[0].GetComponent(typeof(Nation)) as Nation).gold = 10 * million;
         nations.Add("Nation1", players[0]);
+
+        //set capital
+        players[0].GetComponent<Nation>().capitalLandSquare = players[0].GetComponent<Nation>().ownedLandSquares[0];
 
         players[0].GetComponent<Nation>().nationMainColor = new Color(0.59f, .75f, .18f, 1);//Green(0,1,0,1) //Darker Green(0.41f, .56f, .2f, 1) //Brigheter Green(0.59f, .75f, .18f, 1) //
     }
