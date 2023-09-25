@@ -71,11 +71,10 @@ public class NationActions : MonoBehaviour
 
                 (int, int) selectedLandSquare;
                 //choose weather to buy the most or least expensive
-                int randInt = Random.Range(0, 100);
-                if (randInt <= 1) 
+                int randInt = Random.Range(0, 1000);
+                if (randInt < 0)//FindLeastValuableBorderLandSquare only for now
                 {
                     selectedLandSquare = FindMostValuableBorderLandSquare(nation.GetComponent<Nation>().ownedLandSquares);
-
                 }
                 else 
                 {

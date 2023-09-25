@@ -25,8 +25,9 @@ public class Map : MonoBehaviour
     public string mapStr = "";
 
     public bool allSquaresAnnexed;
-    public bool highlightLandSquares = false;
+    public bool highlightLandSquares = true;
 
+    public int gameHoursPassed = 0;
     // Start is called before the first frame update
     void Start()
     {
@@ -108,6 +109,17 @@ public class Map : MonoBehaviour
         //(newNation.GetComponent(typeof(Nation)) as Nation).ownedLandSquares.Add(worldLandSquares[0, 0]);
         int randX = Random.Range(0, worldSize - 1);
         int randY = Random.Range(0, worldSize - 1);
+        bool foundEmptySquare = false;
+        while (!foundEmptySquare) 
+        {
+            randX = Random.Range(0, worldSize - 1);
+            randY = Random.Range(0, worldSize - 1);
+            if (worldLandSquares[randX, randY].GetComponent<LandSquare>().factionOwner == "") 
+            {
+                foundEmptySquare = true;
+            }
+
+        }
 
         (newNation.GetComponent(typeof(Nation)) as Nation).ownedLandSquares.Add(worldLandSquares[randX, randY]);
         (newNation.GetComponent(typeof(Nation)) as Nation).ownedLandSquares[0].GetComponent<LandSquare>().population += 40000;
@@ -253,6 +265,7 @@ public class Map : MonoBehaviour
             //}
 
             //(players[0].GetComponent(typeof(Nation)) as Nation).population += 55;
+            gameHoursPassed += 1;
         }
     }
 
@@ -448,9 +461,14 @@ public class Map : MonoBehaviour
      */
     public void HighlightLandSquare(GameObject landSquare) 
     {
-        if (landSquare.GetComponent<LandSquare>().factionOwner != null && highlightLandSquares) 
+        if (landSquare.GetComponent<LandSquare>().factionOwner != null && highlightLandSquares)
         {
-        
+            landSquare.GetComponent<SpriteRenderer>().color = nations[landSquare.GetComponent<LandSquare>().factionOwner].GetComponent<Nation>().nationMainColor;
+            //nations[landSquare.GetComponent<LandSquare>().factionOwner].GetComponent<SpriteRenderer>().color;
+        }
+        else 
+        {
+            landSquare.GetComponent<SpriteRenderer>().color = new Color(1, 1, 1, 1);
         }
         
     

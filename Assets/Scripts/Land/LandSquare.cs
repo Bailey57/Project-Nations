@@ -94,7 +94,7 @@ public class LandSquare : MonoBehaviour
      */
     public float CalculateAnnexCost(GameObject nation)
     {
-        float priceIncrease = .15f;//1 = 100%
+        float priceIncrease = .1f;//1 = 100%
 
         //TODO: make more expensive the further away and if no infrastructure on the way from a capitol
         int capitalX = nation.GetComponent<Nation>().capitalLandSquare.GetComponent<LandSquare>().x;
