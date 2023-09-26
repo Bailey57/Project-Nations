@@ -29,6 +29,7 @@ public class LandSquare : MonoBehaviour
     //public float infrastuctureLevel;
 
     public float population;
+    //public float populationPercentageInMilitary;//
 
     //
     public float infrastructureLevel;
