@@ -1,8 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
-
+using UnityEngine.SocialPlatforms.Impl;
 
 public class Map : MonoBehaviour
 {
@@ -29,10 +28,26 @@ public class Map : MonoBehaviour
 
     public int gameHoursPassed = 0;
     // Start is called before the first frame update
+
+    public StartSettingsSO startSettingsSO;
+
     void Start()
     {
-        //set this worlds size
-        worldSize = 30;//250 max for now //30 good size
+        int numberOfRandNations = 5;
+        if (startSettingsSO != null) 
+        {
+            worldSize = startSettingsSO.mapSize;
+            numberOfRandNations = startSettingsSO.numberOfNations;
+        }
+        else
+        {
+            //set this worlds size
+            worldSize = 30;//250 max for now //30 good size
+
+        }
+
+
+        
         allSquaresAnnexed = false;
 
         worldLandSquares = new GameObject[worldSize, worldSize];
@@ -50,7 +65,7 @@ public class Map : MonoBehaviour
         //StartCoroutine(UpdateExpencesCR());
         
 
-        for(int i = 0; i < 15; i ++)
+        for(int i = 0; i < numberOfRandNations; i ++)
         {
             GenerateRandNation();
         }
