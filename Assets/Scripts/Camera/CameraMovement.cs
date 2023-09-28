@@ -54,14 +54,14 @@ public class CameraMovement : MonoBehaviour
     private void PanCamera()
     {
 
-        if (Input.GetMouseButtonDown(2))
+        if (Input.GetMouseButtonDown(0))
         {
             target = null;
             dragOrigin = cam.ScreenToWorldPoint(Input.mousePosition);
 
         }
 
-        if (Input.GetMouseButton(2))
+        if (Input.GetMouseButton(0))
         {
             Vector3 difference = dragOrigin - cam.ScreenToWorldPoint(Input.mousePosition);
 
