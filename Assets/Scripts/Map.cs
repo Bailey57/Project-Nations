@@ -1,7 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.SocialPlatforms.Impl;
+
 
 public class Map : MonoBehaviour
 {
@@ -34,7 +34,7 @@ public class Map : MonoBehaviour
     void Start()
     {
         int numberOfRandNations = 5;
-        if (startSettingsSO != null) 
+        if (startSettingsSO != null && startSettingsSO.mapSize > 0 && startSettingsSO.numberOfNations > 0) 
         {
             worldSize = startSettingsSO.mapSize;
             numberOfRandNations = startSettingsSO.numberOfNations;
@@ -43,7 +43,7 @@ public class Map : MonoBehaviour
         {
             //set this worlds size
             worldSize = 30;//250 max for now //30 good size
-
+            numberOfRandNations = 10;
         }
 
 
@@ -157,7 +157,21 @@ public class Map : MonoBehaviour
         float million = 1000000;
         newNation.GetComponent<Nation>().gold += 9 * million;//start with 6 mil usually 
 
-        (newNation.GetComponent(typeof(Nation)) as Nation).capitalLandSquare = (newNation.GetComponent(typeof(Nation)) as Nation).ownedLandSquares[0];
+        (newNation.GetComponent(typeof(Nation)) as Nation).capitalLandSquare = newNation.GetComponent<Nation>().ownedLandSquares[0];
+
+
+        
+
+        //add capital city
+        MajorCity majorCity = new MajorCity("Capital City", (newNation.GetComponent(typeof(Nation)) as Nation).nationName);
+        (newNation.GetComponent(typeof(Nation)) as Nation).ownedLandSquares[0].GetComponent<LandSquare>().buildings.Add(majorCity);
+
+        //draw capital city
+        GameObject newLandSquareBorderR = (GameObject)Instantiate(Resources.Load("Prefabs/Buildings/City_50x50"));
+        newLandSquareBorderR.transform.position = new Vector3(newNation.GetComponent<Nation>().ownedLandSquares[0].GetComponent<LandSquare>().x * squareLength, newNation.GetComponent<Nation>().ownedLandSquares[0].GetComponent<LandSquare>().y * squareLength, 0);
+        newLandSquareBorderR.transform.SetParent((newNation.GetComponent(typeof(Nation)) as Nation).ownedLandSquares[0].transform);
+
+
 
 
         //make nation have a rand color
@@ -402,6 +416,13 @@ public class Map : MonoBehaviour
                     }
                     for (int i = 0; i < (worldLandSquares[x, y].GetComponent(typeof(LandSquare)) as LandSquare).buildings.Count; i++) 
                     {
+
+                        
+
+
+
+
+
                         //building production
 
                         //TODO: make buildings give resources to who owns them instead of who owns the land square

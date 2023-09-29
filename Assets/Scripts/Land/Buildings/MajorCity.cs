@@ -21,6 +21,15 @@ public class MajorCity : Building
     public string FactionOwner { get; set; }
 
 
+    public MajorCity() { }
+
+    public MajorCity(string name, string factionOwner) 
+    {
+        this.Name = name;
+        this.FactionOwner = factionOwner;
+
+        IsActive = true;
+    }
 
 
 

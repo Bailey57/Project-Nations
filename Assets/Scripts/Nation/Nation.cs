@@ -47,6 +47,16 @@ public class Nation : MonoBehaviour
 
     //public bool 
 
+    public Nation() 
+    {
+        this.military = new Military();
+    
+    
+    }
+
+
+
+
     public float GetAndSetGoldExpencesPerHour() 
     {
         float goldExpencesPerHour = 0;
