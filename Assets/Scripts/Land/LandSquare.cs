@@ -44,6 +44,8 @@ public class LandSquare : MonoBehaviour
 
     public List<Building> buildings = new List<Building>();
 
+    public List<GameObject> units = new List<GameObject>();
+
     public LandSquare() 
     {
     }

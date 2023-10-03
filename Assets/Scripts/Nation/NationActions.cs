@@ -51,6 +51,15 @@ public class NationActions : MonoBehaviour
     public GameObject map;
 
 
+    //
+    
+
+
+
+
+
+
+
 
     public IEnumerator UpdateNation()
     {
@@ -147,10 +156,18 @@ public class NationActions : MonoBehaviour
             //nation.GetComponent<Nation>().ownedLandSquares[i].GetComponent<LandSquare>().population -= neededPersonell;
             nation.GetComponent<Nation>().military.totalForce += neededPersonell;
 
-            Debug.Log("i: " + i + " \nneededPersonell: " + neededPersonell + " \npopulationAmmountInMilitary: " + nation.GetComponent<Nation>().ownedLandSquares[i].GetComponent<LandSquare>().populationAmmountInMilitary + " \nTotal force: " + nation.GetComponent<Nation>().military.totalForce);
+            //Debug.Log("i: " + i + " \nneededPersonell: " + neededPersonell + " \npopulationAmmountInMilitary: " + nation.GetComponent<Nation>().ownedLandSquares[i].GetComponent<LandSquare>().populationAmmountInMilitary + " \nTotal force: " + nation.GetComponent<Nation>().military.totalForce);
         }
 
 
+    }
+
+    public void GiveUnitMoveOrders(GameObject unit, GameObject landSquare) 
+    {
+        if (unit.GetComponent<Unit>() && landSquare.GetComponent<LandSquare>()) 
+        {
+            unit.GetComponent<Unit>().MoveOrders(landSquare.GetComponent<LandSquare>().x, landSquare.GetComponent<LandSquare>().y);
+        }
     }
 
 
@@ -158,12 +175,26 @@ public class NationActions : MonoBehaviour
 
     public void CreateUnit(int forceSize) 
     {
-    
-        GameObject newUnit = (GameObject)Instantiate(Resources.Load("Prefabs/Military/Units/infantry1White"));
+
+        GameObject newUnit;
+        if (forceSize >= 100 && forceSize <= 250)
+        {
+            newUnit = (GameObject)Instantiate(Resources.Load("Prefabs/Military/Units/infantry1CompanyWhite"));
+        }
+        else 
+        {
+            newUnit = (GameObject)Instantiate(Resources.Load("Prefabs/Military/Units/infantry1White"));
+        }
+        
         newUnit.GetComponent<SpriteRenderer>().color = nation.GetComponent<Nation>().nationMainColor;
         newUnit.transform.position = nation.GetComponent<Nation>().capitalLandSquare.transform.position;
+        nation.GetComponent<Nation>().capitalLandSquare.GetComponent<LandSquare>().units.Add(newUnit);
         newUnit.GetComponent<Unit>().maxForce = forceSize;
+        newUnit.GetComponent<Unit>().map = map;
+        newUnit.GetComponent<Unit>().currentLandSquare = nation.GetComponent<Nation>().capitalLandSquare;
         newUnit.GetComponent<Unit>().currentForce = forceSize;
+        newUnit.GetComponent<Unit>().nation = nation;
+        newUnit.GetComponent<Unit>().unitName = "newUnit";
     }
 
 
@@ -183,6 +214,20 @@ public class NationActions : MonoBehaviour
 
         }
     
+    }
+
+    public void CreateDivisionUnit()
+    {
+        float companySize = 10000;
+
+
+        if (this.nation.GetComponent<Nation>().military.totalForce >= companySize)
+        {
+            this.nation.GetComponent<Nation>().military.totalForce -= companySize;
+            CreateUnit((int)companySize);
+
+        }
+
     }
 
 

@@ -7,7 +7,9 @@ public class Unit : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        
+        StartCoroutine(Entrench());
+
+        //StartCoroutine(MoveOrders(5, 5));
     }
 
     // Update is called once per frame
@@ -15,6 +17,8 @@ public class Unit : MonoBehaviour
     {
         
     }
+
+    
 
     public string unitName;
 
@@ -24,7 +28,161 @@ public class Unit : MonoBehaviour
     public float maxForce;
 
 
+    public float entrenchmentPercent = 0;
+
+    public bool hasOrders;
+
+    public GameObject map;
+
+    public GameObject currentLandSquare;
+
+
     //keep track of counts of vehicles, rifles, vehicles, ect
+
+
+    public IEnumerator UpdateUnit()
+    {
+        yield return new WaitForSeconds(10);
+        
+        StartCoroutine(Entrench());
+    }
+
+
+
+    public IEnumerator MoveOrders(int goalX, int goalY)
+    {
+        if (hasOrders) 
+        {
+            yield return new WaitForSeconds(0);
+        }
+
+        hasOrders = true;
+        
+        bool destinationReached = false;
+
+        int currentX = currentLandSquare.GetComponent<LandSquare>().x;
+        int currentY = currentLandSquare.GetComponent<LandSquare>().y;
+
+        //int goalX;
+        //int goalY;
+
+
+
+        while (!destinationReached) 
+        {
+
+            yield return new WaitForSeconds(10);
+
+            if (currentX > goalX)
+            {
+                currentX -=1;
+            }
+            else if (currentX < goalX) 
+            {
+                currentX += 1;
+            }
+
+            if (currentY > goalY)
+            {
+                currentY -= 1;
+            }
+            else if (currentY < goalY)
+            {
+                currentY += 1;
+            }
+
+            //wait based on terrain
+
+            //move off of landSquare
+            if (map.GetComponent<Map>().worldLandSquares[currentX, currentY].GetComponent<LandSquare>().units.Count == 0)//TODO: make it to where a unit can move to another square with friendly units only
+            {
+                currentLandSquare.GetComponent<LandSquare>().units.Remove(gameObject);
+
+
+                map.GetComponent<Map>().worldLandSquares[currentX, currentY].GetComponent<LandSquare>().units.Add(gameObject);
+                currentLandSquare = map.GetComponent<Map>().worldLandSquares[currentX, currentY];
+
+                gameObject.transform.position = map.GetComponent<Map>().worldLandSquares[currentX, currentY].transform.position;
+            }
+            else
+            {
+                destinationReached = true;//not reached, but needs to break out of method
+            }
+
+
+            if (goalX == currentX && goalY == currentY) 
+            {
+                destinationReached = true;
+
+            }
+
+            //how long it takes to move to a landSquare
+            //TODO: Account for terrain and infrastructure
+            //yield return new WaitForSeconds(10);
+        }
+
+
+
+
+        hasOrders = false;
+
+    }
+
+
+    public void CancalAllOrders() 
+    {
+        StopAllCoroutines();
+    }
+
+    public IEnumerator Entrench()
+    {
+        if (!hasOrders && entrenchmentPercent < 100)
+        {
+            int hoursToEntrench = 10;//12 hrs
+
+            
+            for (int i = 0; i < hoursToEntrench; i++) 
+            {
+                yield return new WaitForSeconds(1);
+                if (entrenchmentPercent < 100) 
+                {
+                    entrenchmentPercent += 10;
+                }
+            }
+        }
+        else 
+        {
+            yield return new WaitForSeconds(0);
+
+        }
+    
+    }
+
+
+    
+
+
+
+
+
+
+
+
+
+        public string UnitToString() 
+    {
+        string output = "";
+        output += "Name: " + unitName;
+        output += "\nCurrent Force: " + currentForce;
+        output += "\nStrength: " + ((currentForce / maxForce) * 100 + "%");
+        output += "\nEntrenchment: " + entrenchmentPercent + "%";
+        output += "\nHasOrders: " + hasOrders;
+        return output;
+    }
+
+
+
+
 
 
 }

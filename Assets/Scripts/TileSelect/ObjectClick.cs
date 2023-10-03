@@ -7,6 +7,8 @@ public class ObjectClick : MonoBehaviour
     [SerializeField] public GameObject selectedObject;
     [SerializeField] private Camera cam;
 
+    public GameObject nation;
+
     //[SerializeField] public LayerMask clickable;
     //[SerializeField] public LayerMask ground;
 
@@ -14,6 +16,25 @@ public class ObjectClick : MonoBehaviour
     public void SelectObject()
     {
         RaycastHit2D rayHit = Physics2D.GetRayIntersection(Camera.main.ScreenPointToRay(Input.mousePosition));
+
+
+        if (Input.GetMouseButtonDown(0) && selectedObject != null)
+        {
+
+            //if hit landSquare after targeting unit, add it to move order
+            if (rayHit.transform != null && selectedObject.GetComponent<Unit>() && rayHit.transform.gameObject.GetComponent<LandSquare>() && selectedObject.GetComponent<Unit>().nation == nation)
+            {
+                Debug.Log(selectedObject.GetComponent<Unit>().unitName);
+
+                StartCoroutine(selectedObject.GetComponent<Unit>().MoveOrders(rayHit.transform.gameObject.GetComponent<LandSquare>().x, rayHit.transform.gameObject.GetComponent<LandSquare>().y));
+
+
+            }
+        }
+
+            
+
+
 
         if (Input.GetMouseButtonDown(0) && selectedObject == null)
         {
@@ -25,25 +46,27 @@ public class ObjectClick : MonoBehaviour
             }
 
 
+            
+         
+
 
 
             //if (rayHit.transform != null && rayHit.transform.gameObject != null && (((rayHit.transform.gameObject.GetComponent("LandSquare") as LandSquare) && !(rayHit.collider is BoxCollider2D))))
-            if (rayHit.transform != null && rayHit.transform.gameObject != null && (((rayHit.transform.gameObject.GetComponent("LandSquare") as LandSquare))))
+            if (rayHit.transform != null && rayHit.transform.gameObject != null && ((((rayHit.transform.gameObject.GetComponent("LandSquare") as LandSquare))) || rayHit.transform.gameObject.GetComponent<Unit>()))
             {
+
+
+                
+
 
 
                 Debug.Log("Hit " + rayHit.transform.gameObject.name);
                 selectedObject = rayHit.transform.gameObject;
-
-
             }
             else
             {
                 Debug.Log("Hit Nothing");
                 selectedObject = null;
-
-
-
             }
 
 

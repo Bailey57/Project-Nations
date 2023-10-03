@@ -35,9 +35,15 @@ public class TimeText : MonoBehaviour
         int weeks = days / 7;
         int remainderDays = days % 7;
 
+        //int months = weeks / 7;
+        //int remainderWeeks = weeks % 7;
+
+        int years = weeks / 52;
+        int remainderWeeks = weeks % 52;
+
         //int years = remainderDays
 
-        string output = "Weeks: " + weeks + " Days: " + remainderDays + " Hours: " + remainderHrs;
+        string output = "Years: " + years + "Weeks: " + remainderWeeks + " Days: " + remainderDays + " Hours: " + remainderHrs;
         return output;
 
 
