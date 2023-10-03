@@ -50,8 +50,6 @@ public class Nation : MonoBehaviour
     public Nation() 
     {
         this.military = new Military();
-    
-    
     }
 
 
@@ -177,6 +175,12 @@ public class Nation : MonoBehaviour
         {
             output += "\nMetricTonsOfIronOre: " + Math.Round((double)(metricTonsOfIronOre), 3);
         }
+
+        output += "\n";
+
+
+        output += "\nMilitary Reserves: " + military.totalForce;
+
 
         output += "\n";
 

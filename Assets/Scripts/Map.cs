@@ -521,7 +521,7 @@ public class Map : MonoBehaviour
 
             for (int k = 0; k < (nations[item.Key].GetComponent(typeof(Nation)) as Nation).ownedLandSquares.Count; k++)
             {
-                Debug.Log("landsquare: " + k);
+                //Debug.Log("landsquare: " + k);
                 //(nations[item.Key].GetComponent(typeof(Nation)) as Nation).ownedLandSquares[k].gameObject.GetComponent<LandSquare>().
                 int landSquareX = (nations[item.Key].GetComponent(typeof(Nation)) as Nation).ownedLandSquares[k].GetComponent<LandSquare>().x;
                 int landSquareY = (nations[item.Key].GetComponent(typeof(Nation)) as Nation).ownedLandSquares[k].GetComponent<LandSquare>().y;
@@ -636,7 +636,10 @@ public class Map : MonoBehaviour
                 //Debug.Log("owns " + k + " land squares" + (nations[item.Key].GetComponent(typeof(Nation)) as Nation).ownedLandSquares[k].name);
                 (nations[item.Key].GetComponent(typeof(Nation)) as Nation).GetAndSetPopulation();
 
-                
+
+                //nations[item.Key].GetComponent<Nation>().
+
+
 
             }
 
@@ -769,10 +772,24 @@ public class Map : MonoBehaviour
         (players[0].GetComponent(typeof(Nation)) as Nation).gold = 10 * million;
         nations.Add("Nation1", players[0]);
 
+        
+
         //set capital
         players[0].GetComponent<Nation>().capitalLandSquare = players[0].GetComponent<Nation>().ownedLandSquares[0];
 
         players[0].GetComponent<Nation>().nationMainColor = new Color(0.59f, .75f, .18f, 1);//Green(0,1,0,1) //Darker Green(0.41f, .56f, .2f, 1) //Brigheter Green(0.59f, .75f, .18f, 1) //
+        
+        
+        //add capital city
+        MajorCity majorCity = new MajorCity("Capital City", (players[0].GetComponent<Nation>().GetComponent(typeof(Nation)) as Nation).nationName);
+        players[0].GetComponent<Nation>().ownedLandSquares[0].GetComponent<LandSquare>().buildings.Add(majorCity);
+
+        //draw capital city
+        GameObject newLandSquareBorderR = (GameObject)Instantiate(Resources.Load("Prefabs/Buildings/City_50x50"));
+        newLandSquareBorderR.transform.position = new Vector3(players[0].GetComponent<Nation>().ownedLandSquares[0].GetComponent<LandSquare>().x * squareLength, players[0].GetComponent<Nation>().ownedLandSquares[0].GetComponent<LandSquare>().y * squareLength, 0);
+        newLandSquareBorderR.transform.SetParent(players[0].GetComponent<Nation>().ownedLandSquares[0].transform);
+
+
     }
 
 

@@ -16,5 +16,15 @@ public class Unit : MonoBehaviour
         
     }
 
+    public string unitName;
+
+    public GameObject nation;
+
+    public float currentForce;
+    public float maxForce;
+
+
+    //keep track of counts of vehicles, rifles, vehicles, ect
+
 
 }

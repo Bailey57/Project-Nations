@@ -8,7 +8,7 @@ public class NationActions : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        if (mainCamera == null) 
+        if (mainCamera == null)
         {
             mainCamera = new GameObject();
             mainCamera.transform.SetParent(gameObject.transform);
@@ -21,11 +21,18 @@ public class NationActions : MonoBehaviour
         hoursToLobby = 168;
 
 
-        if (nation.GetComponent<Nation>().botControlled) 
+        if (nation.GetComponent<Nation>().botControlled)
         {
             StartCoroutine(ChooseNextAction());
         }
+
+        StartCoroutine(UpdateNation());
+        //ConscriptMilitaryPersonnelOnePercent();
     }
+
+
+
+
 
 
     public GameObject nation;
@@ -34,7 +41,7 @@ public class NationActions : MonoBehaviour
     public float annexMaxNegativeApprovalPercent = .7f;
 
 
-    
+
     public float minHourSupportIncrease = .05f;
     public float maxHourSupportIncrease = .35f;
     public float hoursToLobby = 168;
@@ -43,26 +50,40 @@ public class NationActions : MonoBehaviour
     public GameObject mainCamera;//null if npc 
     public GameObject map;
 
-    
 
 
+    public IEnumerator UpdateNation()
+    {
+
+        while (true)
+        {
+            yield return new WaitForSeconds(1);
+            this.ConscriptMilitaryPersonnelOnePercent();
+        }
+    }
 
 
     /**
      * Choose which landsquare to buy or build on based on what resources the natin needs. 
      * 
      */
-    public IEnumerator ChooseNextAction() 
+    public IEnumerator ChooseNextAction()
     {
-        while (true) 
+        while (true)
         {
             yield return new WaitForSeconds(1);
 
-            for (int i = 0; i < nation.GetComponent<Nation>().ownedLandSquares.Count; i++) 
+
+
+            CreateCompanyUnit();
+
+
+
+            for (int i = 0; i < nation.GetComponent<Nation>().ownedLandSquares.Count; i++)
             {
 
                 //if no mine and ironAvalibility >= .3, then build mine 
-                if (nation.GetComponent<Nation>().ownedLandSquares[i].GetComponent<LandSquare>().ironAvalibility >= .3 && nation.GetComponent<Nation>().ownedLandSquares[i].GetComponent<LandSquare>().buildings.Count < 1) 
+                if (nation.GetComponent<Nation>().ownedLandSquares[i].GetComponent<LandSquare>().ironAvalibility >= .3 && nation.GetComponent<Nation>().ownedLandSquares[i].GetComponent<LandSquare>().buildings.Count < 1)
                 {
                     BuildMine(nation.GetComponent<Nation>().ownedLandSquares[i]);
                 }
@@ -76,12 +97,12 @@ public class NationActions : MonoBehaviour
                 {
                     selectedLandSquare = FindMostValuableBorderLandSquare(nation.GetComponent<Nation>().ownedLandSquares);
                 }
-                else 
+                else
                 {
                     selectedLandSquare = FindLeastValuableBorderLandSquare(nation.GetComponent<Nation>().ownedLandSquares);
                 }
 
-                
+
 
 
 
@@ -90,22 +111,92 @@ public class NationActions : MonoBehaviour
                     if (map.GetComponent<Map>().worldLandSquares[selectedLandSquare.Item1, selectedLandSquare.Item2].GetComponent<LandSquare>().factionOwner == "" && map.GetComponent<Map>().worldLandSquares[selectedLandSquare.Item1, selectedLandSquare.Item2].GetComponent<LandSquare>().nationApprovalRatings[nation.GetComponent<Nation>().nationName].positiveApproval <= 0)// 0
                     {
                         StartCoroutine(LobbyInLandSquare(nation, map.GetComponent<Map>().worldLandSquares[selectedLandSquare.Item1, selectedLandSquare.Item2]));
-                        Debug.Log("Nation: " + nation.GetComponent<Nation>().name + " \nStarted Lobying in square: x" + selectedLandSquare.Item1 + " y" + selectedLandSquare.Item2);
+                        //Debug.Log("Nation: " + nation.GetComponent<Nation>().name + " \nStarted Lobying in square: x" + selectedLandSquare.Item1 + " y" + selectedLandSquare.Item2);
                     }
                     else
                     {
                         AnnexLandSquare(nation, map.GetComponent<Map>().worldLandSquares[selectedLandSquare.Item1, selectedLandSquare.Item2]);
-                        Debug.Log("Nation: " + nation.GetComponent<Nation>().name + " \nAnnexed square: x" + selectedLandSquare.Item1 + " y" + selectedLandSquare.Item2);
+                        //Debug.Log("Nation: " + nation.GetComponent<Nation>().name + " \nAnnexed square: x" + selectedLandSquare.Item1 + " y" + selectedLandSquare.Item2);
                     }
-                    
+
 
                 }
-                
+
 
             }
         }
-        
+
     }
+
+
+
+
+    /**
+     * 
+     * 
+     */
+    private void ConscriptMilitaryPersonnel(float populationMilitaryPercentage)
+    {
+        for (int i = 0; i < nation.GetComponent<Nation>().ownedLandSquares.Count; i++)
+        {
+            nation.GetComponent<Nation>().ownedLandSquares[i].GetComponent<LandSquare>().populationPercentageInMilitary = populationMilitaryPercentage;
+
+            float neededPersonell = populationMilitaryPercentage * (nation.GetComponent<Nation>().ownedLandSquares[i].GetComponent<LandSquare>().population);
+            neededPersonell -= nation.GetComponent<Nation>().ownedLandSquares[i].GetComponent<LandSquare>().populationAmmountInMilitary;
+            nation.GetComponent<Nation>().ownedLandSquares[i].GetComponent<LandSquare>().populationAmmountInMilitary += neededPersonell;
+            //nation.GetComponent<Nation>().ownedLandSquares[i].GetComponent<LandSquare>().population -= neededPersonell;
+            nation.GetComponent<Nation>().military.totalForce += neededPersonell;
+
+            Debug.Log("i: " + i + " \nneededPersonell: " + neededPersonell + " \npopulationAmmountInMilitary: " + nation.GetComponent<Nation>().ownedLandSquares[i].GetComponent<LandSquare>().populationAmmountInMilitary + " \nTotal force: " + nation.GetComponent<Nation>().military.totalForce);
+        }
+
+
+    }
+
+
+
+
+    public void CreateUnit(int forceSize) 
+    {
+    
+        GameObject newUnit = (GameObject)Instantiate(Resources.Load("Prefabs/Military/Units/infantry1White"));
+        newUnit.GetComponent<SpriteRenderer>().color = nation.GetComponent<Nation>().nationMainColor;
+        newUnit.transform.position = nation.GetComponent<Nation>().capitalLandSquare.transform.position;
+        newUnit.GetComponent<Unit>().maxForce = forceSize;
+        newUnit.GetComponent<Unit>().currentForce = forceSize;
+    }
+
+
+    /**
+     * Unit Sizes: https://en.wikipedia.org/wiki/Military_organization
+     * 
+     */
+    public void CreateCompanyUnit() 
+    {
+        float companySize = 250;
+        
+
+        if (this.nation.GetComponent<Nation>().military.totalForce >= companySize) 
+        {
+            this.nation.GetComponent<Nation>().military.totalForce -= companySize;
+            CreateUnit((int)companySize);
+
+        }
+    
+    }
+
+
+
+    public void ConscriptMilitaryPersonnelOnePercent()
+    {
+        ConscriptMilitaryPersonnel(.01f);
+
+
+    }
+
+
+
+
 
     public void SetCapital(GameObject landSquare) 
     {

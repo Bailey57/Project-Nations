@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Military : MonoBehaviour
+public class Military
 {
     // Start is called before the first frame update
     void Start()
@@ -19,7 +19,7 @@ public class Military : MonoBehaviour
     public GameObject nation;
 
 
-    public float totalForce;
+    public float totalForce = 0;
     public float conscriptionPercentage = 1;//starts out at 1%
 
 
