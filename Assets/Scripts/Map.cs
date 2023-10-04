@@ -118,7 +118,7 @@ public class Map : MonoBehaviour
         newNation.AddComponent<Nation>();
         (newNation.GetComponent(typeof(Nation)) as Nation).nationName = "NewNation " + this.nations.Count;
 
-        Debug.Log("X count: " + worldLandSquares.GetLength(0) + "Y count: " + worldLandSquares.GetLength(1) + " ");
+        //Debug.Log("X count: " + worldLandSquares.GetLength(0) + "Y count: " + worldLandSquares.GetLength(1) + " ");
 
 
         //(newNation.GetComponent(typeof(Nation)) as Nation).ownedLandSquares.Add(worldLandSquares[0, 0]);
@@ -757,7 +757,7 @@ public class Map : MonoBehaviour
 
         //(players[0].GetComponent(typeof(Nation)) as Nation).population = 1000000;
         (players[0].GetComponent(typeof(Nation)) as Nation).nationName = "Nation1";
-        Debug.Log("X count: " + worldLandSquares.GetLength(0) + "Y count: " + worldLandSquares.GetLength(1) + " ");
+        //Debug.Log("X count: " + worldLandSquares.GetLength(0) + "Y count: " + worldLandSquares.GetLength(1) + " ");
         (players[0].GetComponent(typeof(Nation)) as Nation).ownedLandSquares.Add(worldLandSquares[0,0]);
         (players[0].GetComponent(typeof(Nation)) as Nation).ownedLandSquares[0].GetComponent<LandSquare>().population += 40000;
         (players[0].GetComponent(typeof(Nation)) as Nation).ownedLandSquares[0].GetComponent<LandSquare>().factionOwner = "Nation1";

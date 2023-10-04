@@ -43,7 +43,7 @@ public class TimeText : MonoBehaviour
 
         //int years = remainderDays
 
-        string output = "Years: " + years + "Weeks: " + remainderWeeks + " Days: " + remainderDays + " Hours: " + remainderHrs;
+        string output = "Years: " + years + " Weeks: " + remainderWeeks + " Days: " + remainderDays + " Hours: " + remainderHrs;
         return output;
 
 

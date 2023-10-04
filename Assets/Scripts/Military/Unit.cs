@@ -7,14 +7,15 @@ public class Unit : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        StartCoroutine(Entrench());
+        //StartCoroutine(Entrench());
 
-        //StartCoroutine(MoveOrders(5, 5));
+        StartCoroutine(UpdateUnit());
     }
 
     // Update is called once per frame
     void Update()
     {
+        
         
     }
 
@@ -42,9 +43,15 @@ public class Unit : MonoBehaviour
 
     public IEnumerator UpdateUnit()
     {
-        yield return new WaitForSeconds(10);
+        while (true) 
+        {
+            StartCoroutine(Entrench());
+            Debug.Log("Updating Unit");
+            yield return new WaitForSeconds(10);
+
+        }
         
-        StartCoroutine(Entrench());
+        
     }
 
 
@@ -53,9 +60,8 @@ public class Unit : MonoBehaviour
     {
         if (hasOrders) 
         {
-            yield return new WaitForSeconds(0);
+            yield break;//breaks out 
         }
-
         hasOrders = true;
         
         bool destinationReached = false;
@@ -67,12 +73,11 @@ public class Unit : MonoBehaviour
         //int goalY;
 
 
-
         while (!destinationReached) 
         {
-
+            entrenchmentPercent = 0;
             yield return new WaitForSeconds(10);
-
+            
             if (currentX > goalX)
             {
                 currentX -=1;
@@ -103,6 +108,14 @@ public class Unit : MonoBehaviour
                 currentLandSquare = map.GetComponent<Map>().worldLandSquares[currentX, currentY];
 
                 gameObject.transform.position = map.GetComponent<Map>().worldLandSquares[currentX, currentY].transform.position;
+
+                if (map.GetComponent<Map>().worldLandSquares[currentX, currentY].GetComponent<LandSquare>().factionOwner != "") 
+                {
+                    //if unit set to annex:
+                    UnitAnnexLandSquareFromNation(this.nation, map.GetComponent<Map>().nations[map.GetComponent<Map>().worldLandSquares[currentX, currentY].GetComponent<LandSquare>().factionOwner], map.GetComponent<Map>().worldLandSquares[currentX, currentY]);
+                }
+
+                
             }
             else
             {
@@ -129,6 +142,34 @@ public class Unit : MonoBehaviour
     }
 
 
+
+    public void UnitAnnexLandSquareFromNation(GameObject nation, GameObject nationLoosing, GameObject landsquare)
+    {
+        
+
+        //take land square away
+        nationLoosing.GetComponent<Nation>().ownedLandSquares.Remove(landsquare);
+
+        //add land square to nation
+        landsquare.GetComponent<LandSquare>().factionOwner = nation.GetComponent<Nation>().nationName;
+        nation.GetComponent<Nation>().ownedLandSquares.Add(landsquare);
+        map.GetComponent<Map>().UpdateBorders();
+
+        //add dissaproval rating if land square likes nationLoosing more
+        if (landsquare.GetComponent<LandSquare>().nationApprovalRatings[nationLoosing.GetComponent<Nation>().nationName].positiveApproval > landsquare.GetComponent<LandSquare>().nationApprovalRatings[nation.GetComponent<Nation>().nationName].positiveApproval) 
+        {
+            float annexMinNegativeApprovalPercent = .3f;
+            float annexMaxNegativeApprovalPercent = 1;
+
+
+            float dissaprovalRating = Random.Range(annexMinNegativeApprovalPercent, annexMaxNegativeApprovalPercent);
+            landsquare.GetComponent<LandSquare>().nationApprovalRatings[nation.GetComponent<Nation>().nationName].DecreaseApproval(landsquare.GetComponent<LandSquare>().nationApprovalRatings[nation.GetComponent<Nation>().nationName].neutralApproval * dissaprovalRating);
+
+        }
+
+
+    }
+
     public void CancalAllOrders() 
     {
         StopAllCoroutines();
@@ -143,6 +184,11 @@ public class Unit : MonoBehaviour
             
             for (int i = 0; i < hoursToEntrench; i++) 
             {
+                if (hasOrders) 
+                {
+                    yield break;
+                }
+
                 yield return new WaitForSeconds(1);
                 if (entrenchmentPercent < 100) 
                 {
@@ -152,7 +198,7 @@ public class Unit : MonoBehaviour
         }
         else 
         {
-            yield return new WaitForSeconds(0);
+            yield break;
 
         }
     
