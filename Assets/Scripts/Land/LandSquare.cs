@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class LandSquare : MonoBehaviour
@@ -29,10 +30,21 @@ public class LandSquare : MonoBehaviour
 
     public float population;
 
+    //military
+    public float populationPercentageInMilitary;//
+    public float populationAmmountInMilitary;//
+
+    //
+    public float infrastructureLevel;
+
+    public GameObject map;
+
     public Dictionary<string, NationApprovalRatings> nationApprovalRatings = new Dictionary<string, NationApprovalRatings>();
     //public List<NationApprovalRatings> nationApprovalRatings = new List<NationApprovalRatings>();
 
     public List<Building> buildings = new List<Building>();
+
+    public List<GameObject> units = new List<GameObject>();
 
     public LandSquare() 
     {
@@ -62,14 +74,14 @@ public class LandSquare : MonoBehaviour
 
 
     
-
+    
 
     /**
      * Based on buildings, population, infastructure ect...
      */
     public float CalculateLandValue() 
     {
-        float value = 5000000;//5mil base value
+        float value = 1000000;//5000000, 5mil base value
         float resourceWorth = 1000000;
         //add based on pop
         value += population * 1000;
@@ -83,6 +95,122 @@ public class LandSquare : MonoBehaviour
         return value;
     }
 
+    /**
+     * Based on buildings, population, infrastructure ect...
+     */
+    public float CalculateAnnexCost(GameObject nation)
+    {
+        float priceIncrease = .18f;//1 = 100%
+
+        //TODO: make more expensive the further away and if no infrastructure on the way from a capitol
+        int capitalX = nation.GetComponent<Nation>().capitalLandSquare.GetComponent<LandSquare>().x;
+        int capitalY = nation.GetComponent<Nation>().capitalLandSquare.GetComponent<LandSquare>().y;
+
+        float distance = nation.GetComponent<Nation>().GetDistanceFromCapitol(this.gameObject);
+
+        priceIncrease *= distance;
+
+
+        float value = CalculateLandValue();
+       
+
+        value += value * priceIncrease;
+        return value;
+    }
+
+
+
+    public bool IsBorderWithNation(GameObject nation)
+    {
+       
+        int xPosTmp;
+        int yPosTmp;
+
+        
+        xPosTmp = this.x + 1;
+        yPosTmp = this.y + 1;
+        if (xPosTmp >= 0 && xPosTmp < map.GetComponent<Map>().worldSize && yPosTmp >= 0 && yPosTmp < map.GetComponent<Map>().worldSize)
+        {
+
+            if (map.GetComponent<Map>().worldLandSquares[xPosTmp, yPosTmp].GetComponent<LandSquare>().factionOwner == nation.GetComponent<Nation>().nationName)
+            {
+                return true;
+            }
+        }
+        xPosTmp = this.x - 1;
+        yPosTmp = this.y - 1;
+        if (xPosTmp >= 0 && xPosTmp < map.GetComponent<Map>().worldSize && yPosTmp >= 0 && yPosTmp < map.GetComponent<Map>().worldSize)
+        {
+
+            if (map.GetComponent<Map>().worldLandSquares[xPosTmp, yPosTmp].GetComponent<LandSquare>().factionOwner == nation.GetComponent<Nation>().nationName)
+            {
+                return true;
+            }
+        }
+        xPosTmp = this.x + 1;
+        yPosTmp = this.y - 1;
+        if (xPosTmp >= 0 && xPosTmp < map.GetComponent<Map>().worldSize && yPosTmp >= 0 && yPosTmp < map.GetComponent<Map>().worldSize)
+        {
+
+            if (map.GetComponent<Map>().worldLandSquares[xPosTmp, yPosTmp].GetComponent<LandSquare>().factionOwner == nation.GetComponent<Nation>().nationName)
+            {
+                return true;
+            }
+        }
+        xPosTmp = this.x - 1;
+        yPosTmp = this.y + 1;
+        if (xPosTmp >= 0 && xPosTmp < map.GetComponent<Map>().worldSize && yPosTmp >= 0 && yPosTmp < map.GetComponent<Map>().worldSize)
+        {
+
+            if (map.GetComponent<Map>().worldLandSquares[xPosTmp, yPosTmp].GetComponent<LandSquare>().factionOwner == nation.GetComponent<Nation>().nationName)
+            {
+                return true;
+            }
+        }
+        xPosTmp = this.x + 1;
+        yPosTmp = this.y;
+        if (xPosTmp >= 0 && xPosTmp < map.GetComponent<Map>().worldSize && yPosTmp >= 0 && yPosTmp < map.GetComponent<Map>().worldSize)
+        {
+
+            if (map.GetComponent<Map>().worldLandSquares[xPosTmp, yPosTmp].GetComponent<LandSquare>().factionOwner == nation.GetComponent<Nation>().nationName)
+            {
+                return true;
+            }
+        }
+        xPosTmp = this.x - 1;
+        yPosTmp = this.y;
+        if (xPosTmp >= 0 && xPosTmp < map.GetComponent<Map>().worldSize && yPosTmp >= 0 && yPosTmp < map.GetComponent<Map>().worldSize)
+        {
+
+            if (map.GetComponent<Map>().worldLandSquares[xPosTmp, yPosTmp].GetComponent<LandSquare>().factionOwner == nation.GetComponent<Nation>().nationName)
+            {
+                return true;
+            }
+        }
+        xPosTmp = this.x;
+        yPosTmp = this.y + 1;
+        if (xPosTmp >= 0 && xPosTmp < map.GetComponent<Map>().worldSize && yPosTmp >= 0 && yPosTmp < map.GetComponent<Map>().worldSize)
+        {
+
+            if (map.GetComponent<Map>().worldLandSquares[xPosTmp, yPosTmp].GetComponent<LandSquare>().factionOwner == nation.GetComponent<Nation>().nationName)
+            {
+                return true;
+            }
+        }
+        xPosTmp = this.x;
+        yPosTmp = this.y - 1;
+        if (xPosTmp >= 0 && xPosTmp < map.GetComponent<Map>().worldSize && yPosTmp >= 0 && yPosTmp < map.GetComponent<Map>().worldSize)
+        {
+
+            if (map.GetComponent<Map>().worldLandSquares[xPosTmp, yPosTmp].GetComponent<LandSquare>().factionOwner == nation.GetComponent<Nation>().nationName)
+            {
+                return true;
+            }
+        }
+
+
+        return false;
+    }
 
     public string GetApprovalRatingsString(GameObject nation) 
     {
@@ -178,6 +306,76 @@ public class LandSquare : MonoBehaviour
         output += "\n";
         return output;
     }
+
+
+
+
+
+
+    public string LandSquareToString(GameObject nation)
+    {
+        string output = "";
+        output += "x: " + x + " y: " + y;
+        if (factionOwner != "")
+        {
+            output += "\nFactionOwner: " + factionOwner;
+        }
+        else
+        {
+            output += "\nFactionOwner: " + "none";
+        }
+
+        if (population > 1000000)
+        {
+            output += "\nPopulation: " + Math.Round((double)(CalculateLandValue() / 1000000), 3) + " million";
+
+        }
+        else
+        {
+            output += "\nPopulation: " + Math.Round(population);
+        }
+
+
+        if (CalculateLandValue() > 1000000)
+        {
+            output += "\nLand Value: " + Math.Round((double)(CalculateLandValue() / 1000000), 3) + " million";
+
+        }
+        else
+        {
+            output += "\nLand Value: " + CalculateLandValue();
+        }
+
+        float landAnnexCost = CalculateAnnexCost(nation);
+        if (landAnnexCost > 1000000)
+        {
+            output += "\nLand Annex Cost: " + Math.Round((double)(landAnnexCost / 1000000), 3) + " million";
+
+        }
+        else
+        {
+            output += "\nLand Annex Cost: " + landAnnexCost;
+        }
+        //output += "\nValue: " ;
+
+        output += "\n";
+        output += "\nIronAvalibility: " + ironAvalibility;
+        output += "\nWaterAvalibility: " + waterAvalibility;
+        output += "\nOilAvalibility: " + oilAvalibility;
+        output += "\nLumberAvalibility: " + lumberAvalibility;
+        output += "\nFertility: " + fertility;
+
+        output += "\n";
+        output += "\nBuildings: ";
+        for (int i = 0; i < buildings.Count; i++)
+        {
+            output += buildings[i].GetType() + ", ";
+        }
+
+        output += "\n";
+        return output;
+    }
+
 
 
 }
