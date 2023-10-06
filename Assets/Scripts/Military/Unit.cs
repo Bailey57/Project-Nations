@@ -10,8 +10,8 @@ public class Unit : MonoBehaviour
     {
         //StartCoroutine(Entrench());
 
-        //StartCoroutine(UpdateUnit());
-        PatrollWithinBordersOrder();
+        StartCoroutine(UpdateUnit());
+        //PatrollWithinBordersOrder();
     }
 
     // Update is called once per frame
@@ -51,6 +51,10 @@ public class Unit : MonoBehaviour
     {
         while (true) 
         {
+            if (!hasOrders) 
+            {
+                RemoveActionIndicator();
+            }
             StartCoroutine(Entrench());
             //Debug.Log("Updating Unit");
             yield return new WaitForSeconds(10);
@@ -71,6 +75,7 @@ public class Unit : MonoBehaviour
         {
             yield break;//breaks out 
         }
+        RemoveActionIndicator();
         hasOrders = true;
         
         bool destinationReached = false;
@@ -145,11 +150,12 @@ public class Unit : MonoBehaviour
             //how long it takes to move to a landSquare
             //TODO: Account for terrain and infrastructure
             //yield return new WaitForSeconds(10);
+            RemoveActionIndicator();
         }
 
 
 
-        RemoveActionIndicator();
+        //RemoveActionIndicator();
         hasOrders = false;
 
     }
@@ -177,6 +183,22 @@ public class Unit : MonoBehaviour
         {
             return "W";
 
+        }
+        else if (destinationX - currX > 0 && destinationY - currY > 0)
+        {
+            return "NE";
+        }
+        else if (destinationX - currX < 0 && destinationY - currY < 0)
+        {
+            return "NW";
+        }
+        else if (destinationX - currX < 0 && destinationY - currY > 0)
+        {
+            return "SW";
+        }
+        else if (destinationX - currX > 0 && destinationY - currY < 0)
+        {
+            return "SE";
         }
         else 
         {
@@ -223,6 +245,26 @@ public class Unit : MonoBehaviour
         {
             newActionIndicator.transform.position = new Vector3(currX - space, currY);
             newActionIndicator.transform.rotation = Quaternion.Euler(0, 0, -270);
+        }
+        else if (direction == "NE" || direction == "ne")
+        {
+            newActionIndicator.transform.position = new Vector3(currX + space, currY + space);
+            newActionIndicator.transform.rotation = Quaternion.Euler(0, 0, 320);
+        }
+        else if (direction == "SW" || direction == "sw")
+        {
+            newActionIndicator.transform.position = new Vector3(currX - space, currY + space);
+            newActionIndicator.transform.rotation = Quaternion.Euler(0, 0, 45);
+        }
+        else if (direction == "SE" || direction == "se")
+        {
+            newActionIndicator.transform.position = new Vector3(currX + space, currY - space);
+            newActionIndicator.transform.rotation = Quaternion.Euler(0, 0, -135);
+        }
+        else if (direction == "NW" || direction == "nw")
+        {
+            newActionIndicator.transform.position = new Vector3(currX - space, currY - space);
+            newActionIndicator.transform.rotation = Quaternion.Euler(0, 0, 135);
         }
         else 
         {

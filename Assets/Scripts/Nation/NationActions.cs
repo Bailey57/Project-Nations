@@ -92,7 +92,11 @@ public class NationActions : MonoBehaviour
                 //CreatePlatoonUnit();
                 for (int i = 0; i < nation.GetComponent<Nation>().military.units.Count; i++) 
                 {
-                    //nation.GetComponent<Nation>().military.units[i].GetComponent<Unit>().PatrollWithinBordersOrder();
+                    if (!nation.GetComponent<Nation>().military.units[i].GetComponent<Unit>().hasOrders) 
+                    {
+                        nation.GetComponent<Nation>().military.units[i].GetComponent<Unit>().PatrollWithinBordersOrder();
+                    }
+                    
                 }
             }
 
