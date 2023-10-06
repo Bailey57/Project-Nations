@@ -45,6 +45,8 @@ public class Nation : MonoBehaviour
 
     public Dictionary<string, (int x, int y)> majorCities = new Dictionary<string, (int x, int y)>();
 
+    public Dictionary<(int, int), GameObject> borderLandSquares = new Dictionary<(int, int), GameObject>();
+
     //public bool 
 
     public Nation() 
@@ -53,7 +55,19 @@ public class Nation : MonoBehaviour
     }
 
 
+    public bool IsSameNation(string nationName) 
+    {
+        if (this.nationName == nationName)
+        {
+            return true;
 
+        }
+        else 
+        {
+            return false;
+        } 
+    
+    }
 
     public float GetAndSetGoldExpencesPerHour() 
     {
@@ -179,7 +193,7 @@ public class Nation : MonoBehaviour
         output += "\n";
 
 
-        output += "\nMilitary Reserves: " + military.totalForce;
+        output += "\nMilitary Reserves: " + (int)military.totalForce;
 
 
         output += "\n";
@@ -188,5 +202,15 @@ public class Nation : MonoBehaviour
     }
 
 
+    public void GetBorderLandSquaresOneNation(GameObject nation) 
+    {
+        //look through all landsquares and see which ones are border squares
+        //for () 
+        //{
+        
+        
+        //}
+    
+    }
    
 }

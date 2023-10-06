@@ -22,7 +22,7 @@ public class Military
     public float totalForce = 0;
     public float conscriptionPercentage = 1;//starts out at 1%
 
-
+    public List<GameObject> units = new List<GameObject>();
     public float EstimateTotalForce() 
     {
         return nation.GetComponent<Nation>().population * conscriptionPercentage;
@@ -39,4 +39,7 @@ public class Military
     }
 
 
+
+
+    
 }
