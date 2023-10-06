@@ -7,7 +7,15 @@ using UnityEngine;
 public class Nation : MonoBehaviour
 {
 
-    
+    void LateUpdate()
+    {
+        if (this.capitalLandSquare.GetComponent<LandSquare>().factionOwner != this.nationName) 
+        {
+            CapitolLost();
+        }
+
+    }
+
 
     //public float metricTonOf = 0;
     public string nationName;
@@ -54,6 +62,28 @@ public class Nation : MonoBehaviour
         this.military = new Military();
     }
 
+
+    /**
+     * If Capitol is lost, nation looses all military and territory
+     * 
+     */
+    public void CapitolLost() 
+    {
+
+        for (int i = 0; i < this.military.units.Count; i++) 
+        {
+            this.military.units[i].GetComponent<Unit>().DestroyUnit();
+            //Destroy(this.military.units[i]);
+        }
+        for (int i = 0; i < this.ownedLandSquares.Count; i++) 
+        {
+            //this.ownedLandSquares[i].GetComponent<LandSquare>().factionOwner = "";
+            //this.ownedLandSquares.Remove(this.ownedLandSquares[i]);
+
+        }
+    
+    
+    }
 
     public bool IsSameNation(string nationName) 
     {

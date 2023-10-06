@@ -30,8 +30,14 @@ public class Unit : MonoBehaviour
     public float currentForce;
     public float maxForce;
 
+    /**
+     * TODO:
+     * When maxed, unit is where it wants to be for defencive manuvers and is able to start entrenching
+     */
+    public float favorableTerrainPercent = 0;
 
     public float entrenchmentPercent = 0;
+    
 
     public bool hasOrders;
 
@@ -66,8 +72,41 @@ public class Unit : MonoBehaviour
 
 
 
+    public void AttackOrders(int goalX, int goalY) 
+    {
+
+        if (!hasOrders && this.currentLandSquare.GetComponent<LandSquare>().x - goalX <= 1 && this.currentLandSquare.GetComponent<LandSquare>().x - goalX >= -1 && this.currentLandSquare.GetComponent<LandSquare>().y - goalY <= 1 && this.currentLandSquare.GetComponent<LandSquare>().y - goalY >= -1)
+        {
+            hasOrders = true;
+            StartCoroutine(Attack(goalX, goalY));
+        }
+    }
+
+    private IEnumerator Attack(int goalX, int goalY) 
+    {
+
+        yield return new WaitForSeconds(8);//time to start attack
+
+        //if no units on square or unit is friendly, then cancal attack
+        if (map.GetComponent<Map>().worldLandSquares[goalX, goalY].GetComponent<LandSquare>().units.Count == 0 || map.GetComponent<Map>().worldLandSquares[goalX, goalY].GetComponent<LandSquare>().units[0].GetComponent<Unit>().nation.GetComponent<Nation>().nationName == this.nation.GetComponent<Nation>().nationName) 
+        {
+            this.hasOrders = false;
+            yield break;
+        }
+
+        //calculate damage done on each side based on force, entrenchment, intel(affects readyness), 
+        //currentForce - combinedForce of units on landsquare
+        
+    }
+
+
+
+
+
     public IEnumerator MoveOrders(int goalX, int goalY)
     {
+        //TODO: make hoursTillFinished affected by movespeed, terrain, and infrastructure
+        int hoursTillFinished = 10;
         int currentX = currentLandSquare.GetComponent<LandSquare>().x;
         int currentY = currentLandSquare.GetComponent<LandSquare>().y;
 
@@ -91,7 +130,7 @@ public class Unit : MonoBehaviour
             entrenchmentPercent = 0;
             
             AddActionIndicator("", GetDirectionHeading(currentX, currentY, goalX, goalY));
-            yield return new WaitForSeconds(10);//10
+            yield return new WaitForSeconds(hoursTillFinished);
             
 
             if (currentX > goalX)
@@ -161,7 +200,14 @@ public class Unit : MonoBehaviour
     }
 
 
+    public void DestroyUnit() 
+    {
+        
+        this.currentLandSquare.GetComponent<LandSquare>().units.Remove(gameObject);
+        this.nation.GetComponent<Nation>().military.units.Remove(gameObject);
+        Destroy(this.gameObject);
     
+    }
     public string GetDirectionHeading(int currX, int currY, int destinationX, int destinationY) 
     {
         if (destinationY - currY > 0 && destinationX == currX)

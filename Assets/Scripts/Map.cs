@@ -432,7 +432,7 @@ public class Map : MonoBehaviour
                             if ((worldLandSquares[x, y].GetComponent(typeof(LandSquare)) as LandSquare).buildings[i].IsActive != false && (worldLandSquares[x, y].GetComponent(typeof(LandSquare)) as LandSquare).buildings[i].HoursToBuild <= 0)
                             {
                                 float oreCost = (worldLandSquares[x, y].GetComponent(typeof(LandSquare)) as LandSquare).buildings[i].MaintenanceCostPerHour;
-                                if (nations[worldLandSquares[x, y].GetComponent<LandSquare>().factionOwner].GetComponent<Nation>().gold >= oreCost)
+                                if (worldLandSquares[x, y].GetComponent<LandSquare>().factionOwner != "" && nations[worldLandSquares[x, y].GetComponent<LandSquare>().factionOwner].GetComponent<Nation>().gold >= oreCost)
                                 {
                                     //(worldLandSquares[x, y].GetComponent<LandSquare>().buildings[i].NationOwner
                                     //(worldLandSquares[x, y].GetComponent(typeof(LandSquare)) as LandSquare).buildings[i].NationOwner
