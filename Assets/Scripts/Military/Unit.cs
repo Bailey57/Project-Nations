@@ -17,6 +17,10 @@ public class Unit : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (currentForce <= 0) 
+        {
+            this.DestroyUnit();
+        }
         
         
     }
@@ -71,32 +75,122 @@ public class Unit : MonoBehaviour
     }
 
 
+    private bool UnitWithinOneSquare(int goalX, int goalY) 
+    {
+        return this.currentLandSquare.GetComponent<LandSquare>().x - goalX <= 1 && this.currentLandSquare.GetComponent<LandSquare>().x - goalX >= -1 && this.currentLandSquare.GetComponent<LandSquare>().y - goalY <= 1 && this.currentLandSquare.GetComponent<LandSquare>().y - goalY >= -1;
+
+
+    }
 
     public void AttackOrders(int goalX, int goalY) 
     {
-
+        
         if (!hasOrders && this.currentLandSquare.GetComponent<LandSquare>().x - goalX <= 1 && this.currentLandSquare.GetComponent<LandSquare>().x - goalX >= -1 && this.currentLandSquare.GetComponent<LandSquare>().y - goalY <= 1 && this.currentLandSquare.GetComponent<LandSquare>().y - goalY >= -1)
         {
-            hasOrders = true;
-            StartCoroutine(Attack(goalX, goalY));
+            if (map.GetComponent<Map>().worldLandSquares[goalX, goalY].GetComponent<LandSquare>().units.Count == 0 || map.GetComponent<Map>().worldLandSquares[goalX, goalY].GetComponent<LandSquare>().units[0].GetComponent<Unit>().nation.GetComponent<Nation>().nationName == this.nation.GetComponent<Nation>().nationName)
+            {
+                //this.hasOrders = false;
+
+            }
+            else 
+            {
+                hasOrders = true;
+                StartCoroutine(InitializeAttack(goalX, goalY));
+            }
+            
         }
     }
 
+    private IEnumerator InitializeAttack(int goalX, int goalY) 
+    {
+        string directionHeading = this.GetDirectionHeading(this.currentLandSquare.GetComponent<LandSquare>().x, this.currentLandSquare.GetComponent<LandSquare>().y, goalX, goalY);
+        this.AddActionIndicator("attack", directionHeading);
+        yield return new WaitForSeconds(8);
+
+        StartCoroutine(Attack(goalX, goalY));
+        //yield break;
+    }
+
+    /**
+     * 
+     */
     private IEnumerator Attack(int goalX, int goalY) 
     {
+        bool finishedWithAttack = false;
+        this.hasOrders = true;
+        //TODO:
+        //Make attacks affected by force, entrenchment, intel(affects readyness), intel
+        //Make long range attacks by artillary and tanks(tank barage affected greatly by sight lines)
+        //Attack affected by specifications of firearms and how much ammo unit has left
+        //units not entrenched or in defence positions are at great risk of artillary damage
 
-        yield return new WaitForSeconds(8);//time to start attack
-
-        //if no units on square or unit is friendly, then cancal attack
-        if (map.GetComponent<Map>().worldLandSquares[goalX, goalY].GetComponent<LandSquare>().units.Count == 0 || map.GetComponent<Map>().worldLandSquares[goalX, goalY].GetComponent<LandSquare>().units[0].GetComponent<Unit>().nation.GetComponent<Nation>().nationName == this.nation.GetComponent<Nation>().nationName) 
-        {
-            this.hasOrders = false;
-            yield break;
-        }
-
-        //calculate damage done on each side based on force, entrenchment, intel(affects readyness), 
-        //currentForce - combinedForce of units on landsquare
+       
         
+        while (!finishedWithAttack) 
+        {
+
+            yield return new WaitForSeconds(1);//
+            float attackForce = this.currentForce;
+            float defenceForce = 0;
+
+
+            
+            
+
+            //if no units on square or unit is friendly, then cancal attack
+            if (map.GetComponent<Map>().worldLandSquares[goalX, goalY].GetComponent<LandSquare>().units.Count == 0 || map.GetComponent<Map>().worldLandSquares[goalX, goalY].GetComponent<LandSquare>().units[0].GetComponent<Unit>().nation.GetComponent<Nation>().nationName == this.nation.GetComponent<Nation>().nationName)
+            {
+                finishedWithAttack = true;
+                this.hasOrders = false;
+                RemoveActionIndicator();
+                yield break;
+            }
+
+            //calculate damage done on each side based on force, entrenchment, intel(affects readyness), 
+            //currentForce - combinedForce of units on landsquare
+            for (int i = 0; i < map.GetComponent<Map>().worldLandSquares[goalX, goalY].GetComponent<LandSquare>().units.Count; i++)
+            {
+                defenceForce += map.GetComponent<Map>().worldLandSquares[goalX, goalY].GetComponent<LandSquare>().units[i].GetComponent<Unit>().currentForce;
+
+            }
+
+            //300 rounds per kill in close/civil war distance combat
+            //7k to 50k rounds to kill someone 
+            //bolt action: 1 to 3 rounds per second depending on experience 
+            float roundsPerKill = 300;
+            float fireRatePerHour = 10;
+
+
+            //get base attackForce damage
+            float attackForceDamage = fireRatePerHour * attackForce / roundsPerKill;
+            float defenceForceDamage = fireRatePerHour * defenceForce / roundsPerKill;
+
+            //entrecnhment changes
+            attackForceDamage -= attackForceDamage * (entrenchmentPercent / 100) * .5f;
+            defenceForceDamage += defenceForceDamage * (entrenchmentPercent / 100) * .5f;
+            //terrain changes
+
+
+            //do damage to both sides
+            float damageToEachUnit = attackForceDamage / map.GetComponent<Map>().worldLandSquares[goalX, goalY].GetComponent<LandSquare>().units.Count;
+            this.currentForce -= defenceForceDamage;
+
+            //damage each unit
+            for (int i = 0; i < map.GetComponent<Map>().worldLandSquares[goalX, goalY].GetComponent<LandSquare>().units.Count; i++)
+            {
+                map.GetComponent<Map>().worldLandSquares[goalX, goalY].GetComponent<LandSquare>().units[i].GetComponent<Unit>().currentForce -= damageToEachUnit;
+
+            }
+
+
+            if ((currentForce / maxForce) <= .2) 
+            {
+                hasOrders = false;
+                finishedWithAttack = true;
+            }
+
+        }
+        RemoveActionIndicator();
     }
 
 
@@ -130,8 +224,22 @@ public class Unit : MonoBehaviour
             entrenchmentPercent = 0;
             
             AddActionIndicator("", GetDirectionHeading(currentX, currentY, goalX, goalY));
-            yield return new WaitForSeconds(hoursTillFinished);
+
+            //if unit there, add attack orders
             
+
+            if (map.GetComponent<Map>().worldLandSquares[goalX, goalY].GetComponent<LandSquare>().units.Count > 0 && UnitWithinOneSquare(goalX, goalY))
+            {
+                RemoveActionIndicator();
+                hasOrders = false;
+                AttackOrders(goalX, goalY);
+                destinationReached = true;
+                yield break;
+            }
+            
+
+            yield return new WaitForSeconds(hoursTillFinished);
+
 
             if (currentX > goalX)
             {
@@ -150,7 +258,7 @@ public class Unit : MonoBehaviour
             {
                 currentY += 1;
             }
-
+            
             
 
             //wait based on terrain
@@ -158,6 +266,9 @@ public class Unit : MonoBehaviour
             //move off of landSquare
             if (map.GetComponent<Map>().worldLandSquares[currentX, currentY].GetComponent<LandSquare>().units.Count == 0)//TODO: make it to where a unit can move to another square with friendly units only
             {
+                
+
+
                 currentLandSquare.GetComponent<LandSquare>().units.Remove(gameObject);
 
 
@@ -176,6 +287,9 @@ public class Unit : MonoBehaviour
             }
             else
             {
+                hasOrders = false;
+                RemoveActionIndicator();
+                AttackOrders(goalX, goalY);
                 destinationReached = true;//not reached, but needs to break out of method
             }
 
@@ -196,7 +310,7 @@ public class Unit : MonoBehaviour
 
         //RemoveActionIndicator();
         hasOrders = false;
-
+        //RemoveActionIndicator();
     }
 
 
@@ -264,6 +378,10 @@ public class Unit : MonoBehaviour
 
 
         GameObject newActionIndicator = (GameObject)Instantiate(Resources.Load("Prefabs/Military/ActionIndicator/WhiteArrow1"));
+        if (action == "attack") 
+        {
+            newActionIndicator.GetComponent<SpriteRenderer>().color = Color.red;
+        }
         newActionIndicator.transform.position = this.transform.position;
 
         float currX = newActionIndicator.transform.position.x;

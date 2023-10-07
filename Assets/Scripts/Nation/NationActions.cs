@@ -88,9 +88,12 @@ public class NationActions : MonoBehaviour
             
             if (nation.GetComponent<Nation>().military.totalForce > 250) 
             {
-                CreateCompanyUnit();
-                //CreatePlatoonUnit();
-                for (int i = 0; i < nation.GetComponent<Nation>().military.units.Count; i++) 
+                //CreateCompanyUnit();
+                CreatePlatoonUnit();
+                
+
+
+                for (int i = 1; i < nation.GetComponent<Nation>().military.units.Count; i++) 
                 {
                     if (!nation.GetComponent<Nation>().military.units[i].GetComponent<Unit>().hasOrders) 
                     {
