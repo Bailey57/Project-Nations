@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
 
@@ -52,7 +53,7 @@ public class NationActions : MonoBehaviour
 
 
     //
-    
+
 
 
 
@@ -84,7 +85,24 @@ public class NationActions : MonoBehaviour
 
 
 
-            CreateCompanyUnit();
+
+            if (nation.GetComponent<Nation>().military.totalForce > 250)
+            {
+                //CreateCompanyUnit();
+                CreatePlatoonUnit();
+
+
+
+                for (int i = 1; i < nation.GetComponent<Nation>().military.units.Count; i++)
+                {
+                    if (!nation.GetComponent<Nation>().military.units[i].GetComponent<Unit>().hasOrders)
+                    {
+                        //nation.GetComponent<Nation>().military.units[i].GetComponent<Unit>().PatrollWithinBordersOrder();
+                        nation.GetComponent<Nation>().military.units[i].GetComponent<Unit>().PatrollWithinBordersAndEnemyOrder();
+                    }
+
+                }
+            }
 
 
 
@@ -139,6 +157,56 @@ public class NationActions : MonoBehaviour
 
 
 
+    public void DeclareEnemyNation(string nationName) 
+    {
+        if (this.nation.GetComponent<Nation>().nationName == nationName) 
+        {
+            return;
+        }
+        if (nation.GetComponent<Nation>().nationRelations.ContainsKey(nationName))
+        {
+            nation.GetComponent<Nation>().nationRelations[nationName] = "enemy";
+
+        }
+        else 
+        {
+            nation.GetComponent<Nation>().nationRelations.Add(nationName, "enemy");
+        }
+    
+    }
+
+    public void DeclareEnemyNationBothSides(string nationName)
+    {
+        if (this.nation.GetComponent<Nation>().nationName == nationName)
+        {
+            return;
+        }
+
+        //map.GetComponent<Map>().nations[nationName].GetComponent<Nation>()
+        string thisNationName = nation.GetComponent<Nation>().nationName;
+        if (map.GetComponent<Map>().nations[nationName].GetComponent<Nation>().nationRelations.ContainsKey(thisNationName))
+        {
+            map.GetComponent<Map>().nations[nationName].GetComponent<Nation>().nationRelations[thisNationName] = "enemy";
+
+        }
+        else
+        {
+            map.GetComponent<Map>().nations[nationName].GetComponent<Nation>().nationRelations.Add(thisNationName, "enemy");
+        }
+
+
+        
+        if (nation.GetComponent<Nation>().nationRelations.ContainsKey(nationName))
+        {
+            nation.GetComponent<Nation>().nationRelations[nationName] = "enemy";
+
+        }
+        else
+        {
+            nation.GetComponent<Nation>().nationRelations.Add(nationName, "enemy");
+        }
+
+    }
 
     /**
      * 
@@ -181,7 +249,12 @@ public class NationActions : MonoBehaviour
         {
             newUnit = (GameObject)Instantiate(Resources.Load("Prefabs/Military/Units/infantry1CompanyWhite"));
         }
-        else 
+        else if (forceSize >= 25 && forceSize <= 40) 
+        {
+            newUnit = (GameObject)Instantiate(Resources.Load("Prefabs/Military/Units/infantry1White"));
+            newUnit.GetComponentInChildren<TextMeshPro>().text = "•••";
+        }
+        else
         {
             newUnit = (GameObject)Instantiate(Resources.Load("Prefabs/Military/Units/infantry1White"));
         }
@@ -195,8 +268,24 @@ public class NationActions : MonoBehaviour
         newUnit.GetComponent<Unit>().currentForce = forceSize;
         newUnit.GetComponent<Unit>().nation = nation;
         newUnit.GetComponent<Unit>().unitName = "newUnit";
+        nation.GetComponent<Nation>().military.units.Add(newUnit);
     }
 
+
+
+    public void CreatePlatoonUnit()
+    {
+        float size = 25;
+
+
+        if (this.nation.GetComponent<Nation>().military.totalForce >= size)
+        {
+            this.nation.GetComponent<Nation>().military.totalForce -= size;
+            CreateUnit((int)size);
+
+        }
+
+    }
 
     /**
      * Unit Sizes: https://en.wikipedia.org/wiki/Military_organization
@@ -215,6 +304,8 @@ public class NationActions : MonoBehaviour
         }
     
     }
+
+
 
     public void CreateDivisionUnit()
     {

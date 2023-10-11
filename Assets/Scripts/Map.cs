@@ -115,8 +115,12 @@ public class Map : MonoBehaviour
         newNationActions.GetComponent<NationActions>().nation = newNation;
         newNationActions.GetComponent<NationActions>().map = this.gameObject;
 
+        
+
         newNation.AddComponent<Nation>();
         (newNation.GetComponent(typeof(Nation)) as Nation).nationName = "NewNation " + this.nations.Count;
+
+        newNation.GetComponent<Nation>().nationActions = newNationActions;
 
         //Debug.Log("X count: " + worldLandSquares.GetLength(0) + "Y count: " + worldLandSquares.GetLength(1) + " ");
 
@@ -432,7 +436,7 @@ public class Map : MonoBehaviour
                             if ((worldLandSquares[x, y].GetComponent(typeof(LandSquare)) as LandSquare).buildings[i].IsActive != false && (worldLandSquares[x, y].GetComponent(typeof(LandSquare)) as LandSquare).buildings[i].HoursToBuild <= 0)
                             {
                                 float oreCost = (worldLandSquares[x, y].GetComponent(typeof(LandSquare)) as LandSquare).buildings[i].MaintenanceCostPerHour;
-                                if (nations[worldLandSquares[x, y].GetComponent<LandSquare>().factionOwner].GetComponent<Nation>().gold >= oreCost)
+                                if (worldLandSquares[x, y].GetComponent<LandSquare>().factionOwner != "" && nations[worldLandSquares[x, y].GetComponent<LandSquare>().factionOwner].GetComponent<Nation>().gold >= oreCost)
                                 {
                                     //(worldLandSquares[x, y].GetComponent<LandSquare>().buildings[i].NationOwner
                                     //(worldLandSquares[x, y].GetComponent(typeof(LandSquare)) as LandSquare).buildings[i].NationOwner
@@ -772,7 +776,8 @@ public class Map : MonoBehaviour
         (players[0].GetComponent(typeof(Nation)) as Nation).gold = 10 * million;
         nations.Add("Nation1", players[0]);
 
-        
+        //set nation actions
+        players[0].GetComponent<Nation>().nationActions = players[0].GetComponentInChildren<NationActions>().gameObject;
 
         //set capital
         players[0].GetComponent<Nation>().capitalLandSquare = players[0].GetComponent<Nation>().ownedLandSquares[0];
