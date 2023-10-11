@@ -134,16 +134,23 @@ public class Unit : MonoBehaviour
             float defenceForce = 0;
 
 
-            
-            
+
+
 
             //if no units on square or unit is friendly, then cancal attack
+            //else, make nations enemies if not already
             if (map.GetComponent<Map>().worldLandSquares[goalX, goalY].GetComponent<LandSquare>().units.Count == 0 || map.GetComponent<Map>().worldLandSquares[goalX, goalY].GetComponent<LandSquare>().units[0].GetComponent<Unit>().nation.GetComponent<Nation>().nationName == this.nation.GetComponent<Nation>().nationName)
             {
                 finishedWithAttack = true;
                 this.hasOrders = false;
                 RemoveActionIndicator();
                 yield break;
+            }
+            else 
+            {
+                //nation declares war
+                
+                nation.GetComponent<Nation>().nationActions.GetComponent<NationActions>().DeclareEnemyNationBothSides(map.GetComponent<Map>().worldLandSquares[goalX, goalY].GetComponent<LandSquare>().units[0].GetComponent<Unit>().nation.GetComponent<Nation>().nationName);
             }
 
             //calculate damage done on each side based on force, entrenchment, intel(affects readyness), 
@@ -188,6 +195,11 @@ public class Unit : MonoBehaviour
                 hasOrders = false;
                 finishedWithAttack = true;
             }
+
+
+            //make two nations enemies
+
+
 
         }
         RemoveActionIndicator();
@@ -278,9 +290,17 @@ public class Unit : MonoBehaviour
                 gameObject.transform.position = map.GetComponent<Map>().worldLandSquares[currentX, currentY].transform.position;
 
                 if (map.GetComponent<Map>().worldLandSquares[currentX, currentY].GetComponent<LandSquare>().factionOwner != "") 
+                //if (nation.GetComponent<Nation>().GetNationRelationship(map.GetComponent<Map>().worldLandSquares[currentX, currentY].GetComponent<LandSquare>().factionOwner) != null && nation.GetComponent<Nation>().GetNationRelationship(map.GetComponent<Map>().worldLandSquares[currentX, currentY].GetComponent<LandSquare>().factionOwner) == "enemy")
                 {
+                    nation.GetComponent<Nation>().GetNationRelationship(map.GetComponent<Map>().worldLandSquares[currentX, currentY].GetComponent<LandSquare>().factionOwner);
                     //if unit set to annex:
                     UnitAnnexLandSquareFromNation(this.nation, map.GetComponent<Map>().nations[map.GetComponent<Map>().worldLandSquares[currentX, currentY].GetComponent<LandSquare>().factionOwner], map.GetComponent<Map>().worldLandSquares[currentX, currentY]);
+                    //nation declares war if not on unowned land
+                    if (map.GetComponent<Map>().worldLandSquares[goalX, goalY].GetComponent<LandSquare>().factionOwner != "") 
+                    {
+                        nation.GetComponent<Nation>().nationActions.GetComponent<NationActions>().DeclareEnemyNationBothSides(map.GetComponent<Map>().worldLandSquares[goalX, goalY].GetComponent<LandSquare>().factionOwner);
+                    }
+                    
                 }
 
                 
@@ -471,6 +491,8 @@ public class Unit : MonoBehaviour
     
     }
 
+    
+
     private IEnumerator PatrollWithinBorders() 
     {
         
@@ -488,6 +510,47 @@ public class Unit : MonoBehaviour
 
         }
        
+
+    }
+
+    public void PatrollWithinBordersAndEnemyOrder()
+    {
+        if (!hasOrders) 
+        {
+            StartCoroutine(PatrollWithinBordersAndEnemy());
+        }
+        
+
+    }
+
+    private IEnumerator PatrollWithinBordersAndEnemy()
+    {
+
+        while (true)
+        {
+            yield return new WaitForSeconds(.1f);
+
+            int randX = Random.Range(currentLandSquare.GetComponent<LandSquare>().x - 1, currentLandSquare.GetComponent<LandSquare>().x + 2);
+            int randY = Random.Range(currentLandSquare.GetComponent<LandSquare>().y - 1, currentLandSquare.GetComponent<LandSquare>().y + 2);
+
+            if (randX >= 0 && randY >= 0 && map.GetComponent<Map>().worldSize > randX && map.GetComponent<Map>().worldSize > randY) 
+            {
+                bool isOwner = map.GetComponent<Map>().worldLandSquares[randX, randY].GetComponent<LandSquare>().factionOwner == this.nation.GetComponent<Nation>().nationName;
+                bool hasUnits = map.GetComponent<Map>().worldLandSquares[randX, randY].GetComponent<LandSquare>().units.Count > 0;
+
+                bool isOwnedByEnemy = nation.GetComponent<Nation>().IsEnemyNation(map.GetComponent<Map>().worldLandSquares[randX, randY].GetComponent<LandSquare>().factionOwner);
+                if ((isOwnedByEnemy || (isOwner && !hasUnits)))
+                {
+                    StartCoroutine(MoveOrders(randX, randY));
+                }
+
+            }
+
+            
+
+
+        }
+
 
     }
 

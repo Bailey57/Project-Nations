@@ -53,7 +53,7 @@ public class NationActions : MonoBehaviour
 
 
     //
-    
+
 
 
 
@@ -85,21 +85,22 @@ public class NationActions : MonoBehaviour
 
 
 
-            
-            if (nation.GetComponent<Nation>().military.totalForce > 250) 
+
+            if (nation.GetComponent<Nation>().military.totalForce > 250)
             {
                 //CreateCompanyUnit();
                 CreatePlatoonUnit();
-                
 
 
-                for (int i = 1; i < nation.GetComponent<Nation>().military.units.Count; i++) 
+
+                for (int i = 1; i < nation.GetComponent<Nation>().military.units.Count; i++)
                 {
-                    if (!nation.GetComponent<Nation>().military.units[i].GetComponent<Unit>().hasOrders) 
+                    if (!nation.GetComponent<Nation>().military.units[i].GetComponent<Unit>().hasOrders)
                     {
-                        nation.GetComponent<Nation>().military.units[i].GetComponent<Unit>().PatrollWithinBordersOrder();
+                        //nation.GetComponent<Nation>().military.units[i].GetComponent<Unit>().PatrollWithinBordersOrder();
+                        nation.GetComponent<Nation>().military.units[i].GetComponent<Unit>().PatrollWithinBordersAndEnemyOrder();
                     }
-                    
+
                 }
             }
 
@@ -156,6 +157,56 @@ public class NationActions : MonoBehaviour
 
 
 
+    public void DeclareEnemyNation(string nationName) 
+    {
+        if (this.nation.GetComponent<Nation>().nationName == nationName) 
+        {
+            return;
+        }
+        if (nation.GetComponent<Nation>().nationRelations.ContainsKey(nationName))
+        {
+            nation.GetComponent<Nation>().nationRelations[nationName] = "enemy";
+
+        }
+        else 
+        {
+            nation.GetComponent<Nation>().nationRelations.Add(nationName, "enemy");
+        }
+    
+    }
+
+    public void DeclareEnemyNationBothSides(string nationName)
+    {
+        if (this.nation.GetComponent<Nation>().nationName == nationName)
+        {
+            return;
+        }
+
+        //map.GetComponent<Map>().nations[nationName].GetComponent<Nation>()
+        string thisNationName = nation.GetComponent<Nation>().nationName;
+        if (map.GetComponent<Map>().nations[nationName].GetComponent<Nation>().nationRelations.ContainsKey(thisNationName))
+        {
+            map.GetComponent<Map>().nations[nationName].GetComponent<Nation>().nationRelations[thisNationName] = "enemy";
+
+        }
+        else
+        {
+            map.GetComponent<Map>().nations[nationName].GetComponent<Nation>().nationRelations.Add(thisNationName, "enemy");
+        }
+
+
+        
+        if (nation.GetComponent<Nation>().nationRelations.ContainsKey(nationName))
+        {
+            nation.GetComponent<Nation>().nationRelations[nationName] = "enemy";
+
+        }
+        else
+        {
+            nation.GetComponent<Nation>().nationRelations.Add(nationName, "enemy");
+        }
+
+    }
 
     /**
      * 

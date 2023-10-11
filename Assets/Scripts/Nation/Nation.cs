@@ -11,7 +11,7 @@ public class Nation : MonoBehaviour
     {
         if (this.capitalLandSquare.GetComponent<LandSquare>().factionOwner != this.nationName) 
         {
-            CapitolLost();
+            CapitalLost();
         }
 
     }
@@ -47,13 +47,30 @@ public class Nation : MonoBehaviour
 
     public Military military = new Military();
 
+
+    public GameObject nationActions;
+
+    /**
+     * NationNameString, relationship)
+     * 
+     * Relationship types: friendly, enemy, neutral
+     */
+    public Dictionary<string, string> nationRelations = new Dictionary<string, string>();
+
+
     public List<GameObject> ownedLandSquares = new List<GameObject>();
+
+    /**
+     * Ordered list of border land squares based on annex cost from high to low
+     */
+    public List<GameObject> borderLandSquares = new List<GameObject>();
 
     public GameObject capitalLandSquare;
 
     public Dictionary<string, (int x, int y)> majorCities = new Dictionary<string, (int x, int y)>();
 
-    public Dictionary<(int, int), GameObject> borderLandSquares = new Dictionary<(int, int), GameObject>();
+    
+    //public Dictionary<(int, int), GameObject> borderLandSquares = new Dictionary<(int, int), GameObject>();
 
     //public bool 
 
@@ -67,7 +84,7 @@ public class Nation : MonoBehaviour
      * If Capitol is lost, nation looses all military and territory
      * 
      */
-    public void CapitolLost() 
+    public void CapitalLost() 
     {
 
         for (int i = 0; i < this.military.units.Count; i++) 
@@ -85,18 +102,76 @@ public class Nation : MonoBehaviour
     
     }
 
+    public void AddToBorderList(GameObject landSquare) 
+    {
+
+        if (borderLandSquares.Count == 0)
+        {
+            borderLandSquares.Add(landSquare);
+        }
+        else 
+        {
+            for (int i = 0; i < this.borderLandSquares.Count; i++)
+            {
+                if (borderLandSquares[i].GetComponent<LandSquare>().CalculateAnnexCost(this.gameObject) >= landSquare.GetComponent<LandSquare>().CalculateAnnexCost(this.gameObject))
+                {
+                    borderLandSquares.Insert(i, landSquare);
+                    break;
+                }
+
+            }
+
+        }
+
+        
+
+    
+    
+    }
+
+    /**
+     * Gets Nation Relationship string, if does not exist, returns null
+     * 
+     */
+    public string GetNationRelationship(string otherNationName) 
+    {
+        if (nationRelations.ContainsKey(otherNationName))
+        {
+            return nationRelations[otherNationName];
+        }
+        else 
+        {
+            return null;
+        }
+        
+    
+    }
+
     public bool IsSameNation(string nationName) 
     {
         if (this.nationName == nationName)
         {
             return true;
-
         }
         else 
         {
             return false;
         } 
     
+    }
+
+    public bool IsEnemyNation(string nationName) 
+    {
+
+        if (nationRelations.ContainsKey(nationName) && nationRelations[nationName] == "enemy")
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+
     }
 
     public float GetAndSetGoldExpencesPerHour() 
@@ -228,6 +303,29 @@ public class Nation : MonoBehaviour
 
         output += "\n";
 
+
+        output += "\nFriends: ";
+        foreach (var item in nationRelations)
+        {
+            if (item.Value == "friendly")
+            {
+                output += item.Key + ", ";
+            }
+
+        }
+
+
+        output += "\nEnemies: ";
+        foreach (var item in nationRelations)
+        {
+            if (item.Value == "enemy")
+            {
+                output += item.Key + ", ";
+            }
+
+        }
+
+        output += "\n";
         return output;
     }
 
