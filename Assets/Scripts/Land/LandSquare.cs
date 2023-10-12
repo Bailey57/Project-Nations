@@ -228,6 +228,20 @@ public class LandSquare : MonoBehaviour
 
     }
 
+    public bool HasMajorCity() 
+    {
+        for (int i = 0; i < this.buildings.Count; i++) 
+        {
+            if (buildings[i] is MajorCity) 
+            {
+                return true;
+            }
+        
+        }
+
+        return false;
+    }
+
     public string BuildingsToString() 
     {
         string output = "";

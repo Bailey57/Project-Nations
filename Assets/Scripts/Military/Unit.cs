@@ -17,7 +17,7 @@ public class Unit : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (currentForce <= 0) 
+        if (currentForce < 1) 
         {
             this.DestroyUnit();
         }
@@ -173,9 +173,60 @@ public class Unit : MonoBehaviour
             float defenceForceDamage = fireRatePerHour * defenceForce / roundsPerKill;
 
             //entrecnhment changes
-            attackForceDamage -= attackForceDamage * (entrenchmentPercent / 100) * .5f;
-            defenceForceDamage += defenceForceDamage * (entrenchmentPercent / 100) * .5f;
+            attackForceDamage -= attackForceDamage * (entrenchmentPercent / 100) * .8f;
+            defenceForceDamage += defenceForceDamage * (entrenchmentPercent / 100) * .8f;
+
             //terrain changes
+            //this unit terrain changes
+            if (this.currentLandSquare.GetComponent<LandSquare>().gameObject.name.Contains("Mountain"))
+            {
+                attackForceDamage += attackForceDamage * .4f;
+            }
+            else if (this.currentLandSquare.GetComponent<LandSquare>().gameObject.name.Contains("Hill"))
+            {
+                attackForceDamage += attackForceDamage * .2f;
+            }
+            else if (this.currentLandSquare.GetComponent<LandSquare>().gameObject.name.Contains("Grass"))
+            {
+                attackForceDamage -= attackForceDamage * .2f;
+            }
+            else if (this.currentLandSquare.GetComponent<LandSquare>().gameObject.name.Contains("Lake"))
+            {
+                attackForceDamage += attackForceDamage * 0f;
+            }
+            else if (this.currentLandSquare.GetComponent<LandSquare>().gameObject.name.Contains("Tree"))
+            {
+                attackForceDamage += attackForceDamage * .1f;
+            }
+
+            //defending unit terrain changes
+            if (map.GetComponent<Map>().worldLandSquares[goalX, goalY].GetComponent<LandSquare>().gameObject.name.Contains("Mountain"))
+            {
+                defenceForceDamage += defenceForceDamage * 1f;
+            }
+            else if (map.GetComponent<Map>().worldLandSquares[goalX, goalY].GetComponent<LandSquare>().gameObject.name.Contains("Hill")) 
+            {
+                defenceForceDamage += defenceForceDamage * .4f;
+            }
+            else if (map.GetComponent<Map>().worldLandSquares[goalX, goalY].GetComponent<LandSquare>().gameObject.name.Contains("Grass"))
+            {
+                defenceForceDamage -= defenceForceDamage * .5f;
+            }
+            else if (map.GetComponent<Map>().worldLandSquares[goalX, goalY].GetComponent<LandSquare>().gameObject.name.Contains("lake"))
+            {
+                defenceForceDamage += defenceForceDamage * .5f;
+            }
+            else if (map.GetComponent<Map>().worldLandSquares[goalX, goalY].GetComponent<LandSquare>().gameObject.name.Contains("Tree"))
+            {
+                defenceForceDamage += defenceForceDamage * .4f;
+            }
+
+
+            if (map.GetComponent<Map>().worldLandSquares[goalX, goalY].GetComponent<LandSquare>().HasMajorCity() == true) 
+            {
+                defenceForceDamage += defenceForceDamage * 1f;
+
+            }
 
 
             //do damage to both sides
@@ -591,7 +642,7 @@ public class Unit : MonoBehaviour
     {
         if (!hasOrders && entrenchmentPercent < 100)
         {
-            int hoursToEntrench = 10;//12 hrs
+            int hoursToEntrench = 20;//12 hrs
 
             
             for (int i = 0; i < hoursToEntrench; i++) 
@@ -604,7 +655,7 @@ public class Unit : MonoBehaviour
                 yield return new WaitForSeconds(1);
                 if (entrenchmentPercent < 100) 
                 {
-                    entrenchmentPercent += 10;
+                    entrenchmentPercent += 5;
                 }
             }
         }

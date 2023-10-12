@@ -247,16 +247,17 @@ public class NationActions : MonoBehaviour
         GameObject newUnit;
         if (forceSize >= 100 && forceSize <= 250)
         {
-            newUnit = (GameObject)Instantiate(Resources.Load("Prefabs/Military/Units/infantry1CompanyWhite"));
+            newUnit = (GameObject)Instantiate(Resources.Load("Prefabs/Military/Units/infantry1White2"));
+            newUnit.GetComponentInChildren<TextMeshPro>().text = "I";
         }
         else if (forceSize >= 25 && forceSize <= 40) 
         {
-            newUnit = (GameObject)Instantiate(Resources.Load("Prefabs/Military/Units/infantry1White"));
+            newUnit = (GameObject)Instantiate(Resources.Load("Prefabs/Military/Units/infantry1White2"));
             newUnit.GetComponentInChildren<TextMeshPro>().text = "•••";
         }
         else
         {
-            newUnit = (GameObject)Instantiate(Resources.Load("Prefabs/Military/Units/infantry1White"));
+            newUnit = (GameObject)Instantiate(Resources.Load("Prefabs/Military/Units/infantry1White2"));
         }
         
         newUnit.GetComponent<SpriteRenderer>().color = nation.GetComponent<Nation>().nationMainColor;
