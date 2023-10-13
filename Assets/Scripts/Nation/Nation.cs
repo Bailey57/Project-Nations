@@ -9,7 +9,7 @@ public class Nation : MonoBehaviour
 
     void LateUpdate()
     {
-        if (this.capitalLandSquare.GetComponent<LandSquare>().factionOwner != this.nationName) 
+        if (this.capitalLandSquare != null && this.capitalLandSquare.GetComponent<LandSquare>().factionOwner != this.nationName) 
         {
             CapitalLost();
         }

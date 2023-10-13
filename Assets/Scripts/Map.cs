@@ -55,7 +55,11 @@ public class Map : MonoBehaviour
         MakeMap1();
 
         //GetMapStr();
-        MakeNation1();
+        if (startSettingsSO.SpawnPlayer) 
+        {
+            MakeNation1();
+        }
+        
 
 
         StartCoroutine(PassTime());

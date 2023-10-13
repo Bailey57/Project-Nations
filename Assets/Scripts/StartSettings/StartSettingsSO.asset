@@ -12,5 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ec88a806fc06b0946a421d553394ac12, type: 3}
   m_Name: StartSettingsSO
   m_EditorClassIdentifier: 
-  mapSize: 0
-  numberOfNations: 0
+  spawnPlayer: 1
+  mapSize: 30
+  numberOfNations: 5

@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
-
+using System;
 public class Unit : MonoBehaviour
 {
     // Start is called before the first frame update
@@ -65,7 +65,14 @@ public class Unit : MonoBehaviour
             {
                 RemoveActionIndicator();
             }
+            
             StartCoroutine(Entrench());
+
+            if (this.currentForce < this.maxForce) 
+            {
+                StartCoroutine(ResupplyUnit());
+            }
+            
             //Debug.Log("Updating Unit");
             yield return new WaitForSeconds(10);
 
@@ -74,6 +81,25 @@ public class Unit : MonoBehaviour
         
     }
 
+
+    public IEnumerator ResupplyUnit() 
+    {
+
+        int distanceFromCapitol = (int)this.nation.GetComponent<Nation>().GetDistanceFromCapitol(this.currentLandSquare);
+
+        int timeToTravelOneSquare = 10;
+
+        yield return new WaitForSeconds(distanceFromCapitol * timeToTravelOneSquare * 2);
+
+        float forceNeeded = maxForce - currentForce;
+        if (this.nation.GetComponent<Nation>().military.totalForce >= forceNeeded) 
+        {
+            this.nation.GetComponent<Nation>().military.totalForce -= forceNeeded;
+            currentForce += forceNeeded;
+        }
+        
+
+    }
 
     private bool UnitWithinOneSquare(int goalX, int goalY) 
     {
@@ -557,8 +583,8 @@ public class Unit : MonoBehaviour
         {
              yield return new WaitForSeconds(.1f);
             
-            int randX = Random.Range(currentLandSquare.GetComponent<LandSquare>().x - 1, currentLandSquare.GetComponent<LandSquare>().x + 2);
-            int randY = Random.Range(currentLandSquare.GetComponent<LandSquare>().y - 1, currentLandSquare.GetComponent<LandSquare>().y + 2);
+            int randX = UnityEngine.Random.Range(currentLandSquare.GetComponent<LandSquare>().x - 1, currentLandSquare.GetComponent<LandSquare>().x + 2);
+            int randY = UnityEngine.Random.Range(currentLandSquare.GetComponent<LandSquare>().y - 1, currentLandSquare.GetComponent<LandSquare>().y + 2);
             if (randX >= 0 && randY >= 0 && map.GetComponent<Map>().worldSize > randX && map.GetComponent<Map>().worldSize > randY  && map.GetComponent<Map>().worldLandSquares[randX, randY].GetComponent<LandSquare>().factionOwner == this.nation.GetComponent<Nation>().nationName && map.GetComponent<Map>().worldLandSquares[randX, randY].GetComponent<LandSquare>().units.Count == 0) 
             {
                 StartCoroutine(MoveOrders(randX, randY));
@@ -587,8 +613,8 @@ public class Unit : MonoBehaviour
         {
             yield return new WaitForSeconds(.1f);
 
-            int randX = Random.Range(currentLandSquare.GetComponent<LandSquare>().x - 1, currentLandSquare.GetComponent<LandSquare>().x + 2);
-            int randY = Random.Range(currentLandSquare.GetComponent<LandSquare>().y - 1, currentLandSquare.GetComponent<LandSquare>().y + 2);
+            int randX = UnityEngine.Random.Range(currentLandSquare.GetComponent<LandSquare>().x - 1, currentLandSquare.GetComponent<LandSquare>().x + 2);
+            int randY = UnityEngine.Random.Range(currentLandSquare.GetComponent<LandSquare>().y - 1, currentLandSquare.GetComponent<LandSquare>().y + 2);
 
             if (randX >= 0 && randY >= 0 && map.GetComponent<Map>().worldSize > randX && map.GetComponent<Map>().worldSize > randY) 
             {
@@ -630,7 +656,7 @@ public class Unit : MonoBehaviour
             float annexMaxNegativeApprovalPercent = 1;
 
 
-            float dissaprovalRating = Random.Range(annexMinNegativeApprovalPercent, annexMaxNegativeApprovalPercent);
+            float dissaprovalRating = UnityEngine.Random.Range(annexMinNegativeApprovalPercent, annexMaxNegativeApprovalPercent);
             landsquare.GetComponent<LandSquare>().nationApprovalRatings[nation.GetComponent<Nation>().nationName].DecreaseApproval(landsquare.GetComponent<LandSquare>().nationApprovalRatings[nation.GetComponent<Nation>().nationName].neutralApproval * dissaprovalRating);
 
         }
@@ -688,8 +714,8 @@ public class Unit : MonoBehaviour
     {
         string output = "";
         output += "Name: " + unitName;
-        output += "\nCurrent Force: " + currentForce;
-        output += "\nStrength: " + ((currentForce / maxForce) * 100 + "%");
+        output += "\nCurrent Force: " + Math.Round((double)(currentForce), 0);//Math.Round((double)(currentForce), 3)
+        output += "\nStrength: " + (Math.Round((double)((currentForce / maxForce) * 100), 1) + "%"); 
         output += "\nEntrenchment: " + entrenchmentPercent + "%";
         output += "\nHasOrders: " + hasOrders;
         return output;
