@@ -67,8 +67,12 @@ public class Map : MonoBehaviour
         //StartCoroutine(UpdateNationCR());
         //StartCoroutine(IncreaseNationGoldCRCR());
         //StartCoroutine(UpdateExpencesCR());
-        
 
+
+        if (worldSize * worldSize <= numberOfRandNations + 2) 
+        {
+            numberOfRandNations = worldSize * worldSize - worldSize;
+        }
         for(int i = 0; i < numberOfRandNations; i ++)
         {
             GenerateRandNation();
@@ -130,13 +134,13 @@ public class Map : MonoBehaviour
 
 
         //(newNation.GetComponent(typeof(Nation)) as Nation).ownedLandSquares.Add(worldLandSquares[0, 0]);
-        int randX = Random.Range(0, worldSize - 1);
-        int randY = Random.Range(0, worldSize - 1);
+        int randX = Random.Range(0, worldSize);
+        int randY = Random.Range(0, worldSize);
         bool foundEmptySquare = false;
         while (!foundEmptySquare) 
         {
-            randX = Random.Range(0, worldSize - 1);
-            randY = Random.Range(0, worldSize - 1);
+            randX = Random.Range(0, worldSize);
+            randY = Random.Range(0, worldSize);
             if (worldLandSquares[randX, randY].GetComponent<LandSquare>().factionOwner == "") 
             {
                 foundEmptySquare = true;
