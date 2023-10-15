@@ -170,8 +170,26 @@ public class NationActions : MonoBehaviour
     }
 
 
+    public IEnumerator SellExtraResources()
+    {
+        while (true)
+        {
+            bool isActive = true;
+            //TODO: put in nation actions so bots can sell extra ore
+            yield return new WaitForSeconds(1);
+            if (isActive)//(toggle.GetComponent<Toggle>().IsActive())
+            {
+                float oneMetricTonOfIronWorth = 120;
 
-    public void DeclareEnemyNation(string nationName) 
+                nation.GetComponent<Nation>().gold += nation.GetComponent<Nation>().metricTonsOfIronOre * oneMetricTonOfIronWorth;
+                nation.GetComponent<Nation>().metricTonsOfIronOre = 0;
+            }
+
+        }
+
+    }
+
+        public void DeclareEnemyNation(string nationName) 
     {
         if (this.nation.GetComponent<Nation>().nationName == nationName) 
         {
