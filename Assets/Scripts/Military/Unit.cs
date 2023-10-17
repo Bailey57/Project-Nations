@@ -131,6 +131,7 @@ public class Unit : MonoBehaviour
     {
         string directionHeading = this.GetDirectionHeading(this.currentLandSquare.GetComponent<LandSquare>().x, this.currentLandSquare.GetComponent<LandSquare>().y, goalX, goalY);
         this.AddActionIndicator("attack", directionHeading);
+        hasOrders = true;
         yield return new WaitForSeconds(8);
 
         StartCoroutine(Attack(goalX, goalY));
@@ -406,6 +407,7 @@ public class Unit : MonoBehaviour
             //how long it takes to move to a landSquare
             //TODO: Account for terrain and infrastructure
             //yield return new WaitForSeconds(10);
+            hasOrders = false;
             RemoveActionIndicator();
         }
 
@@ -581,13 +583,45 @@ public class Unit : MonoBehaviour
         
         while (true)
         {
-             yield return new WaitForSeconds(.1f);
+            float waitTime = 0;
+            float minWaitTime = 0;
+            float maxWaitTime = 0;
+
+            //this.currentLandSquare.GetComponent<LandSquare>().
+            if (this.currentLandSquare.GetComponent<LandSquare>().gameObject.name.Contains("Mountain"))
+            {
+                minWaitTime = 5;
+                maxWaitTime = 20;
+            }
+            else if (this.currentLandSquare.GetComponent<LandSquare>().gameObject.name.Contains("Hill"))
+            {
+                minWaitTime = 5;
+                maxWaitTime = 15;
+            }
+            else if (this.currentLandSquare.GetComponent<LandSquare>().gameObject.name.Contains("Grass"))
+            {
+                minWaitTime = 0;
+                maxWaitTime = 3;
+            }
+            else if (this.currentLandSquare.GetComponent<LandSquare>().gameObject.name.Contains("Lake"))
+            {
+                minWaitTime = 0;
+                maxWaitTime = 3;
+            }
+            else if (this.currentLandSquare.GetComponent<LandSquare>().gameObject.name.Contains("Tree"))
+            {
+                minWaitTime = 5;
+                maxWaitTime = 15;
+            }
+
+            waitTime = UnityEngine.Random.Range(minWaitTime, maxWaitTime);
+            yield return new WaitForSeconds(waitTime);
             
             int randX = UnityEngine.Random.Range(currentLandSquare.GetComponent<LandSquare>().x - 1, currentLandSquare.GetComponent<LandSquare>().x + 2);
             int randY = UnityEngine.Random.Range(currentLandSquare.GetComponent<LandSquare>().y - 1, currentLandSquare.GetComponent<LandSquare>().y + 2);
             if (randX >= 0 && randY >= 0 && map.GetComponent<Map>().worldSize > randX && map.GetComponent<Map>().worldSize > randY  && map.GetComponent<Map>().worldLandSquares[randX, randY].GetComponent<LandSquare>().factionOwner == this.nation.GetComponent<Nation>().nationName && map.GetComponent<Map>().worldLandSquares[randX, randY].GetComponent<LandSquare>().units.Count == 0) 
             {
-                hasOrders = false;
+                //hasOrders = false;
                 StartCoroutine(MoveOrders(randX, randY));
             }
             
@@ -609,28 +643,67 @@ public class Unit : MonoBehaviour
 
     private IEnumerator PatrollWithinBordersAndEnemy()
     {
-        if (hasOrders)
-        {
-            yield break;
-        }
+        
         while (true)
         {
+            yield return new WaitForSeconds(1);
+            /*
+            if (hasOrders)
+            {
+                yield break;
+            }
+            */
 
-            hasOrders = true;
-            yield return new WaitForSeconds(1f);
+            //hasOrders = true;
 
             int randX = UnityEngine.Random.Range(currentLandSquare.GetComponent<LandSquare>().x - 1, currentLandSquare.GetComponent<LandSquare>().x + 2);
             int randY = UnityEngine.Random.Range(currentLandSquare.GetComponent<LandSquare>().y - 1, currentLandSquare.GetComponent<LandSquare>().y + 2);
 
-            if (randX >= 0 && randY >= 0 && map.GetComponent<Map>().worldSize > randX && map.GetComponent<Map>().worldSize > randY) 
+            if (!hasOrders && randX >= 0 && randY >= 0 && map.GetComponent<Map>().worldSize > randX && map.GetComponent<Map>().worldSize > randY) 
             {
+                float waitTime = 0;
+                float minWaitTime = 0;
+                float maxWaitTime = 0;
+
+                //this.currentLandSquare.GetComponent<LandSquare>().
+                if (this.currentLandSquare.GetComponent<LandSquare>().gameObject.name.Contains("Mountain"))
+                {
+                    minWaitTime = 5;
+                    maxWaitTime = 20;
+                }
+                else if (this.currentLandSquare.GetComponent<LandSquare>().gameObject.name.Contains("Hill"))
+                {
+                    minWaitTime = 5;
+                    maxWaitTime = 15;
+                }
+                else if (this.currentLandSquare.GetComponent<LandSquare>().gameObject.name.Contains("Grass"))
+                {
+                    minWaitTime = 0;
+                    maxWaitTime = 3;
+                }
+                else if (this.currentLandSquare.GetComponent<LandSquare>().gameObject.name.Contains("Lake"))
+                {
+                    minWaitTime = 0;
+                    maxWaitTime = 3;
+                }
+                else if (this.currentLandSquare.GetComponent<LandSquare>().gameObject.name.Contains("Tree"))
+                {
+                    minWaitTime = 5;
+                    maxWaitTime = 15;
+                }
+
+                waitTime = UnityEngine.Random.Range(minWaitTime, maxWaitTime);
+                yield return new WaitForSeconds(waitTime);
+
+
+                
                 bool isOwner = map.GetComponent<Map>().worldLandSquares[randX, randY].GetComponent<LandSquare>().factionOwner == this.nation.GetComponent<Nation>().nationName;
                 bool hasUnits = map.GetComponent<Map>().worldLandSquares[randX, randY].GetComponent<LandSquare>().units.Count > 0;
 
                 bool isOwnedByEnemy = nation.GetComponent<Nation>().IsEnemyNation(map.GetComponent<Map>().worldLandSquares[randX, randY].GetComponent<LandSquare>().factionOwner);
                 if ((isOwnedByEnemy || (isOwner && !hasUnits)))
                 {
-                    hasOrders = false;
+                    //hasOrders = false;
                     StartCoroutine(MoveOrders(randX, randY));
                 }
 

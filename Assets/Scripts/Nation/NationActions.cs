@@ -87,7 +87,7 @@ public class NationActions : MonoBehaviour
 
 
 
-            if (nation.GetComponent<Nation>().military.totalForce > 250)
+            if (nation.GetComponent<Nation>().military.totalForce > 100)
             {
 
 
