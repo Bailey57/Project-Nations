@@ -170,6 +170,16 @@ public class NationActions : MonoBehaviour
     }
 
 
+    /**
+     * Declare war against a random nation
+     */
+    public void DeclareRandWar() 
+    {
+        //map.
+    
+    
+    }
+
     public IEnumerator SellExtraResources()
     {
         while (true)
@@ -294,6 +304,8 @@ public class NationActions : MonoBehaviour
         
         newUnit.GetComponent<SpriteRenderer>().color = nation.GetComponent<Nation>().nationMainColor;
         newUnit.transform.position = nation.GetComponent<Nation>().capitalLandSquare.transform.position;
+        newUnit.transform.position = new Vector3(newUnit.transform.position.x, newUnit.transform.position.y, -0.01f);
+        //0.01
         nation.GetComponent<Nation>().capitalLandSquare.GetComponent<LandSquare>().units.Add(newUnit);
         newUnit.GetComponent<Unit>().maxForce = forceSize;
         newUnit.GetComponent<Unit>().map = map;
@@ -308,7 +320,7 @@ public class NationActions : MonoBehaviour
 
     public void CreatePlatoonUnit()
     {
-        float size = 25;
+        float size = 40;//4 to 5 squads
 
 
         if (this.nation.GetComponent<Nation>().military.totalForce >= size)
@@ -326,7 +338,7 @@ public class NationActions : MonoBehaviour
      */
     public void CreateCompanyUnit() 
     {
-        float companySize = 250;
+        float companySize = 160;//4 to 5 platoons
         
 
         if (this.nation.GetComponent<Nation>().military.totalForce >= companySize) 

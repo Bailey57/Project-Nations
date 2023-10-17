@@ -9,7 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5561600026893050300}
-  m_Layer: 5
+  m_Layer: 7
   m_Name: Handle Slide Area
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -47,7 +47,7 @@ GameObject:
   - component: {fileID: 5561600026958568022}
   - component: {fileID: 5561600026958568020}
   - component: {fileID: 5561600026958568023}
-  m_Layer: 5
+  m_Layer: 7
   m_Name: Background
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -122,7 +122,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5561600027687268794}
   - component: {fileID: 5561600027687268795}
-  m_Layer: 5
+  m_Layer: 7
   m_Name: Slider
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -214,7 +214,7 @@ GameObject:
   - component: {fileID: 5561600027935806693}
   - component: {fileID: 5561600027935806691}
   - component: {fileID: 5561600027935806690}
-  m_Layer: 5
+  m_Layer: 7
   m_Name: Fill
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -288,7 +288,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5561600028771082818}
-  m_Layer: 5
+  m_Layer: 7
   m_Name: Fill Area
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -328,7 +328,7 @@ GameObject:
   - component: {fileID: 5561600028823892661}
   - component: {fileID: 5561600028823892660}
   - component: {fileID: 5561600028823892663}
-  m_Layer: 5
+  m_Layer: 7
   m_Name: Canvas
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -428,7 +428,7 @@ GameObject:
   - component: {fileID: 6546259080379840725}
   - component: {fileID: 6546259080379840723}
   - component: {fileID: 6546259080379840722}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: UnitSizeText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -602,9 +602,9 @@ GameObject:
   - component: {fileID: 6546259081134893825}
   - component: {fileID: 6546259081134893839}
   - component: {fileID: 5561600028949320169}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: infantry1White2
-  m_TagString: Untagged
+  m_TagString: Unit
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -617,7 +617,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6546259081392540276}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -20.396893, y: -18.106785, z: 0}
+  m_LocalPosition: {x: -20.396893, y: -18.106785, z: 0.01}
   m_LocalScale: {x: 0.25, y: 0.25, z: 0.25}
   m_ConstrainProportionsScale: 1
   m_Children:

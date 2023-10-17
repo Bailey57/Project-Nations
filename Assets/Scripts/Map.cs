@@ -167,7 +167,7 @@ public class Map : MonoBehaviour
 
         newNation.name = (newNation.GetComponent(typeof(Nation)) as Nation).nationName;
         float million = 1000000;
-        newNation.GetComponent<Nation>().gold += 9 * million;//start with 6 mil usually 
+        newNation.GetComponent<Nation>().gold += 900 * million;//start with 6 mil usually 
 
         (newNation.GetComponent(typeof(Nation)) as Nation).capitalLandSquare = newNation.GetComponent<Nation>().ownedLandSquares[0];
 

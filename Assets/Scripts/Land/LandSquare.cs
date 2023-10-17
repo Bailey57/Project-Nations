@@ -84,7 +84,7 @@ public class LandSquare : MonoBehaviour
         float value = 1000000;//5000000, 5mil base value
         float resourceWorth = 1000000;
         //add based on pop
-        value += population * 1000;
+        value += population * 100;
         value += ironAvalibility * resourceWorth;
         value += waterAvalibility * resourceWorth;
         value += oilAvalibility * resourceWorth;
@@ -100,7 +100,7 @@ public class LandSquare : MonoBehaviour
      */
     public float CalculateAnnexCost(GameObject nation)
     {
-        float priceIncrease = .18f;//1 = 100%
+        float priceIncrease = .25f;//1 = 100%
 
         //TODO: make more expensive the further away and if no infrastructure on the way from a capitol
         int capitalX = nation.GetComponent<Nation>().capitalLandSquare.GetComponent<LandSquare>().x;
