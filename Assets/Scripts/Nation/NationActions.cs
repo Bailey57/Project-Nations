@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
@@ -88,6 +89,10 @@ public class NationActions : MonoBehaviour
 
             if (nation.GetComponent<Nation>().military.totalForce > 250)
             {
+
+
+
+
                 CreatePlatoonUnit();
 
                 /*
@@ -116,6 +121,12 @@ public class NationActions : MonoBehaviour
                     }
 
                 }
+
+
+
+
+
+                DeclareRandWar();
             }
 
 
@@ -175,7 +186,9 @@ public class NationActions : MonoBehaviour
      */
     public void DeclareRandWar() 
     {
-        //map.
+        int max = map.GetComponent<Map>().nations.Count;
+        int num = Random.Range(0, max);
+        DeclareEnemyNationBothSides(map.GetComponent<Map>().nations.ElementAt(num).Key);
     
     
     }

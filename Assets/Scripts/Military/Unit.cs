@@ -587,6 +587,7 @@ public class Unit : MonoBehaviour
             int randY = UnityEngine.Random.Range(currentLandSquare.GetComponent<LandSquare>().y - 1, currentLandSquare.GetComponent<LandSquare>().y + 2);
             if (randX >= 0 && randY >= 0 && map.GetComponent<Map>().worldSize > randX && map.GetComponent<Map>().worldSize > randY  && map.GetComponent<Map>().worldLandSquares[randX, randY].GetComponent<LandSquare>().factionOwner == this.nation.GetComponent<Nation>().nationName && map.GetComponent<Map>().worldLandSquares[randX, randY].GetComponent<LandSquare>().units.Count == 0) 
             {
+                hasOrders = false;
                 StartCoroutine(MoveOrders(randX, randY));
             }
             
@@ -608,10 +609,15 @@ public class Unit : MonoBehaviour
 
     private IEnumerator PatrollWithinBordersAndEnemy()
     {
-
+        if (hasOrders)
+        {
+            yield break;
+        }
         while (true)
         {
-            yield return new WaitForSeconds(.1f);
+
+            hasOrders = true;
+            yield return new WaitForSeconds(1f);
 
             int randX = UnityEngine.Random.Range(currentLandSquare.GetComponent<LandSquare>().x - 1, currentLandSquare.GetComponent<LandSquare>().x + 2);
             int randY = UnityEngine.Random.Range(currentLandSquare.GetComponent<LandSquare>().y - 1, currentLandSquare.GetComponent<LandSquare>().y + 2);
@@ -624,6 +630,7 @@ public class Unit : MonoBehaviour
                 bool isOwnedByEnemy = nation.GetComponent<Nation>().IsEnemyNation(map.GetComponent<Map>().worldLandSquares[randX, randY].GetComponent<LandSquare>().factionOwner);
                 if ((isOwnedByEnemy || (isOwner && !hasUnits)))
                 {
+                    hasOrders = false;
                     StartCoroutine(MoveOrders(randX, randY));
                 }
 
