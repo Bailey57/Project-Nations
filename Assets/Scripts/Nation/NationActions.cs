@@ -87,7 +87,7 @@ public class NationActions : MonoBehaviour
 
 
 
-            if (nation.GetComponent<Nation>().military.totalForce > 100)
+            if (nation.GetComponent<Nation>().military.totalForce > 40)
             {
 
 
@@ -111,7 +111,13 @@ public class NationActions : MonoBehaviour
                     CreateCompanyUnit();
                 }
                 */
+                if (nation.GetComponent<Nation>().military.units.Count > 2) 
+                {
+                    int index = nation.GetComponent<Nation>().military.units.Count - 1;
+                    nation.GetComponent<Nation>().military.units[index].GetComponent<Unit>().PatrollWithinBordersAndEnemyOrder();
+                }
 
+                /*
                 for (int i = 1; i < nation.GetComponent<Nation>().military.units.Count; i++)
                 {
                     if (!nation.GetComponent<Nation>().military.units[i].GetComponent<Unit>().hasOrders)
@@ -121,6 +127,7 @@ public class NationActions : MonoBehaviour
                     }
 
                 }
+                */
 
 
 

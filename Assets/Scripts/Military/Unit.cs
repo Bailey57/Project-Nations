@@ -65,6 +65,11 @@ public class Unit : MonoBehaviour
             {
                 RemoveActionIndicator();
             }
+
+            if (patrolling) 
+            {
+                //StartCoroutine(PatrollWithinBordersAndEnemy());
+            }
             
             StartCoroutine(Entrench());
 
@@ -304,7 +309,7 @@ public class Unit : MonoBehaviour
         {
             yield break;//breaks out 
         }
-        RemoveActionIndicator();
+        //RemoveActionIndicator();
         hasOrders = true;
         
         bool destinationReached = false;
@@ -371,7 +376,8 @@ public class Unit : MonoBehaviour
                 map.GetComponent<Map>().worldLandSquares[currentX, currentY].GetComponent<LandSquare>().units.Add(gameObject);
                 currentLandSquare = map.GetComponent<Map>().worldLandSquares[currentX, currentY];
 
-                gameObject.transform.position = map.GetComponent<Map>().worldLandSquares[currentX, currentY].transform.position;
+                //gameObject.transform.position = map.GetComponent<Map>().worldLandSquares[currentX, currentY].transform.position;
+                gameObject.transform.position = new Vector3(map.GetComponent<Map>().worldLandSquares[currentX, currentY].transform.position.x, map.GetComponent<Map>().worldLandSquares[currentX, currentY].transform.position.y, gameObject.transform.position.z);
 
                 if (map.GetComponent<Map>().worldLandSquares[currentX, currentY].GetComponent<LandSquare>().factionOwner != "") 
                 //if (nation.GetComponent<Nation>().GetNationRelationship(map.GetComponent<Map>().worldLandSquares[currentX, currentY].GetComponent<LandSquare>().factionOwner) != null && nation.GetComponent<Nation>().GetNationRelationship(map.GetComponent<Map>().worldLandSquares[currentX, currentY].GetComponent<LandSquare>().factionOwner) == "enemy")
@@ -395,26 +401,30 @@ public class Unit : MonoBehaviour
                 RemoveActionIndicator();
                 AttackOrders(goalX, goalY);
                 destinationReached = true;//not reached, but needs to break out of method
+                yield break;
             }
 
 
             if (goalX == currentX && goalY == currentY) 
             {
                 destinationReached = true;
-
+                RemoveActionIndicator();
+                hasOrders = false;
+                yield break;
             }
 
             //how long it takes to move to a landSquare
             //TODO: Account for terrain and infrastructure
             //yield return new WaitForSeconds(10);
-            hasOrders = false;
+
+            //hasOrders = false;
             RemoveActionIndicator();
         }
 
 
 
         //RemoveActionIndicator();
-        hasOrders = false;
+        //hasOrders = false;
         //RemoveActionIndicator();
     }
 
@@ -661,6 +671,9 @@ public class Unit : MonoBehaviour
 
             if (!hasOrders && randX >= 0 && randY >= 0 && map.GetComponent<Map>().worldSize > randX && map.GetComponent<Map>().worldSize > randY) 
             {
+               
+                //StopAllCoroutines();
+                //StartCoroutine(UpdateUnit());
                 float waitTime = 0;
                 float minWaitTime = 0;
                 float maxWaitTime = 0;
