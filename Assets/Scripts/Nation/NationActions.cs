@@ -53,8 +53,6 @@ public class NationActions : MonoBehaviour
     public GameObject map;
 
 
-    //
-
 
 
 
@@ -846,12 +844,57 @@ public class NationActions : MonoBehaviour
         //this.transform.parent
         Debug.Log("This: " + gameObject.name);
         Debug.Log("The Parent: " + gameObject.transform.parent.GetComponent<Nation>().nationName);
-        if (mainCamera.GetComponent<ObjectClick>().selectedObject != null)
+        if (mainCamera.GetComponent<ObjectClick>().selectedObject != null && mainCamera.GetComponent<ObjectClick>().selectedObject.GetComponent<LandSquare>() != null)
         {
 
             BuildMine(mainCamera.GetComponent<ObjectClick>().selectedObject);
         }
     }
+
+
+    public void BuildSteelPlant(GameObject landSquare)
+    {
+        if (gameObject.transform.parent.GetComponent<Nation>().nationName == landSquare.GetComponent<LandSquare>().factionOwner)
+        {
+            float buildCost = 5000000;
+            if (gameObject.transform.parent.GetComponent<Nation>().gold >= buildCost)
+            {
+                gameObject.transform.parent.GetComponent<Nation>().gold -= buildCost;
+                landSquare.GetComponent<LandSquare>().buildings.Add(buildingFactory.BuildSteelPlant(gameObject.transform.parent.GetComponent<Nation>().nationName));
+
+
+            }
+        }
+    }
+
+    public void PlayerBuildSteelPlant()
+    {
+        //this.transform.parent
+        Debug.Log("This: " + gameObject.name);
+        Debug.Log("The Parent: " + gameObject.transform.parent.GetComponent<Nation>().nationName);
+        if (mainCamera.GetComponent<ObjectClick>().selectedObject != null && mainCamera.GetComponent<ObjectClick>().selectedObject.GetComponent<LandSquare>() != null)
+        {
+
+            BuildSteelPlant(mainCamera.GetComponent<ObjectClick>().selectedObject);
+        }
+    }
+    public void BuildRifelFactory(GameObject landSquare)
+    {
+        if (gameObject.transform.parent.GetComponent<Nation>().nationName == landSquare.GetComponent<LandSquare>().factionOwner)
+        {
+            float buildCost = 5000000;
+            if (gameObject.transform.parent.GetComponent<Nation>().gold >= buildCost)
+            {
+                gameObject.transform.parent.GetComponent<Nation>().gold -= buildCost;
+                landSquare.GetComponent<LandSquare>().buildings.Add(buildingFactory.BuildMine_lvl1(gameObject.transform.parent.GetComponent<Nation>().nationName));
+
+
+            }
+        }
+    }
+
+
+
 
 
     public void LobbyInSquare(GameObject nation, GameObject landsquare) 

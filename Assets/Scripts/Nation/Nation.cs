@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Security.Cryptography.X509Certificates;
 using Unity.VisualScripting;
 using UnityEngine;
 
@@ -37,6 +38,20 @@ public class Nation : MonoBehaviour
     public float goldIncomePerHour = 0;
 
     public float goldExpencesPerHour = 0;
+
+
+
+
+
+    //military supplies
+    public float rifles;
+
+    public float rifleBullets;
+
+    public float artillary;
+
+    public float artillaryShells;
+
 
 
     //have net gain/day for each resource 
@@ -293,6 +308,14 @@ public class Nation : MonoBehaviour
         else
         {
             output += "\nMetricTonsOfIronOre: " + Math.Round((double)(metricTonsOfIronOre), 3);
+        }
+        if (metricTonsOfIronOre > 1000000)
+        {
+            output += "\nMetricTonsOfSteel: " + Math.Round((double)(metricTonsOfSteel / 1000000), 3) + " million";
+        }
+        else
+        {
+            output += "\nMetricTonsOfSteel: " + Math.Round((double)(metricTonsOfSteel), 3);
         }
 
         output += "\n";

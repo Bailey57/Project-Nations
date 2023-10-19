@@ -485,6 +485,33 @@ public class Map : MonoBehaviour
                         {
 
                         }
+
+
+
+                        if (worldLandSquares[x, y].GetComponent<LandSquare>().buildings[i] is SteelPlant)
+                        {
+                            if (worldLandSquares[x, y].GetComponent<LandSquare>().factionOwner != "" && (worldLandSquares[x, y].GetComponent(typeof(LandSquare)) as LandSquare).buildings[i].HoursToBuild <= 0)
+                            {
+
+                                float negativeApprovalInSquare = worldLandSquares[x, y].GetComponent<LandSquare>().nationApprovalRatings[(worldLandSquares[x, y].GetComponent(typeof(LandSquare)) as LandSquare).buildings[i].FactionOwner].negativeApproval;
+                                float positiveApprovalInSquare = worldLandSquares[x, y].GetComponent<LandSquare>().nationApprovalRatings[(worldLandSquares[x, y].GetComponent(typeof(LandSquare)) as LandSquare).buildings[i].FactionOwner].positiveApproval;
+                               
+
+                                worldLandSquares[x, y].GetComponent<LandSquare>().buildings[i].SetEfficencyAndProductionRate(negativeApprovalInSquare, positiveApprovalInSquare, 1);
+                                ((SteelPlant)worldLandSquares[x, y].GetComponent<LandSquare>().buildings[i]).ConvertIronOreToSteel(this.gameObject);
+                            }
+                            else if ((worldLandSquares[x, y].GetComponent(typeof(LandSquare)) as LandSquare).buildings[i].HoursToBuild >= 0)
+                            {
+                                (worldLandSquares[x, y].GetComponent(typeof(LandSquare)) as LandSquare).buildings[i].HoursToBuild -= hourPerTick;
+
+                                if ((worldLandSquares[x, y].GetComponent(typeof(LandSquare)) as LandSquare).buildings[i].HoursToBuild <= 0)
+                                {
+                                    (worldLandSquares[x, y].GetComponent(typeof(LandSquare)) as LandSquare).buildings[i].IsActive = true;
+                                }
+
+
+                            }
+                        }
                     }
 
 
@@ -511,6 +538,7 @@ public class Map : MonoBehaviour
     {
         if (landSquare.GetComponent<LandSquare>().factionOwner != null && highlightLandSquares)
         {
+
             landSquare.GetComponent<SpriteRenderer>().color = nations[landSquare.GetComponent<LandSquare>().factionOwner].GetComponent<Nation>().nationMainColor;
             //nations[landSquare.GetComponent<LandSquare>().factionOwner].GetComponent<SpriteRenderer>().color;
         }
