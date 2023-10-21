@@ -204,70 +204,88 @@ public class Unit : MonoBehaviour
             float attackForceDamage = fireRatePerHour * attackForce / roundsPerKill;
             float defenceForceDamage = fireRatePerHour * defenceForce / roundsPerKill;
 
+
+
+
             //entrecnhment changes
-            attackForceDamage -= attackForceDamage * (entrenchmentPercent / 100) * .8f;
-            defenceForceDamage += defenceForceDamage * (entrenchmentPercent / 100) * 2f;
+            float entrenchmentAttackChanges = -1 * attackForceDamage * (entrenchmentPercent / 100) * .8f;
+            float entrenchmentDefenceChanges = defenceForceDamage * (entrenchmentPercent / 100) * 2f;
+            //attackForceDamage -= attackForceDamage * (entrenchmentPercent / 100) * .8f;
+            //defenceForceDamage += defenceForceDamage * (entrenchmentPercent / 100) * 2f;
+
+
+
+            float terrainAttackChanges = 0;
+            float terrainDefenceChanges = 0;
+
+
 
             //terrain changes
             //this unit terrain changes
-            if (this.currentLandSquare.GetComponent<LandSquare>().gameObject.name.Contains("Mountain"))
+            if (map.GetComponent<Map>().worldLandSquares[goalX, goalY].GetComponent<LandSquare>().HasMajorCity() == true)
             {
-                attackForceDamage += attackForceDamage * .4f;
-            }
-            else if (this.currentLandSquare.GetComponent<LandSquare>().gameObject.name.Contains("Hill"))
-            {
-                attackForceDamage += attackForceDamage * .2f;
-            }
-            else if (this.currentLandSquare.GetComponent<LandSquare>().gameObject.name.Contains("Grass"))
-            {
-                attackForceDamage -= attackForceDamage * .2f;
-            }
-            else if (this.currentLandSquare.GetComponent<LandSquare>().gameObject.name.Contains("Lake"))
-            {
-                attackForceDamage += attackForceDamage * 0f;
-            }
-            else if (this.currentLandSquare.GetComponent<LandSquare>().gameObject.name.Contains("Tree"))
-            {
-                attackForceDamage += attackForceDamage * .1f;
-            }
+                terrainDefenceChanges += defenceForceDamage * 2f;
+                terrainAttackChanges -= attackForceDamage * .5f;
 
-            //defending unit terrain changes
-            if (map.GetComponent<Map>().worldLandSquares[goalX, goalY].GetComponent<LandSquare>().gameObject.name.Contains("Mountain"))
-            {
-                defenceForceDamage += defenceForceDamage * 1.2f;
-                attackForceDamage -= attackForceDamage * .6f;
             }
-            else if (map.GetComponent<Map>().worldLandSquares[goalX, goalY].GetComponent<LandSquare>().gameObject.name.Contains("Hill")) 
+            else 
             {
-                defenceForceDamage += defenceForceDamage * .6f;
-                attackForceDamage -= attackForceDamage * .3f;
-            }
-            else if (map.GetComponent<Map>().worldLandSquares[goalX, goalY].GetComponent<LandSquare>().gameObject.name.Contains("Grass"))
-            {
-                //defenceForceDamage -= defenceForceDamage * .1f;
-                //attackForceDamage -= attackForceDamage * .5f;
-            }
-            else if (map.GetComponent<Map>().worldLandSquares[goalX, goalY].GetComponent<LandSquare>().gameObject.name.Contains("lake"))
-            {
-                defenceForceDamage += defenceForceDamage * 0f;
-                attackForceDamage -= attackForceDamage * 0f;
-            }
-            else if (map.GetComponent<Map>().worldLandSquares[goalX, goalY].GetComponent<LandSquare>().gameObject.name.Contains("Tree"))
-            {
-                defenceForceDamage += defenceForceDamage * 1f;
-                attackForceDamage -= attackForceDamage * .4f;
-            }
+                
+                if (this.currentLandSquare.GetComponent<LandSquare>().gameObject.name.Contains("Mountain"))
+                {
+                    terrainAttackChanges += attackForceDamage * .4f;
+                }
+                else if (this.currentLandSquare.GetComponent<LandSquare>().gameObject.name.Contains("Hill"))
+                {
+                    terrainAttackChanges += attackForceDamage * .2f;
+                }
+                else if (this.currentLandSquare.GetComponent<LandSquare>().gameObject.name.Contains("Grass"))
+                {
+                    terrainAttackChanges -= attackForceDamage * .2f;
+                }
+                else if (this.currentLandSquare.GetComponent<LandSquare>().gameObject.name.Contains("Lake"))
+                {
+                    terrainAttackChanges += attackForceDamage * 0f;
+                }
+                else if (this.currentLandSquare.GetComponent<LandSquare>().gameObject.name.Contains("Tree"))
+                {
+                    terrainAttackChanges += attackForceDamage * .1f;
+                }
 
-
-            if (map.GetComponent<Map>().worldLandSquares[goalX, goalY].GetComponent<LandSquare>().HasMajorCity() == true) 
-            {
-                defenceForceDamage += defenceForceDamage * 2f;
-                attackForceDamage -= attackForceDamage * .5f;
+                //defending unit terrain changes
+                if (map.GetComponent<Map>().worldLandSquares[goalX, goalY].GetComponent<LandSquare>().gameObject.name.Contains("Mountain"))
+                {
+                    terrainDefenceChanges += defenceForceDamage * 1.2f;
+                    terrainAttackChanges -= attackForceDamage * .6f;
+                }
+                else if (map.GetComponent<Map>().worldLandSquares[goalX, goalY].GetComponent<LandSquare>().gameObject.name.Contains("Hill"))
+                {
+                    terrainDefenceChanges += defenceForceDamage * .6f;
+                    terrainAttackChanges -= attackForceDamage * .3f;
+                }
+                else if (map.GetComponent<Map>().worldLandSquares[goalX, goalY].GetComponent<LandSquare>().gameObject.name.Contains("Grass"))
+                {
+                    //defenceForceDamage -= defenceForceDamage * .1f;
+                    //attackForceDamage -= attackForceDamage * .5f;
+                }
+                else if (map.GetComponent<Map>().worldLandSquares[goalX, goalY].GetComponent<LandSquare>().gameObject.name.Contains("lake"))
+                {
+                    terrainDefenceChanges += defenceForceDamage * 0f;
+                    terrainAttackChanges -= attackForceDamage * 0f;
+                }
+                else if (map.GetComponent<Map>().worldLandSquares[goalX, goalY].GetComponent<LandSquare>().gameObject.name.Contains("Tree"))
+                {
+                    terrainDefenceChanges += defenceForceDamage * 1f;
+                    terrainAttackChanges -= attackForceDamage * .4f;
+                }
 
             }
 
 
             //do damage to both sides
+            attackForceDamage += entrenchmentAttackChanges + terrainAttackChanges;
+            defenceForceDamage += entrenchmentDefenceChanges + terrainDefenceChanges;
+
             float damageToEachUnit = attackForceDamage / map.GetComponent<Map>().worldLandSquares[goalX, goalY].GetComponent<LandSquare>().units.Count;
             this.currentForce -= defenceForceDamage;
 
