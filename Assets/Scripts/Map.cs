@@ -34,7 +34,7 @@ public class Map : MonoBehaviour
     void Start()
     {
         int numberOfRandNations = 5;
-        if (startSettingsSO != null && startSettingsSO.mapSize > 0 && startSettingsSO.numberOfNations > 0) 
+        if (startSettingsSO != null && startSettingsSO.mapSize > 0 && startSettingsSO.numberOfNations >= 0) 
         {
             worldSize = startSettingsSO.mapSize;
             numberOfRandNations = startSettingsSO.numberOfNations;
@@ -167,7 +167,7 @@ public class Map : MonoBehaviour
 
         newNation.name = (newNation.GetComponent(typeof(Nation)) as Nation).nationName;
         float million = 1000000;
-        newNation.GetComponent<Nation>().gold += 6 * million;//start with 6 mil usually 
+        newNation.GetComponent<Nation>().gold += 0 * million;//start with 6 mil usually 
 
         (newNation.GetComponent(typeof(Nation)) as Nation).capitalLandSquare = newNation.GetComponent<Nation>().ownedLandSquares[0];
 

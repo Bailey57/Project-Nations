@@ -41,7 +41,8 @@ public class Unit : MonoBehaviour
     public float favorableTerrainPercent = 0;
 
     public float entrenchmentPercent = 0;
-    
+
+    public float combatExperiencePercent = 0;//get 2% per hour
 
     public bool hasOrders;
 
@@ -100,7 +101,10 @@ public class Unit : MonoBehaviour
         if (this.nation.GetComponent<Nation>().military.totalForce >= forceNeeded) 
         {
             this.nation.GetComponent<Nation>().military.totalForce -= forceNeeded;
+            combatExperiencePercent = combatExperiencePercent * currentForce / maxForce;
             currentForce += forceNeeded;
+
+            
         }
         
 
@@ -189,9 +193,14 @@ public class Unit : MonoBehaviour
             //currentForce - combinedForce of units on landsquare
             for (int i = 0; i < map.GetComponent<Map>().worldLandSquares[goalX, goalY].GetComponent<LandSquare>().units.Count; i++)
             {
-                defenceForce += map.GetComponent<Map>().worldLandSquares[goalX, goalY].GetComponent<LandSquare>().units[i].GetComponent<Unit>().currentForce;
+                defenceForce += map.GetComponent<Map>().worldLandSquares[goalX, goalY].GetComponent<LandSquare>().units[i].GetComponent<Unit>().currentForce * map.GetComponent<Map>().worldLandSquares[goalX, goalY].GetComponent<LandSquare>().units[i].GetComponent<Unit>().combatExperiencePercent * .01f;
+                
 
             }
+
+
+
+            
 
             //300 rounds per kill in close/civil war distance combat
             //7k to 50k rounds to kill someone 
@@ -224,7 +233,7 @@ public class Unit : MonoBehaviour
             //this unit terrain changes
             if (map.GetComponent<Map>().worldLandSquares[goalX, goalY].GetComponent<LandSquare>().HasMajorCity() == true)
             {
-                terrainDefenceChanges += defenceForceDamage * 2f;
+                terrainDefenceChanges += defenceForceDamage * 1f;
                 terrainAttackChanges -= attackForceDamage * .5f;
 
             }
@@ -286,15 +295,33 @@ public class Unit : MonoBehaviour
             attackForceDamage += entrenchmentAttackChanges + terrainAttackChanges;
             defenceForceDamage += entrenchmentDefenceChanges + terrainDefenceChanges;
 
+            //account for experience
+            attackForceDamage += attackForceDamage * .01f * combatExperiencePercent;
+            //defenceForceDamage += defenceForceDamage * .01f * map.GetComponent<Map>().worldLandSquares[goalX, goalY].GetComponent<LandSquare>().units[i].GetComponent<Unit>().combatExperiencePercent;
+
+
             float damageToEachUnit = attackForceDamage / map.GetComponent<Map>().worldLandSquares[goalX, goalY].GetComponent<LandSquare>().units.Count;
+            float damageByEachUnit = defenceForceDamage / map.GetComponent<Map>().worldLandSquares[goalX, goalY].GetComponent<LandSquare>().units.Count;
+
             this.currentForce -= defenceForceDamage;
 
             //damage each unit
             for (int i = 0; i < map.GetComponent<Map>().worldLandSquares[goalX, goalY].GetComponent<LandSquare>().units.Count; i++)
             {
                 map.GetComponent<Map>().worldLandSquares[goalX, goalY].GetComponent<LandSquare>().units[i].GetComponent<Unit>().currentForce -= damageToEachUnit;
-
+                map.GetComponent<Map>().worldLandSquares[goalX, goalY].GetComponent<LandSquare>().units[i].GetComponent<Unit>().nation.GetComponent<Nation>().military.casualtiesSuffered += damageToEachUnit;
+                map.GetComponent<Map>().worldLandSquares[goalX, goalY].GetComponent<LandSquare>().units[i].GetComponent<Unit>().nation.GetComponent<Nation>().military.casualtiesInflicted += damageByEachUnit;
+                this.nation.GetComponent<Nation>().military.casualtiesInflicted += damageToEachUnit;
+                this.nation.GetComponent<Nation>().military.casualtiesSuffered += damageByEachUnit;
+                map.GetComponent<Map>().worldLandSquares[goalX, goalY].GetComponent<LandSquare>().units[i].GetComponent<Unit>().combatExperiencePercent += 2;
             }
+
+            //give combat exp
+            combatExperiencePercent += 2;
+
+            //this.nation.GetComponent<Nation>().military.casualtiesInflicted += attackForceDamage;
+
+
 
 
             if ((currentForce / maxForce) <= .2) 
@@ -618,17 +645,17 @@ public class Unit : MonoBehaviour
             //this.currentLandSquare.GetComponent<LandSquare>().
             if (this.currentLandSquare.GetComponent<LandSquare>().gameObject.name.Contains("Mountain"))
             {
-                minWaitTime = 5;
-                maxWaitTime = 20;
+                minWaitTime = 10;
+                maxWaitTime = 30;
             }
             else if (this.currentLandSquare.GetComponent<LandSquare>().gameObject.name.Contains("Hill"))
             {
-                minWaitTime = 5;
-                maxWaitTime = 15;
+                minWaitTime = 10;
+                maxWaitTime = 20;
             }
             else if (this.currentLandSquare.GetComponent<LandSquare>().gameObject.name.Contains("Grass"))
             {
-                minWaitTime = 0;
+                minWaitTime = 1;
                 maxWaitTime = 3;
             }
             else if (this.currentLandSquare.GetComponent<LandSquare>().gameObject.name.Contains("Lake"))
@@ -639,7 +666,7 @@ public class Unit : MonoBehaviour
             else if (this.currentLandSquare.GetComponent<LandSquare>().gameObject.name.Contains("Tree"))
             {
                 minWaitTime = 5;
-                maxWaitTime = 15;
+                maxWaitTime = 20;
             }
 
             waitTime = UnityEngine.Random.Range(minWaitTime, maxWaitTime);
@@ -821,7 +848,7 @@ public class Unit : MonoBehaviour
 
 
 
-        public string UnitToString() 
+    public string UnitToString() 
     {
         string output = "";
         output += "Name: " + unitName;
@@ -829,6 +856,7 @@ public class Unit : MonoBehaviour
         output += "\nStrength: " + (Math.Round((double)((currentForce / maxForce) * 100), 1) + "%"); 
         output += "\nEntrenchment: " + entrenchmentPercent + "%";
         output += "\nHasOrders: " + hasOrders;
+        output += "\nCombatExperience: " + (Math.Round(combatExperiencePercent, 1) + "%"); ;
         return output;
     }
 

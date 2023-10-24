@@ -349,6 +349,12 @@ public class Nation : MonoBehaviour
         }
 
         output += "\n";
+
+        output += "\nCasualtiesInflicted: " + Math.Round((double)(military.casualtiesInflicted));
+        output += "\nCasualtiesSuffered: " + Math.Round((double)(military.casualtiesSuffered));
+
+
+        output += "\n";
         return output;
     }
 
