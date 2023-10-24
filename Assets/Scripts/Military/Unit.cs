@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
-
+using System;
 public class Unit : MonoBehaviour
 {
     // Start is called before the first frame update
@@ -17,7 +17,7 @@ public class Unit : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (currentForce <= 0) 
+        if (currentForce < 1) 
         {
             this.DestroyUnit();
         }
@@ -41,7 +41,8 @@ public class Unit : MonoBehaviour
     public float favorableTerrainPercent = 0;
 
     public float entrenchmentPercent = 0;
-    
+
+    public float combatExperiencePercent = 0;//get 2% per hour
 
     public bool hasOrders;
 
@@ -65,7 +66,19 @@ public class Unit : MonoBehaviour
             {
                 RemoveActionIndicator();
             }
+
+            if (patrolling) 
+            {
+                //StartCoroutine(PatrollWithinBordersAndEnemy());
+            }
+            
             StartCoroutine(Entrench());
+
+            if (this.currentForce < this.maxForce) 
+            {
+                StartCoroutine(ResupplyUnit());
+            }
+            
             //Debug.Log("Updating Unit");
             yield return new WaitForSeconds(10);
 
@@ -74,6 +87,28 @@ public class Unit : MonoBehaviour
         
     }
 
+
+    public IEnumerator ResupplyUnit() 
+    {
+
+        int distanceFromCapitol = (int)this.nation.GetComponent<Nation>().GetDistanceFromCapitol(this.currentLandSquare);
+
+        int timeToTravelOneSquare = 10;
+
+        yield return new WaitForSeconds(distanceFromCapitol * timeToTravelOneSquare * 2);
+
+        float forceNeeded = maxForce - currentForce;
+        if (this.nation.GetComponent<Nation>().military.totalForce >= forceNeeded) 
+        {
+            this.nation.GetComponent<Nation>().military.totalForce -= forceNeeded;
+            combatExperiencePercent = combatExperiencePercent * currentForce / maxForce;
+            currentForce += forceNeeded;
+
+            
+        }
+        
+
+    }
 
     private bool UnitWithinOneSquare(int goalX, int goalY) 
     {
@@ -105,6 +140,7 @@ public class Unit : MonoBehaviour
     {
         string directionHeading = this.GetDirectionHeading(this.currentLandSquare.GetComponent<LandSquare>().x, this.currentLandSquare.GetComponent<LandSquare>().y, goalX, goalY);
         this.AddActionIndicator("attack", directionHeading);
+        hasOrders = true;
         yield return new WaitForSeconds(8);
 
         StartCoroutine(Attack(goalX, goalY));
@@ -157,9 +193,14 @@ public class Unit : MonoBehaviour
             //currentForce - combinedForce of units on landsquare
             for (int i = 0; i < map.GetComponent<Map>().worldLandSquares[goalX, goalY].GetComponent<LandSquare>().units.Count; i++)
             {
-                defenceForce += map.GetComponent<Map>().worldLandSquares[goalX, goalY].GetComponent<LandSquare>().units[i].GetComponent<Unit>().currentForce;
+                defenceForce += map.GetComponent<Map>().worldLandSquares[goalX, goalY].GetComponent<LandSquare>().units[i].GetComponent<Unit>().currentForce * map.GetComponent<Map>().worldLandSquares[goalX, goalY].GetComponent<LandSquare>().units[i].GetComponent<Unit>().combatExperiencePercent * .01f;
+                
 
             }
+
+
+
+            
 
             //300 rounds per kill in close/civil war distance combat
             //7k to 50k rounds to kill someone 
@@ -172,22 +213,115 @@ public class Unit : MonoBehaviour
             float attackForceDamage = fireRatePerHour * attackForce / roundsPerKill;
             float defenceForceDamage = fireRatePerHour * defenceForce / roundsPerKill;
 
+
+
+
             //entrecnhment changes
-            attackForceDamage -= attackForceDamage * (entrenchmentPercent / 100) * .5f;
-            defenceForceDamage += defenceForceDamage * (entrenchmentPercent / 100) * .5f;
+            float entrenchmentAttackChanges = -1 * attackForceDamage * (entrenchmentPercent / 100) * .8f;
+            float entrenchmentDefenceChanges = defenceForceDamage * (entrenchmentPercent / 100) * 2f;
+            //attackForceDamage -= attackForceDamage * (entrenchmentPercent / 100) * .8f;
+            //defenceForceDamage += defenceForceDamage * (entrenchmentPercent / 100) * 2f;
+
+
+
+            float terrainAttackChanges = 0;
+            float terrainDefenceChanges = 0;
+
+
+
             //terrain changes
+            //this unit terrain changes
+            if (map.GetComponent<Map>().worldLandSquares[goalX, goalY].GetComponent<LandSquare>().HasMajorCity() == true)
+            {
+                terrainDefenceChanges += defenceForceDamage * 1f;
+                terrainAttackChanges -= attackForceDamage * .5f;
+
+            }
+            else 
+            {
+                
+                if (this.currentLandSquare.GetComponent<LandSquare>().gameObject.name.Contains("Mountain"))
+                {
+                    terrainAttackChanges += attackForceDamage * .4f;
+                }
+                else if (this.currentLandSquare.GetComponent<LandSquare>().gameObject.name.Contains("Hill"))
+                {
+                    terrainAttackChanges += attackForceDamage * .2f;
+                }
+                else if (this.currentLandSquare.GetComponent<LandSquare>().gameObject.name.Contains("Grass"))
+                {
+                    terrainAttackChanges -= attackForceDamage * .2f;
+                }
+                else if (this.currentLandSquare.GetComponent<LandSquare>().gameObject.name.Contains("Lake"))
+                {
+                    terrainAttackChanges += attackForceDamage * 0f;
+                }
+                else if (this.currentLandSquare.GetComponent<LandSquare>().gameObject.name.Contains("Tree"))
+                {
+                    terrainAttackChanges += attackForceDamage * .1f;
+                }
+
+                //defending unit terrain changes
+                if (map.GetComponent<Map>().worldLandSquares[goalX, goalY].GetComponent<LandSquare>().gameObject.name.Contains("Mountain"))
+                {
+                    terrainDefenceChanges += defenceForceDamage * 1.2f;
+                    terrainAttackChanges -= attackForceDamage * .6f;
+                }
+                else if (map.GetComponent<Map>().worldLandSquares[goalX, goalY].GetComponent<LandSquare>().gameObject.name.Contains("Hill"))
+                {
+                    terrainDefenceChanges += defenceForceDamage * .6f;
+                    terrainAttackChanges -= attackForceDamage * .3f;
+                }
+                else if (map.GetComponent<Map>().worldLandSquares[goalX, goalY].GetComponent<LandSquare>().gameObject.name.Contains("Grass"))
+                {
+                    //defenceForceDamage -= defenceForceDamage * .1f;
+                    //attackForceDamage -= attackForceDamage * .5f;
+                }
+                else if (map.GetComponent<Map>().worldLandSquares[goalX, goalY].GetComponent<LandSquare>().gameObject.name.Contains("lake"))
+                {
+                    terrainDefenceChanges += defenceForceDamage * 0f;
+                    terrainAttackChanges -= attackForceDamage * 0f;
+                }
+                else if (map.GetComponent<Map>().worldLandSquares[goalX, goalY].GetComponent<LandSquare>().gameObject.name.Contains("Tree"))
+                {
+                    terrainDefenceChanges += defenceForceDamage * 1f;
+                    terrainAttackChanges -= attackForceDamage * .4f;
+                }
+
+            }
 
 
             //do damage to both sides
+            attackForceDamage += entrenchmentAttackChanges + terrainAttackChanges;
+            defenceForceDamage += entrenchmentDefenceChanges + terrainDefenceChanges;
+
+            //account for experience
+            attackForceDamage += attackForceDamage * .01f * combatExperiencePercent;
+            //defenceForceDamage += defenceForceDamage * .01f * map.GetComponent<Map>().worldLandSquares[goalX, goalY].GetComponent<LandSquare>().units[i].GetComponent<Unit>().combatExperiencePercent;
+
+
             float damageToEachUnit = attackForceDamage / map.GetComponent<Map>().worldLandSquares[goalX, goalY].GetComponent<LandSquare>().units.Count;
+            float damageByEachUnit = defenceForceDamage / map.GetComponent<Map>().worldLandSquares[goalX, goalY].GetComponent<LandSquare>().units.Count;
+
             this.currentForce -= defenceForceDamage;
 
             //damage each unit
             for (int i = 0; i < map.GetComponent<Map>().worldLandSquares[goalX, goalY].GetComponent<LandSquare>().units.Count; i++)
             {
                 map.GetComponent<Map>().worldLandSquares[goalX, goalY].GetComponent<LandSquare>().units[i].GetComponent<Unit>().currentForce -= damageToEachUnit;
-
+                map.GetComponent<Map>().worldLandSquares[goalX, goalY].GetComponent<LandSquare>().units[i].GetComponent<Unit>().nation.GetComponent<Nation>().military.casualtiesSuffered += damageToEachUnit;
+                map.GetComponent<Map>().worldLandSquares[goalX, goalY].GetComponent<LandSquare>().units[i].GetComponent<Unit>().nation.GetComponent<Nation>().military.casualtiesInflicted += damageByEachUnit;
+                this.nation.GetComponent<Nation>().military.casualtiesInflicted += damageToEachUnit;
+                this.nation.GetComponent<Nation>().military.casualtiesSuffered += damageByEachUnit;
+                map.GetComponent<Map>().worldLandSquares[goalX, goalY].GetComponent<LandSquare>().units[i].GetComponent<Unit>().combatExperiencePercent += 2;
             }
+
+            //give combat exp
+            combatExperiencePercent += 2;
+
+            //this.nation.GetComponent<Nation>().military.casualtiesInflicted += attackForceDamage;
+
+
 
 
             if ((currentForce / maxForce) <= .2) 
@@ -220,7 +354,7 @@ public class Unit : MonoBehaviour
         {
             yield break;//breaks out 
         }
-        RemoveActionIndicator();
+        //RemoveActionIndicator();
         hasOrders = true;
         
         bool destinationReached = false;
@@ -287,7 +421,8 @@ public class Unit : MonoBehaviour
                 map.GetComponent<Map>().worldLandSquares[currentX, currentY].GetComponent<LandSquare>().units.Add(gameObject);
                 currentLandSquare = map.GetComponent<Map>().worldLandSquares[currentX, currentY];
 
-                gameObject.transform.position = map.GetComponent<Map>().worldLandSquares[currentX, currentY].transform.position;
+                //gameObject.transform.position = map.GetComponent<Map>().worldLandSquares[currentX, currentY].transform.position;
+                gameObject.transform.position = new Vector3(map.GetComponent<Map>().worldLandSquares[currentX, currentY].transform.position.x, map.GetComponent<Map>().worldLandSquares[currentX, currentY].transform.position.y, gameObject.transform.position.z);
 
                 if (map.GetComponent<Map>().worldLandSquares[currentX, currentY].GetComponent<LandSquare>().factionOwner != "") 
                 //if (nation.GetComponent<Nation>().GetNationRelationship(map.GetComponent<Map>().worldLandSquares[currentX, currentY].GetComponent<LandSquare>().factionOwner) != null && nation.GetComponent<Nation>().GetNationRelationship(map.GetComponent<Map>().worldLandSquares[currentX, currentY].GetComponent<LandSquare>().factionOwner) == "enemy")
@@ -311,25 +446,30 @@ public class Unit : MonoBehaviour
                 RemoveActionIndicator();
                 AttackOrders(goalX, goalY);
                 destinationReached = true;//not reached, but needs to break out of method
+                yield break;
             }
 
 
             if (goalX == currentX && goalY == currentY) 
             {
                 destinationReached = true;
-
+                RemoveActionIndicator();
+                hasOrders = false;
+                yield break;
             }
 
             //how long it takes to move to a landSquare
             //TODO: Account for terrain and infrastructure
             //yield return new WaitForSeconds(10);
+
+            //hasOrders = false;
             RemoveActionIndicator();
         }
 
 
 
         //RemoveActionIndicator();
-        hasOrders = false;
+        //hasOrders = false;
         //RemoveActionIndicator();
     }
 
@@ -498,12 +638,45 @@ public class Unit : MonoBehaviour
         
         while (true)
         {
-             yield return new WaitForSeconds(.1f);
+            float waitTime = 0;
+            float minWaitTime = 0;
+            float maxWaitTime = 0;
+
+            //this.currentLandSquare.GetComponent<LandSquare>().
+            if (this.currentLandSquare.GetComponent<LandSquare>().gameObject.name.Contains("Mountain"))
+            {
+                minWaitTime = 10;
+                maxWaitTime = 30;
+            }
+            else if (this.currentLandSquare.GetComponent<LandSquare>().gameObject.name.Contains("Hill"))
+            {
+                minWaitTime = 10;
+                maxWaitTime = 20;
+            }
+            else if (this.currentLandSquare.GetComponent<LandSquare>().gameObject.name.Contains("Grass"))
+            {
+                minWaitTime = 1;
+                maxWaitTime = 3;
+            }
+            else if (this.currentLandSquare.GetComponent<LandSquare>().gameObject.name.Contains("Lake"))
+            {
+                minWaitTime = 0;
+                maxWaitTime = 3;
+            }
+            else if (this.currentLandSquare.GetComponent<LandSquare>().gameObject.name.Contains("Tree"))
+            {
+                minWaitTime = 5;
+                maxWaitTime = 20;
+            }
+
+            waitTime = UnityEngine.Random.Range(minWaitTime, maxWaitTime);
+            yield return new WaitForSeconds(waitTime);
             
-            int randX = Random.Range(currentLandSquare.GetComponent<LandSquare>().x - 1, currentLandSquare.GetComponent<LandSquare>().x + 2);
-            int randY = Random.Range(currentLandSquare.GetComponent<LandSquare>().y - 1, currentLandSquare.GetComponent<LandSquare>().y + 2);
+            int randX = UnityEngine.Random.Range(currentLandSquare.GetComponent<LandSquare>().x - 1, currentLandSquare.GetComponent<LandSquare>().x + 2);
+            int randY = UnityEngine.Random.Range(currentLandSquare.GetComponent<LandSquare>().y - 1, currentLandSquare.GetComponent<LandSquare>().y + 2);
             if (randX >= 0 && randY >= 0 && map.GetComponent<Map>().worldSize > randX && map.GetComponent<Map>().worldSize > randY  && map.GetComponent<Map>().worldLandSquares[randX, randY].GetComponent<LandSquare>().factionOwner == this.nation.GetComponent<Nation>().nationName && map.GetComponent<Map>().worldLandSquares[randX, randY].GetComponent<LandSquare>().units.Count == 0) 
             {
+                //hasOrders = false;
                 StartCoroutine(MoveOrders(randX, randY));
             }
             
@@ -525,22 +698,70 @@ public class Unit : MonoBehaviour
 
     private IEnumerator PatrollWithinBordersAndEnemy()
     {
-
+        
         while (true)
         {
-            yield return new WaitForSeconds(.1f);
-
-            int randX = Random.Range(currentLandSquare.GetComponent<LandSquare>().x - 1, currentLandSquare.GetComponent<LandSquare>().x + 2);
-            int randY = Random.Range(currentLandSquare.GetComponent<LandSquare>().y - 1, currentLandSquare.GetComponent<LandSquare>().y + 2);
-
-            if (randX >= 0 && randY >= 0 && map.GetComponent<Map>().worldSize > randX && map.GetComponent<Map>().worldSize > randY) 
+            yield return new WaitForSeconds(1);
+            /*
+            if (hasOrders)
             {
+                yield break;
+            }
+            */
+
+            //hasOrders = true;
+
+            int randX = UnityEngine.Random.Range(currentLandSquare.GetComponent<LandSquare>().x - 1, currentLandSquare.GetComponent<LandSquare>().x + 2);
+            int randY = UnityEngine.Random.Range(currentLandSquare.GetComponent<LandSquare>().y - 1, currentLandSquare.GetComponent<LandSquare>().y + 2);
+
+            if (!hasOrders && randX >= 0 && randY >= 0 && map.GetComponent<Map>().worldSize > randX && map.GetComponent<Map>().worldSize > randY) 
+            {
+               
+                //StopAllCoroutines();
+                //StartCoroutine(UpdateUnit());
+                float waitTime = 0;
+                float minWaitTime = 0;
+                float maxWaitTime = 0;
+
+                //this.currentLandSquare.GetComponent<LandSquare>().
+                if (this.currentLandSquare.GetComponent<LandSquare>().gameObject.name.Contains("Mountain"))
+                {
+                    minWaitTime = 5;
+                    maxWaitTime = 20;
+                }
+                else if (this.currentLandSquare.GetComponent<LandSquare>().gameObject.name.Contains("Hill"))
+                {
+                    minWaitTime = 5;
+                    maxWaitTime = 15;
+                }
+                else if (this.currentLandSquare.GetComponent<LandSquare>().gameObject.name.Contains("Grass"))
+                {
+                    minWaitTime = 0;
+                    maxWaitTime = 3;
+                }
+                else if (this.currentLandSquare.GetComponent<LandSquare>().gameObject.name.Contains("Lake"))
+                {
+                    minWaitTime = 0;
+                    maxWaitTime = 3;
+                }
+                else if (this.currentLandSquare.GetComponent<LandSquare>().gameObject.name.Contains("Tree"))
+                {
+                    minWaitTime = 5;
+                    maxWaitTime = 15;
+                }
+
+                waitTime = UnityEngine.Random.Range(minWaitTime, maxWaitTime);
+                yield return new WaitForSeconds(waitTime);
+
+
+                
                 bool isOwner = map.GetComponent<Map>().worldLandSquares[randX, randY].GetComponent<LandSquare>().factionOwner == this.nation.GetComponent<Nation>().nationName;
                 bool hasUnits = map.GetComponent<Map>().worldLandSquares[randX, randY].GetComponent<LandSquare>().units.Count > 0;
 
                 bool isOwnedByEnemy = nation.GetComponent<Nation>().IsEnemyNation(map.GetComponent<Map>().worldLandSquares[randX, randY].GetComponent<LandSquare>().factionOwner);
                 if ((isOwnedByEnemy || (isOwner && !hasUnits)))
                 {
+                    //hasOrders = false;
                     StartCoroutine(MoveOrders(randX, randY));
                 }
 
@@ -573,7 +794,7 @@ public class Unit : MonoBehaviour
             float annexMaxNegativeApprovalPercent = 1;
 
 
-            float dissaprovalRating = Random.Range(annexMinNegativeApprovalPercent, annexMaxNegativeApprovalPercent);
+            float dissaprovalRating = UnityEngine.Random.Range(annexMinNegativeApprovalPercent, annexMaxNegativeApprovalPercent);
             landsquare.GetComponent<LandSquare>().nationApprovalRatings[nation.GetComponent<Nation>().nationName].DecreaseApproval(landsquare.GetComponent<LandSquare>().nationApprovalRatings[nation.GetComponent<Nation>().nationName].neutralApproval * dissaprovalRating);
 
         }
@@ -591,7 +812,7 @@ public class Unit : MonoBehaviour
     {
         if (!hasOrders && entrenchmentPercent < 100)
         {
-            int hoursToEntrench = 10;//12 hrs
+            int hoursToEntrench = 20;//12 hrs
 
             
             for (int i = 0; i < hoursToEntrench; i++) 
@@ -604,7 +825,7 @@ public class Unit : MonoBehaviour
                 yield return new WaitForSeconds(1);
                 if (entrenchmentPercent < 100) 
                 {
-                    entrenchmentPercent += 10;
+                    entrenchmentPercent += 5;
                 }
             }
         }
@@ -627,14 +848,15 @@ public class Unit : MonoBehaviour
 
 
 
-        public string UnitToString() 
+    public string UnitToString() 
     {
         string output = "";
         output += "Name: " + unitName;
-        output += "\nCurrent Force: " + currentForce;
-        output += "\nStrength: " + ((currentForce / maxForce) * 100 + "%");
+        output += "\nCurrent Force: " + Math.Round((double)(currentForce), 0);//Math.Round((double)(currentForce), 3)
+        output += "\nStrength: " + (Math.Round((double)((currentForce / maxForce) * 100), 1) + "%"); 
         output += "\nEntrenchment: " + entrenchmentPercent + "%";
         output += "\nHasOrders: " + hasOrders;
+        output += "\nCombatExperience: " + (Math.Round(combatExperiencePercent, 1) + "%"); ;
         return output;
     }
 

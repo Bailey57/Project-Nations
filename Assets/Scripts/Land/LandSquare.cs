@@ -82,9 +82,9 @@ public class LandSquare : MonoBehaviour
     public float CalculateLandValue() 
     {
         float value = 1000000;//5000000, 5mil base value
-        float resourceWorth = 1000000;
+        float resourceWorth = 300000;
         //add based on pop
-        value += population * 1000;
+        value += population * 10;
         value += ironAvalibility * resourceWorth;
         value += waterAvalibility * resourceWorth;
         value += oilAvalibility * resourceWorth;
@@ -100,7 +100,7 @@ public class LandSquare : MonoBehaviour
      */
     public float CalculateAnnexCost(GameObject nation)
     {
-        float priceIncrease = .18f;//1 = 100%
+        float priceIncrease = .4f;//1 = 100%
 
         //TODO: make more expensive the further away and if no infrastructure on the way from a capitol
         int capitalX = nation.GetComponent<Nation>().capitalLandSquare.GetComponent<LandSquare>().x;
@@ -114,7 +114,7 @@ public class LandSquare : MonoBehaviour
         float value = CalculateLandValue();
        
 
-        value += value * priceIncrease;
+        value += value * priceIncrease * priceIncrease;
         return value;
     }
 
@@ -226,6 +226,20 @@ public class LandSquare : MonoBehaviour
         population *= (float)Math.Pow(e, (r * hoursPassed / 8760));//8760 = hors in a year
         //(worldLandSquares[x, y].GetComponent(typeof(LandSquare)) as LandSquare).population += (worldLandSquares[x, y].GetComponent(typeof(LandSquare)) as LandSquare).population * hourPerTick * 0.00000134077f;//old pop equation
 
+    }
+
+    public bool HasMajorCity() 
+    {
+        for (int i = 0; i < this.buildings.Count; i++) 
+        {
+            if (buildings[i] is MajorCity) 
+            {
+                return true;
+            }
+        
+        }
+
+        return false;
     }
 
     public string BuildingsToString() 

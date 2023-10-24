@@ -5,7 +5,7 @@ using UnityEngine;
 [CreateAssetMenu]
 public class StartSettingsSO : ScriptableObject
 {
-
+    [SerializeField] public bool spawnPlayer;
 
     [SerializeField] public int mapSize;
     [SerializeField] public int numberOfNations;
@@ -19,4 +19,14 @@ public class StartSettingsSO : ScriptableObject
         get { return numberOfNations; }
         set { numberOfNations = value; }
     }
+
+    public bool SpawnPlayer
+    {
+        get { return spawnPlayer; }
+        set { spawnPlayer = value; }
+    }
+
+
+
+
 }

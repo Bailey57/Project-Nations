@@ -24,4 +24,19 @@ public class BuildingFactory
         return BuildMine("Mine",false, 24, 100, factionOwner);
     }
 
+
+    public SteelPlant BuildSteelPlant(string Name, bool IsActive, float HoursToBuild, float MaxProductionInKGPerHour, string factionOwner)
+    {
+        //
+        SteelPlant newSteelPlant = new SteelPlant(Name, IsActive, HoursToBuild, MaxProductionInKGPerHour * 1.087f, MaxProductionInKGPerHour);
+        newSteelPlant.FactionOwner = factionOwner;
+
+        return newSteelPlant;
+    }
+
+    public SteelPlant BuildSteelPlant(string factionOwner) 
+    {
+        return BuildSteelPlant("Steel Plant", false, 24, 50, factionOwner);
+    }
+
 }

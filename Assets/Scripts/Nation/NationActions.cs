@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
@@ -52,8 +53,6 @@ public class NationActions : MonoBehaviour
     public GameObject map;
 
 
-    //
-
 
 
 
@@ -86,13 +85,37 @@ public class NationActions : MonoBehaviour
 
 
 
-            if (nation.GetComponent<Nation>().military.totalForce > 250)
+            if (nation.GetComponent<Nation>().military.totalForce > 40)
             {
-                //CreateCompanyUnit();
+
+
+
+
                 CreatePlatoonUnit();
 
+                /*
+                int randInt = Random.Range(0, 100);
+                if (nation.GetComponent<Nation>().military.units.Count == 0)
+                {
+                    CreateCompanyUnit();
 
+                }
+                else if (randInt <= 75)
+                {
+                    CreatePlatoonUnit();
+                }
+                else 
+                {
+                    CreateCompanyUnit();
+                }
+                */
+                if (nation.GetComponent<Nation>().military.units.Count > 2) 
+                {
+                    int index = nation.GetComponent<Nation>().military.units.Count - 1;
+                    nation.GetComponent<Nation>().military.units[index].GetComponent<Unit>().PatrollWithinBordersAndEnemyOrder();
+                }
 
+                /*
                 for (int i = 1; i < nation.GetComponent<Nation>().military.units.Count; i++)
                 {
                     if (!nation.GetComponent<Nation>().military.units[i].GetComponent<Unit>().hasOrders)
@@ -102,6 +125,13 @@ public class NationActions : MonoBehaviour
                     }
 
                 }
+                */
+
+
+
+
+
+                DeclareRandWar();
             }
 
 
@@ -156,8 +186,38 @@ public class NationActions : MonoBehaviour
     }
 
 
+    /**
+     * Declare war against a random nation
+     */
+    public void DeclareRandWar() 
+    {
+        int max = map.GetComponent<Map>().nations.Count;
+        int num = Random.Range(0, max);
+        DeclareEnemyNationBothSides(map.GetComponent<Map>().nations.ElementAt(num).Key);
+    
+    
+    }
 
-    public void DeclareEnemyNation(string nationName) 
+    public IEnumerator SellExtraResources()
+    {
+        while (true)
+        {
+            bool isActive = true;
+            //TODO: put in nation actions so bots can sell extra ore
+            yield return new WaitForSeconds(1);
+            if (isActive)//(toggle.GetComponent<Toggle>().IsActive())
+            {
+                float oneMetricTonOfIronWorth = 120;
+
+                nation.GetComponent<Nation>().gold += nation.GetComponent<Nation>().metricTonsOfIronOre * oneMetricTonOfIronWorth;
+                nation.GetComponent<Nation>().metricTonsOfIronOre = 0;
+            }
+
+        }
+
+    }
+
+        public void DeclareEnemyNation(string nationName) 
     {
         if (this.nation.GetComponent<Nation>().nationName == nationName) 
         {
@@ -247,20 +307,23 @@ public class NationActions : MonoBehaviour
         GameObject newUnit;
         if (forceSize >= 100 && forceSize <= 250)
         {
-            newUnit = (GameObject)Instantiate(Resources.Load("Prefabs/Military/Units/infantry1CompanyWhite"));
+            newUnit = (GameObject)Instantiate(Resources.Load("Prefabs/Military/Units/infantry1White2"));
+            newUnit.GetComponentInChildren<TextMeshPro>().text = "I";
         }
         else if (forceSize >= 25 && forceSize <= 40) 
         {
-            newUnit = (GameObject)Instantiate(Resources.Load("Prefabs/Military/Units/infantry1White"));
+            newUnit = (GameObject)Instantiate(Resources.Load("Prefabs/Military/Units/infantry1White2"));
             newUnit.GetComponentInChildren<TextMeshPro>().text = "•••";
         }
         else
         {
-            newUnit = (GameObject)Instantiate(Resources.Load("Prefabs/Military/Units/infantry1White"));
+            newUnit = (GameObject)Instantiate(Resources.Load("Prefabs/Military/Units/infantry1White2"));
         }
         
         newUnit.GetComponent<SpriteRenderer>().color = nation.GetComponent<Nation>().nationMainColor;
         newUnit.transform.position = nation.GetComponent<Nation>().capitalLandSquare.transform.position;
+        newUnit.transform.position = new Vector3(newUnit.transform.position.x, newUnit.transform.position.y, -0.01f);
+        //0.01
         nation.GetComponent<Nation>().capitalLandSquare.GetComponent<LandSquare>().units.Add(newUnit);
         newUnit.GetComponent<Unit>().maxForce = forceSize;
         newUnit.GetComponent<Unit>().map = map;
@@ -275,7 +338,7 @@ public class NationActions : MonoBehaviour
 
     public void CreatePlatoonUnit()
     {
-        float size = 25;
+        float size = 40;//4 to 5 squads
 
 
         if (this.nation.GetComponent<Nation>().military.totalForce >= size)
@@ -293,7 +356,7 @@ public class NationActions : MonoBehaviour
      */
     public void CreateCompanyUnit() 
     {
-        float companySize = 250;
+        float companySize = 160;//4 to 5 platoons
         
 
         if (this.nation.GetComponent<Nation>().military.totalForce >= companySize) 
@@ -781,12 +844,57 @@ public class NationActions : MonoBehaviour
         //this.transform.parent
         Debug.Log("This: " + gameObject.name);
         Debug.Log("The Parent: " + gameObject.transform.parent.GetComponent<Nation>().nationName);
-        if (mainCamera.GetComponent<ObjectClick>().selectedObject != null)
+        if (mainCamera.GetComponent<ObjectClick>().selectedObject != null && mainCamera.GetComponent<ObjectClick>().selectedObject.GetComponent<LandSquare>() != null)
         {
 
             BuildMine(mainCamera.GetComponent<ObjectClick>().selectedObject);
         }
     }
+
+
+    public void BuildSteelPlant(GameObject landSquare)
+    {
+        if (gameObject.transform.parent.GetComponent<Nation>().nationName == landSquare.GetComponent<LandSquare>().factionOwner)
+        {
+            float buildCost = 5000000;
+            if (gameObject.transform.parent.GetComponent<Nation>().gold >= buildCost)
+            {
+                gameObject.transform.parent.GetComponent<Nation>().gold -= buildCost;
+                landSquare.GetComponent<LandSquare>().buildings.Add(buildingFactory.BuildSteelPlant(gameObject.transform.parent.GetComponent<Nation>().nationName));
+
+
+            }
+        }
+    }
+
+    public void PlayerBuildSteelPlant()
+    {
+        //this.transform.parent
+        Debug.Log("This: " + gameObject.name);
+        Debug.Log("The Parent: " + gameObject.transform.parent.GetComponent<Nation>().nationName);
+        if (mainCamera.GetComponent<ObjectClick>().selectedObject != null && mainCamera.GetComponent<ObjectClick>().selectedObject.GetComponent<LandSquare>() != null)
+        {
+
+            BuildSteelPlant(mainCamera.GetComponent<ObjectClick>().selectedObject);
+        }
+    }
+    public void BuildRifelFactory(GameObject landSquare)
+    {
+        if (gameObject.transform.parent.GetComponent<Nation>().nationName == landSquare.GetComponent<LandSquare>().factionOwner)
+        {
+            float buildCost = 5000000;
+            if (gameObject.transform.parent.GetComponent<Nation>().gold >= buildCost)
+            {
+                gameObject.transform.parent.GetComponent<Nation>().gold -= buildCost;
+                landSquare.GetComponent<LandSquare>().buildings.Add(buildingFactory.BuildMine_lvl1(gameObject.transform.parent.GetComponent<Nation>().nationName));
+
+
+            }
+        }
+    }
+
+
+
 
 
     public void LobbyInSquare(GameObject nation, GameObject landsquare) 
