@@ -9,6 +9,10 @@ public class ObjectClick : MonoBehaviour
 
     public GameObject nation;
 
+
+
+    public GameObject selectionIndicator;
+
     //[SerializeField] public LayerMask clickable;
     //[SerializeField] public LayerMask ground;
 
@@ -62,11 +66,14 @@ public class ObjectClick : MonoBehaviour
 
                 Debug.Log("Hit " + rayHit.transform.gameObject.name);
                 selectedObject = rayHit.transform.gameObject;
+                selectionIndicator = (GameObject)Instantiate(Resources.Load("Prefabs/UI/DownArrowGreen"));
+                selectionIndicator.transform.position = selectedObject.transform.position;
             }
             else
             {
                 Debug.Log("Hit Nothing");
                 selectedObject = null;
+                Destroy(selectionIndicator);
             }
 
 
@@ -74,6 +81,7 @@ public class ObjectClick : MonoBehaviour
         else if (Input.GetMouseButtonDown(1))
         {
             selectedObject = null;
+            Destroy(selectionIndicator);
             Debug.Log("unselected");
 
         }

@@ -1,8 +1,9 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-
+[Serializable]
 public class Map : MonoBehaviour
 {
 
@@ -89,6 +90,14 @@ public class Map : MonoBehaviour
 
         //AddNewSquareTst();
         SetBaseNationApprovalForTiles();
+
+
+
+
+        //TODO
+        //test save and loading
+        //SaveAndLoad saveAndLoad = new SaveAndLoad();
+        //saveAndLoad.SaveGame(this.gameObject);
     }
 
 
@@ -134,13 +143,13 @@ public class Map : MonoBehaviour
 
 
         //(newNation.GetComponent(typeof(Nation)) as Nation).ownedLandSquares.Add(worldLandSquares[0, 0]);
-        int randX = Random.Range(0, worldSize);
-        int randY = Random.Range(0, worldSize);
+        int randX = UnityEngine.Random.Range(0, worldSize);
+        int randY = UnityEngine.Random.Range(0, worldSize);
         bool foundEmptySquare = false;
         while (!foundEmptySquare) 
         {
-            randX = Random.Range(0, worldSize);
-            randY = Random.Range(0, worldSize);
+            randX = UnityEngine.Random.Range(0, worldSize);
+            randY = UnityEngine.Random.Range(0, worldSize);
             if (worldLandSquares[randX, randY].GetComponent<LandSquare>().factionOwner == "") 
             {
                 foundEmptySquare = true;
@@ -187,7 +196,7 @@ public class Map : MonoBehaviour
 
 
         //make nation have a rand color
-        newNation.GetComponent<Nation>().nationMainColor = Random.ColorHSV();
+        newNation.GetComponent<Nation>().nationMainColor = UnityEngine.Random.ColorHSV();
 
     }
 
@@ -708,14 +717,14 @@ public class Map : MonoBehaviour
 
                 GameObject newLandSquare;
 
-                int randInt = Random.Range(0, 100);
+                int randInt = UnityEngine.Random.Range(0, 100);
                 if (randInt <= 1)
                 {
                     newLandSquare = (GameObject)Instantiate(Resources.Load("Prefabs/LakeTile_50x50"));
                     (newLandSquare.GetComponent(typeof(LandSquare)) as LandSquare).type = "lake";
                     (newLandSquare.GetComponent(typeof(LandSquare)) as LandSquare).SetLandSquareResources(0, 1, 0, 0, 1);
                     //rand pop count
-                    randInt = Random.Range(0, 4000);
+                    randInt = UnityEngine.Random.Range(0, 4000);
                     (newLandSquare.GetComponent(typeof(LandSquare)) as LandSquare).population = randInt;
                 }
                 else if (randInt >= 15 && randInt <= 30)
@@ -724,7 +733,7 @@ public class Map : MonoBehaviour
                     (newLandSquare.GetComponent(typeof(LandSquare)) as LandSquare).type = "forest";
                     (newLandSquare.GetComponent(typeof(LandSquare)) as LandSquare).SetLandSquareResources(.08f, .2f, .3f, 1, .2f);
                     //rand pop count
-                    randInt = Random.Range(0, 4000);
+                    randInt = UnityEngine.Random.Range(0, 4000);
                     (newLandSquare.GetComponent(typeof(LandSquare)) as LandSquare).population = randInt;
                 }
                 
@@ -734,7 +743,7 @@ public class Map : MonoBehaviour
                     (newLandSquare.GetComponent(typeof(LandSquare)) as LandSquare).type = "hills";
                     (newLandSquare.GetComponent(typeof(LandSquare)) as LandSquare).SetLandSquareResources(.3f, .1f, .1f, 0, .2f);
                     //rand pop count
-                    randInt = Random.Range(0, 4000);
+                    randInt = UnityEngine.Random.Range(0, 4000);
                     (newLandSquare.GetComponent(typeof(LandSquare)) as LandSquare).population = randInt;
                 }
                 else if (randInt >= 98 && randInt <= 100)
@@ -743,7 +752,7 @@ public class Map : MonoBehaviour
                     (newLandSquare.GetComponent(typeof(LandSquare)) as LandSquare).type = "mountain";
                     (newLandSquare.GetComponent(typeof(LandSquare)) as LandSquare).SetLandSquareResources(1f, .1f, .1f, .1f, 0);
                     //rand pop count
-                    randInt = Random.Range(0, 200);
+                    randInt = UnityEngine.Random.Range(0, 200);
                     (newLandSquare.GetComponent(typeof(LandSquare)) as LandSquare).population = randInt;
                 }
                 else 
@@ -752,7 +761,7 @@ public class Map : MonoBehaviour
                     (newLandSquare.GetComponent(typeof(LandSquare)) as LandSquare).type = "grass_fields";
                     (newLandSquare.GetComponent(typeof(LandSquare)) as LandSquare).SetLandSquareResources(.08f, .1f, .1f, 0, 1);
                     //rand pop count
-                    randInt = Random.Range(0, 4000);
+                    randInt = UnityEngine.Random.Range(0, 4000);
                     (newLandSquare.GetComponent(typeof(LandSquare)) as LandSquare).population = randInt;
 
                 }

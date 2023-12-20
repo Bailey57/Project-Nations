@@ -5,6 +5,7 @@ using System.Security.Cryptography.X509Certificates;
 using Unity.VisualScripting;
 using UnityEngine;
 
+[Serializable]
 public class Nation : MonoBehaviour
 {
 

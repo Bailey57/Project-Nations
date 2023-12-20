@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
 using System;
+
+
+[Serializable]
 public class Unit : MonoBehaviour
 {
     // Start is called before the first frame update

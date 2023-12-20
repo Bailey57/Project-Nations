@@ -10,6 +10,9 @@ public class CameraMovement : MonoBehaviour
     [SerializeField] private GameObject target;
 
     [SerializeField] private float scrollSpeed = 10;
+
+
+
     // Start is called before the first frame update
     void Start()
     {

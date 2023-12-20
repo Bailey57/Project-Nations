@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -5,6 +6,7 @@ using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
 
+[Serializable]
 public class NationActions : MonoBehaviour
 {
     // Start is called before the first frame update
@@ -94,7 +96,7 @@ public class NationActions : MonoBehaviour
                 CreatePlatoonUnit();
 
                 /*
-                int randInt = Random.Range(0, 100);
+                int randInt = UnityEngine.Random.Range(0, 100);
                 if (nation.GetComponent<Nation>().military.units.Count == 0)
                 {
                     CreateCompanyUnit();
@@ -149,7 +151,7 @@ public class NationActions : MonoBehaviour
 
                 (int, int) selectedLandSquare;
                 //choose weather to buy the most or least expensive
-                int randInt = Random.Range(0, 1000);
+                int randInt = UnityEngine.Random.Range(0, 1000);
                 if (randInt < 0)//FindLeastValuableBorderLandSquare only for now
                 {
                     selectedLandSquare = FindMostValuableBorderLandSquare(nation.GetComponent<Nation>().ownedLandSquares);
@@ -192,7 +194,7 @@ public class NationActions : MonoBehaviour
     public void DeclareRandWar() 
     {
         int max = map.GetComponent<Map>().nations.Count;
-        int num = Random.Range(0, max);
+        int num = UnityEngine.Random.Range(0, max);
         DeclareEnemyNationBothSides(map.GetComponent<Map>().nations.ElementAt(num).Key);
     
     
@@ -746,7 +748,7 @@ public class NationActions : MonoBehaviour
             {
                 yield return new WaitForSeconds(1);
 
-                float ratingIncrease = Random.Range(minHourSupportIncrease, maxHourSupportIncrease);
+                float ratingIncrease = UnityEngine.Random.Range(minHourSupportIncrease, maxHourSupportIncrease);
                 landsquare.GetComponent<LandSquare>().nationApprovalRatings[nation.GetComponent<Nation>().nationName].IncreaseApproval(ratingIncrease);
                 //Debug.Log("Lobby hours left: " + (hoursToLobby - i) + " ratingIncrease: " + ratingIncrease);
             }
@@ -791,7 +793,7 @@ public class NationActions : MonoBehaviour
             map.GetComponent<Map>().UpdateBorders();
 
             //adds dissaproval rating 
-            float dissaprovalRating = Random.Range(annexMinNegativeApprovalPercent, annexMaxNegativeApprovalPercent);
+            float dissaprovalRating = UnityEngine.Random.Range(annexMinNegativeApprovalPercent, annexMaxNegativeApprovalPercent);
             landsquare.GetComponent<LandSquare>().nationApprovalRatings[nation.GetComponent<Nation>().nationName].DecreaseApproval(landsquare.GetComponent<LandSquare>().nationApprovalRatings[nation.GetComponent<Nation>().nationName].neutralApproval * dissaprovalRating);
 
 
