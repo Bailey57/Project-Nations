@@ -253,6 +253,31 @@ public class Nation : MonoBehaviour
     
     }
 
+
+
+    public string NumberToResourceString(string resoruceName, float resourceCount) 
+    {
+        string output = "";
+        if (resourceCount > 1000000)
+        {
+            output += resoruceName + ": " + Math.Round((double)(resourceCount / 1000000), 3) + " million";
+        }
+        else if (resourceCount > 1000000000)
+        {
+            output += resoruceName + ": " + Math.Round((double)(resourceCount / 1000000000), 3) + " billion";
+        }
+        else
+        {
+            output += resoruceName + ": " + Math.Round((double)(resourceCount), 3);
+        }
+        return output;
+    }
+
+
+
+
+
+
    public string NationToString() 
     {
         string output = "";
@@ -260,69 +285,25 @@ public class Nation : MonoBehaviour
         output += "\nPopulation: " + Math.Round(population);
 
         output += "\n";
-
-
-        if (gold > 1000000)
-        {
-            output += "\nGold: " + Math.Round((double)(gold / 1000000), 3) + " million";
-            //Math.Round((double)(gold / 1000000), 2);
-        }
-        else 
-        {
-            output += "\nGold: " + Math.Round((double)(gold), 3);
-        }
-
-        
-        if (goldIncomePerHour > 1000000)
-        {
-            output += "\nGoldIncomePerHour: " + Math.Round((double)(goldIncomePerHour / 1000000), 3) + " million";
-        }
-        else
-        {
-            output += "\nGoldIncomePerHour: " + Math.Round((double)(goldIncomePerHour), 3);
-        }
-
-        if (goldExpencesPerHour > 1000000)
-        {
-            output += "\nGoldExpencesPerHour: " + Math.Round((double)(goldExpencesPerHour / 1000000), 3) + " million";
-        }
-        else
-        {
-            output += "\nGoldExpencesPerHour: " + Math.Round((double)(goldExpencesPerHour), 3);
-        }
-
-        if (goldIncomePerHour - goldExpencesPerHour > 1000000)
-        {
-            output += "\nNetGoldPerHour: " + Math.Round((double)((goldIncomePerHour - goldExpencesPerHour) / 1000000), 3) + " million";
-        }
-        else
-        {
-            output += "\nNetGoldPerHour: " + Math.Round((double)((goldIncomePerHour - goldExpencesPerHour)), 3);
-        }
+        output += NumberToResourceString("Gold", gold);
 
         output += "\n";
-
-        if (metricTonsOfIronOre > 1000000)
-        {
-            output += "\nMetricTonsOfIronOre: " + Math.Round((double)(metricTonsOfIronOre / 1000000), 3) + " million";
-        }
-        else
-        {
-            output += "\nMetricTonsOfIronOre: " + Math.Round((double)(metricTonsOfIronOre), 3);
-        }
-        if (metricTonsOfIronOre > 1000000)
-        {
-            output += "\nMetricTonsOfSteel: " + Math.Round((double)(metricTonsOfSteel / 1000000), 3) + " million";
-        }
-        else
-        {
-            output += "\nMetricTonsOfSteel: " + Math.Round((double)(metricTonsOfSteel), 3);
-        }
+        output += NumberToResourceString("GoldIncomePerHour", goldIncomePerHour);
 
         output += "\n";
+        output += NumberToResourceString("GoldExpencesPerHour", goldExpencesPerHour);
 
+        output += "\n";
+        output += NumberToResourceString("NetGoldPerHour", goldIncomePerHour - goldExpencesPerHour);
 
-        output += "\nMilitary Reserves: " + (int)military.totalForce;
+        output += "\n";
+        output += NumberToResourceString("MetricTonsOfIronOre", metricTonsOfIronOre);
+
+        output += "\n";
+        output += NumberToResourceString("MetricTonsOfSteel", metricTonsOfSteel);
+
+        output += "\n";
+        output += NumberToResourceString("Military Reserves", (int)military.totalForce);
 
 
         output += "\n";

@@ -9,6 +9,10 @@ public class StartSettingsSO : ScriptableObject
 
     [SerializeField] public int mapSize;
     [SerializeField] public int numberOfNations;
+
+
+    [SerializeField] public bool showAdvancedStats;
+
     public int MapSize
     {
 		get { return mapSize; }
@@ -24,6 +28,12 @@ public class StartSettingsSO : ScriptableObject
     {
         get { return spawnPlayer; }
         set { spawnPlayer = value; }
+    }
+
+    public bool ShowAdvancedStats
+    {
+        get { return showAdvancedStats; }
+        set { showAdvancedStats = value; }
     }
 
 
